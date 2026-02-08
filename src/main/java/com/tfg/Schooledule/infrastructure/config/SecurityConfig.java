@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -23,23 +24,61 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/profesor/**").hasRole("PROFESOR")
-                        .requestMatchers("/alumno/**").hasRole("ALUMNO")
-                        .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
-                        .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .permitAll())
-                .logout(logout -> logout
-                        .permitAll());
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/admin/**").hasRole("ADMIN")
+//                        .requestMatchers("/profesor/**").hasRole("PROFESOR")
+//                        .requestMatchers("/alumno/**").hasRole("ALUMNO")
+//                        .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
+//                        .anyRequest().authenticated())
+//                .formLogin(form -> form
+//                        .loginPage("/login")
+//                        .permitAll())
+//                .logout(logout -> logout
+//                        .permitAll());
+//
+//        return http.build();
+//    }
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+            // 1. DESACTIVAR CSRF (Vital para desarrollo y Postman)
+            .csrf(csrf -> csrf.disable())
 
-        return http.build();
-    }
+            .authorizeHttpRequests(auth -> auth
+                    // 2. Roles específicos
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/profesor/**").hasRole("PROFESOR")
+                    .requestMatchers("/alumno/**").hasRole("ALUMNO")
+
+                    // 3. Rutas públicas (¡OJO! /loginSession debe estar aquí para tu Postman)
+                    .requestMatchers("/","/control", "/login", "/loginSession", "/register", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+
+                    // 4. El resto requiere estar logueado
+                    .anyRequest().authenticated())
+
+            .formLogin(form -> form
+                    // 5. TU PÁGINA DE LOGIN PERSONALIZADA
+                    // Como ya has creado el LoginController y movido el HTML a templates,
+                    // AHORA SÍ descomentamos esto:
+                    .loginPage("/login")
+
+                    // La URL donde el formulario HTML hace el POST (th:action="@{/login}")
+                    .loginProcessingUrl("/login")
+
+                    .defaultSuccessUrl("/", true) // A dónde ir si el login sale bien
+                    .permitAll())
+
+            .logout(logout -> logout
+                    // Configuración para cerrar sesión
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .logoutSuccessUrl("/login?logout")
+                    .permitAll());
+
+    return http.build();
+}
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -48,7 +87,8 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
