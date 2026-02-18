@@ -2,6 +2,5 @@
 <project version="4">
   <component name="DataSourcePerFileMappings">
     <file url="file://$PROJECT_DIR$/src/main/resources/SQL/Schooledule.sql" value="60b347c3-c418-448a-a8a9-922d30a150ed" />
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/60b347c3-c418-448a-a8a9-922d30a150ed/console.sql" value="60b347c3-c418-448a-a8a9-922d30a150ed" />
   </component>
 </project>

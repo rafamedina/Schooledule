@@ -1,6 +1,7 @@
 package com.tfg.schooledule.infrastructure.config;
 
 import com.tfg.schooledule.infrastructure.security.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,7 +18,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
+    @Autowired
+    private CustomLoginSuccessHandler successHandler;
     private final CustomUserDetailsService userDetailsService;
 
     public SecurityConfig(CustomUserDetailsService userDetailsService) {
@@ -54,21 +56,16 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers("/alumno/**").hasRole("ALUMNO")
 
                     // 3. Rutas públicas (¡OJO! /loginSession debe estar aquí para tu Postman)
-                    .requestMatchers("/","/control", "/login", "/loginSession", "/register", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                    .requestMatchers("/","/login", "/loginSession", "/register", "/css/**", "/js/**", "/images/**", "/error").permitAll()
 
                     // 4. El resto requiere estar logueado
                     .anyRequest().authenticated())
 
             .formLogin(form -> form
-                    // 5. TU PÁGINA DE LOGIN PERSONALIZADA
-                    // Como ya has creado el LoginController y movido el HTML a templates,
-                    // AHORA SÍ descomentamos esto:
                     .loginPage("/login")
-
-                    // La URL donde el formulario HTML hace el POST (th:action="@{/login}")
+                    // AQUI ESTA LA MAGIA:
                     .loginProcessingUrl("/login")
-
-                    .defaultSuccessUrl("/", true) // A dónde ir si el login sale bien
+                    .successHandler(successHandler)
                     .permitAll())
 
             .logout(logout -> logout

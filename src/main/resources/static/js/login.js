@@ -1,132 +1,142 @@
+document.addEventListener("DOMContentLoaded", () => {
 
-let formulario = document.getElementById("formulario");
-let email = document.getElementById("email");
-let password = document.getElementById("password");
-let btnRegistro = document.getElementById("btnRegistro");
-var toast = document.getElementById("toast")
+    // Referencias al DOM
+    const formulario = document.getElementById("formulario");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const toast = document.getElementById("toast");
 
-fetch('/killSession')
+    // Limpieza preventiva de sesión al cargar la página
+    fetch('/killSession').catch(err => console.log("Sesión limpia"));
 
-formulario.addEventListener('submit',(e)=> {
-    e.preventDefault();
+    // --- EVENTO PRINCIPAL: LOGIN ---
+    formulario.addEventListener('submit', (e) => {
+        e.preventDefault(); // Evita que la página se recargue sola
 
-    var emailMetido = email.value.trim()
-    var passwordMetido = password.value.trim()
+        const emailMetido = email.value.trim();
+        const passwordMetido = password.value.trim();
 
-    fetch('/loginSession', {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            email: emailMetido,
-            password: passwordMetido
+        // 1. Petición de Login
+        fetch('/loginSession', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: emailMetido,
+                password: passwordMetido
+            })
         })
-    })
-        .then(async (response) => {
-            // 1. Leemos la respuesta del servidor (sea éxito o error)
-            const textoRespuesta = await response.text();
+            .then(async (response) => {
+                // Leemos la respuesta como texto primero para evitar errores de parseo
+                const textoRespuesta = await response.text();
+                let data;
 
-            // 2. Comprobamos si el status es 200-299
-            if (response.ok) {
-                // Intentamos convertirlo a JSON por si acaso, si no, devolvemos texto
                 try {
-                    return JSON.parse(textoRespuesta);
+                    // Intentamos convertir a JSON (lo normal si todo va bien)
+                    data = JSON.parse(textoRespuesta);
                 } catch (err) {
-                    return textoRespuesta; // Era texto plano ("Inicio de sesión exitoso")
+                    // Si falla, es que el servidor devolvió texto plano
+                    data = { message: textoRespuesta };
                 }
-            } else {
-                // 3. SI FALLA (401, 404):
-                // Lanzamos un error con el texto QUE ENVÍA EL SERVIDOR ("Contraseña incorrecta")
-                // Si el servidor no envió texto, usamos el statusText genérico
-                throw new Error(textoRespuesta || response.statusText);
-            }
-        })
-        .then((data) => {
-            // 1. Limpiamos el string de roles (ej: "-ADMIN-PROFESOR" -> ["ADMIN", "PROFESOR"])
-            // El filter(Boolean) elimina los strings vacíos que deja el split
-            const listaRoles = data.roles.split("-").filter(Boolean);
 
-            // 2. Lógica de decisión
-            if (listaRoles.length > 1) {
-                // --- CASO A: Varios roles -> Abrimos el <dialog> ---
-                abrirDialogoRoles(listaRoles);
-            } else if (listaRoles.length === 1) {
-                // --- CASO B: Un solo rol -> Entramos directo ---
-                seleccionarRol(listaRoles[0]);
-            } else {
-                mostrarToast("Error: Usuario sin roles asignados");
-            }
-        })
+                if (response.ok) {
+                    return data; // Pasamos los datos al siguiente .then
+                } else {
+                    // Si hay error (401, 404), lanzamos una excepción con el mensaje del servidor
+                    throw new Error(data.message || data.error || textoRespuesta || "Error desconocido");
+                }
+            })
+            .then((data) => {
+                console.log("Login correcto, analizando roles...", data);
 
+                // A. Convertimos el string de roles en Array
+                // Ejemplo: "-ADMIN-PROFESOR" -> ["ADMIN", "PROFESOR"]
+                // El .filter(Boolean) elimina los huecos vacíos
+                const listaRoles = data.roles ? data.roles.split("-").filter(Boolean) : [];
 
-
-        .catch((error) => {
-
-                // --- ERROR ---
-                console.error("Fallo en login:", error);
-
-                // 4. Usamos error.message, que contiene el texto que lanzamos en el paso 3
-                toast.textContent = error.message;
-
-                toast.style.display = "flex";
-                toast.style.backgroundColor = "red"; // Opcional: Para que se vea que es error
-
-                setTimeout(() => {
-                    toast.style.display = "none";
-                }, 3000);
+                // B. Decidimos qué hacer
+                if (listaRoles.length > 1) {
+                    // CASO 1: Muchos roles -> Abrir modal
+                    abrirDialogoRoles(listaRoles);
+                } else if (listaRoles.length === 1) {
+                    // CASO 2: Un rol -> Entrar directo
+                    seleccionarRol(listaRoles[0]);
+                } else {
+                    throw new Error("El usuario no tiene roles asignados");
+                }
+            })
+            .catch((error) => {
+                mostrarError(error.message);
             });
-});
-
-function abrirDialogoRoles(roles) {
-    const dialog = document.getElementById("dialogoRoles");
-    const contenedor = document.getElementById("contenedorBotones");
-
-    // Limpiamos botones viejos
-    contenedor.innerHTML = "";
-
-    // Generamos botones dinámicamente
-    roles.forEach(rol => {
-        const btn = document.createElement("button");
-        btn.textContent = rol; // Texto del botón: ADMIN, ALUMNO, etc.
-
-        // Al hacer click, cerramos el dialog y enviamos el rol
-        btn.onclick = () => {
-            dialog.close(); // Método nativo para cerrar
-            seleccionarRol(rol);
-        };
-
-        contenedor.appendChild(btn);
     });
 
-    // ¡MAGIA! showModal() abre el dialog y bloquea el fondo
-    dialog.showModal();
-}
+    // --- FUNCIONES AUXILIARES ---
 
-function seleccionarRol(rolElegido) {
-    console.log("Rol elegido:", rolElegido);
+    function abrirDialogoRoles(roles) {
+        const dialog = document.getElementById("dialogoRoles");
+        const contenedor = document.getElementById("contenedorBotones");
 
-    // Fetch para guardar el rol en sesión y redirigir
-    fetch('/control', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rol: rolElegido })
-    })
-        .then(response => {
-            if (response.ok) {
-                return response.json(); // Esperamos el JSON con la URL { "redirectUrl": "..." }
-            } else {
-                throw new Error("Error al establecer el rol");
-            }
-        })
-        .then(data => {
-            // AQUÍ OCURRE LA MAGIA: El servidor nos dice a dónde ir
-            console.log("Redirigiendo a:", data.redirectUrl);
-            window.location.href = data.redirectUrl;
-        })
-        .catch(error => {
-            console.error(error);
-            alert("Hubo un problema al seleccionar el perfil.");
+        // Limpiamos botones anteriores
+        contenedor.innerHTML = "";
+
+        roles.forEach(rol => {
+            const btn = document.createElement("button");
+
+            // ¡IMPORTANTE! type="button" evita que este botón envíe el formulario de fondo
+            btn.type = "button";
+            btn.textContent = rol;
+            btn.className = "btn-rol"; // Clase opcional para CSS
+
+            btn.onclick = () => {
+                dialog.close();
+                seleccionarRol(rol);
+            };
+
+            contenedor.appendChild(btn);
         });
 
-}
+        // Abrimos el modal nativo
+        if (typeof dialog.showModal === "function") {
+            dialog.showModal();
+        } else {
+            alert("Tu navegador no soporta <dialog>. Por favor actualízalo.");
+        }
+    }
+
+    function seleccionarRol(rolElegido) {
+        console.log("Rol seleccionado:", rolElegido);
+
+        // 2. Petición de Selección de Rol
+        fetch('/control', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rol: rolElegido })
+        })
+            .then(response => {
+                if (response.ok) return response.json();
+                throw new Error("Error al establecer el perfil");
+            })
+            .then(data => {
+                // 3. Redirección Final
+                console.log("Redirigiendo a:", data.redirectUrl);
+                window.location.href = data.redirectUrl;
+            })
+            .catch(error => {
+                console.error(error);
+                mostrarError("Error al acceder al panel: " + error.message);
+            });
+    }
+
+    function mostrarError(mensaje) {
+        console.error("Error UI:", mensaje);
+        toast.textContent = mensaje;
+        toast.style.display = "flex";
+        toast.style.backgroundColor = "#e74c3c"; // Rojo error
+
+        setTimeout(() => {
+            toast.style.display = "none";
+        }, 3000);
+    }
+
+});
