@@ -1,7 +1,7 @@
-package com.tfg.schooledule.infrastructure.security;
+package com.tfg.Schooledule.infrastructure.security;
 
-import com.tfg.schooledule.domain.entity.Usuario;
-import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
+import com.tfg.Schooledule.domain.entity.Usuario;
+import com.tfg.Schooledule.infrastructure.repository.UsuarioRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,9 +24,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // Buscamos el usuario por su nombre de usuario (o email)
         Usuario usuario = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
+        // Mapeamos los roles del usuario a autoridades de Spring Security
+        // Es importante añadir el prefijo 'ROLE_' para que Spring Security los
+        // reconozca correctamente
+        // al usar métodos como hasRole()
         return new User(
                 usuario.getUsername(),
                 usuario.getPasswordHash(),
@@ -35,7 +40,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 true,
                 true,
                 usuario.getRoles().stream()
-                        .map(rol -> new SimpleGrantedAuthority(rol.getNombre()))
+                        .map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getNombre().toUpperCase()))
                         .collect(Collectors.toSet()));
     }
 }

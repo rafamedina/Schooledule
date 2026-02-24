@@ -1,4 +1,4 @@
-package com.tfg.schooledule.domain.entity;
+package com.tfg.Schooledule.domain.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;

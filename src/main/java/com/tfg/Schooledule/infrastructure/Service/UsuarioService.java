@@ -1,10 +1,9 @@
-package com.tfg.schooledule.infrastructure.Service;
+package com.tfg.Schooledule.infrastructure.Service;
 
-import com.tfg.schooledule.domain.entity.Usuario;
-import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
+import com.tfg.Schooledule.domain.entity.Usuario;
+import com.tfg.Schooledule.infrastructure.repository.UsuarioRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

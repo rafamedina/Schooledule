@@ -1,4 +1,4 @@
-package com.tfg.schooledule.domain.entity;
+package com.tfg.Schooledule.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

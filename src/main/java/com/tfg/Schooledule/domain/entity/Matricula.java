@@ -1,12 +1,11 @@
-package com.tfg.schooledule.domain.entity;
+package com.tfg.Schooledule.domain.entity;
 
-import com.tfg.schooledule.domain.enums.EstadoMatricula;
+import com.tfg.Schooledule.domain.enums.EstadoMatricula;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "matriculas", uniqueConstraints = {

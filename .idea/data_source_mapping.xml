@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$PROJECT_DIR$/src/main/resources/SQL/Schooledule.sql" value="60b347c3-c418-448a-a8a9-922d30a150ed" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/db/migration/V1__Initial_Schema.sql" value="336003fb-18c4-48b6-93a5-d5af0df3c8cc" />
   </component>
 </project>

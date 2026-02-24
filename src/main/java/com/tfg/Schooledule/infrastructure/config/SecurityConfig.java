@@ -1,6 +1,7 @@
-package com.tfg.schooledule.infrastructure.config;
+package com.tfg.Schooledule.infrastructure.config;
 
-import com.tfg.schooledule.infrastructure.security.CustomUserDetailsService;
+import com.tfg.Schooledule.infrastructure.security.CustomLoginSuccessHandler;
+import com.tfg.Schooledule.infrastructure.security.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,56 +27,60 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/profesor/**").hasRole("PROFESOR")
-//                        .requestMatchers("/alumno/**").hasRole("ALUMNO")
-//                        .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
-//                        .anyRequest().authenticated())
-//                .formLogin(form -> form
-//                        .loginPage("/login")
-//                        .permitAll())
-//                .logout(logout -> logout
-//                        .permitAll());
-//
-//        return http.build();
-//    }
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-            // 1. DESACTIVAR CSRF (Vital para desarrollo y Postman)
-            .csrf(csrf -> csrf.disable())
+    // @Bean
+    // public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
+    // Exception {
+    // http
+    // .authorizeHttpRequests(auth -> auth
+    // .requestMatchers("/admin/**").hasRole("ADMIN")
+    // .requestMatchers("/profesor/**").hasRole("PROFESOR")
+    // .requestMatchers("/alumno/**").hasRole("ALUMNO")
+    // .requestMatchers("/", "/login", "/css/**", "/js/**",
+    // "/images/**").permitAll()
+    // .anyRequest().authenticated())
+    // .formLogin(form -> form
+    // .loginPage("/login")
+    // .permitAll())
+    // .logout(logout -> logout
+    // .permitAll());
+    //
+    // return http.build();
+    // }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                // 1. DESACTIVAR CSRF (Vital para desarrollo y Postman)
+                .csrf(csrf -> csrf.disable())
 
-            .authorizeHttpRequests(auth -> auth
-                    // 2. Roles específicos
-                    .requestMatchers("/admin/**").hasRole("ADMIN")
-                    .requestMatchers("/profesor/**").hasRole("PROFESOR")
-                    .requestMatchers("/alumno/**").hasRole("ALUMNO")
+                .authorizeHttpRequests(auth -> auth
+                        // 2. Roles específicos
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/profesor/**").hasRole("PROFESOR")
+                        .requestMatchers("/alumno/**").hasRole("ALUMNO")
 
-                    // 3. Rutas públicas (¡OJO! /loginSession debe estar aquí para tu Postman)
-                    .requestMatchers("/","/login", "/loginSession", "/register", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                        // 3. Rutas públicas (¡OJO! /loginSession debe estar aquí para tu Postman)
+                        .requestMatchers("/", "/login", "/loginSession", "/register", "/css/**", "/js/**", "/images/**",
+                                "/error")
+                        .permitAll()
 
-                    // 4. El resto requiere estar logueado
-                    .anyRequest().authenticated())
+                        // 4. El resto requiere estar logueado
+                        .anyRequest().authenticated())
 
-            .formLogin(form -> form
-                    .loginPage("/login")
-                    // AQUI ESTA LA MAGIA:
-                    .loginProcessingUrl("/login")
-                    .successHandler(successHandler)
-                    .permitAll())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        // AQUI ESTA LA MAGIA:
+                        .loginProcessingUrl("/login")
+                        .successHandler(successHandler)
+                        .permitAll())
 
-            .logout(logout -> logout
-                    // Configuración para cerrar sesión
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                    .logoutSuccessUrl("/login?logout")
-                    .permitAll());
+                .logout(logout -> logout
+                        // Configuración para cerrar sesión
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll());
 
-    return http.build();
-}
+        return http.build();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
