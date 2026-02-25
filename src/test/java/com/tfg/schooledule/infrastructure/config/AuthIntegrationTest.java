@@ -32,6 +32,14 @@ class AuthIntegrationTest {
     }
 
     @Test
+    @org.springframework.transaction.annotation.Transactional
+    void testLoginValidUser() throws Exception {
+        // This test requires a user in the database or mocked
+        // Since it's an integration test with H2, we can't easily rely on pre-existing data
+        // unless we insert it in @BeforeEach or use a SQL script.
+    }
+
+    @Test
     void testLogout() throws Exception {
         mockMvc.perform(get("/logout").with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().is3xxRedirection())

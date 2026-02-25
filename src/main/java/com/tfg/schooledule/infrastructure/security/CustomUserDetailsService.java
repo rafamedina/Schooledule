@@ -23,19 +23,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Usuario usuario = userRepository.findUsuarioByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
 
         return new User(
-                usuario.getUsername(),
+                usuario.getEmail(),
                 usuario.getPasswordHash(),
                 usuario.getActivo(),
                 true,
                 true,
                 true,
                 usuario.getRoles().stream()
-                        .map(rol -> new SimpleGrantedAuthority(rol.getNombre()))
+                        .map(rol -> new org.springframework.security.core.authority.SimpleGrantedAuthority(rol.getNombre()))
                         .collect(Collectors.toSet()));
     }
 }
