@@ -95,5 +95,9 @@ public class UsuarioService {
         return usuarioRepository.findUsuarioByEmail(email);
     }
 
+    public Optional<Usuario> buscarPorNombreUsuario(String username) {
+        return usuarioRepository.findByUsername(username);
+    }
+
 
 }

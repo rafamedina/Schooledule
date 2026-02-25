@@ -1,0 +1,49 @@
+package com.tfg.schooledule.infrastructure.Controller;
+
+import com.tfg.schooledule.domain.DTO.AlumnoProfileDTO;
+import com.tfg.schooledule.domain.entity.Usuario;
+import com.tfg.schooledule.infrastructure.Service.UsuarioService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(AlumnoController.class)
+public class AlumnoControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private UsuarioService usuarioService;
+
+    @Test
+    @WithMockUser(username = "testalumno", roles = "ALUMNO")
+    public void testPerfilAlumno_Success() throws Exception {
+        Usuario usuario = Usuario.builder().id(1).username("testalumno").build();
+        AlumnoProfileDTO profile = AlumnoProfileDTO.builder()
+                .nombre("Test")
+                .apellidos("Alumno")
+                .email("test@alumno.com")
+                .centroNombre("Centro Test")
+                .build();
+
+        when(usuarioService.buscarPorNombreUsuario("testalumno")).thenReturn(Optional.of(usuario));
+        when(usuarioService.getAlumnoProfile(1)).thenReturn(profile);
+
+        mockMvc.perform(get("/alumno/perfil"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("alumno/perfil"))
+                .andExpect(model().attributeExists("profile"))
+                .andExpect(model().attribute("profile", profile));
+    }
+}
