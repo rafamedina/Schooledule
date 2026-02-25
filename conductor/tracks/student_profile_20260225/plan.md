@@ -6,7 +6,7 @@ This plan follows the TDD-based workflow defined in `conductor/workflow.md`.
 - [x] Task: Create DTOs for Alumno Profile and Grade Dashboard [37501d0]
     - [ ] Create `com.tfg.schooledule.domain.DTO.AlumnoProfileDTO`
     - [ ] Create `com.tfg.schooledule.domain.DTO.GradeDTO` and `GradeDashboardDTO`
-- [ ] Task: Implement Data Retrieval in Repositories
+- [x] Task: Implement Data Retrieval in Repositories [5257bbc]
     - [ ] Add query methods to `UsuarioRepository` to fetch profile-related entities
     - [ ] Add query methods to `CalificacionRepository` to fetch grades for a specific student and period
 - [ ] Task: Implement Profile Service Logic
