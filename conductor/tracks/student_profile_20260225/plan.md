@@ -17,7 +17,7 @@ This plan follows the TDD-based workflow defined in `conductor/workflow.md`.
     - [ ] Write failing tests for `UsuarioService.getStudentGrades(Long usuarioId, Long periodoId)`
     - [ ] Implement logic to fetch and map `Calificacion` and `ItemEvaluable` to `GradeDashboardDTO`
     - [ ] Verify tests pass
-- [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) [ab567e4]
 
 ## Phase 2: Web Layer & User Interface
 - [ ] Task: Implement Profile Controller & View
