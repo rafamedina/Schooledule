@@ -36,4 +36,27 @@ public class AlumnoController {
         return "alumno/perfil";
     }
 
+    @GetMapping("/notas")
+    public String dashboardNotas(@org.springframework.web.bind.annotation.RequestParam(required = false) Integer periodoId, 
+                                Principal principal, Model model) {
+        String username = principal.getName();
+        com.tfg.schooledule.domain.entity.Usuario usuario = usuarioService.buscarPorNombreUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        java.util.List<com.tfg.schooledule.domain.entity.PeriodoEvaluacion> periodos = usuarioService.getStudentPeriods(usuario.getId());
+        model.addAttribute("periodos", periodos);
+
+        if (periodoId == null && !periodos.isEmpty()) {
+            periodoId = periodos.get(0).getId();
+        }
+
+        if (periodoId != null) {
+            com.tfg.schooledule.domain.DTO.GradeDashboardDTO dashboard = usuarioService.getStudentGrades(usuario.getId(), periodoId);
+            model.addAttribute("dashboard", dashboard);
+            model.addAttribute("selectedPeriodoId", periodoId);
+        }
+
+        return "alumno/dashboard_notas";
+    }
+
 }

@@ -46,4 +46,24 @@ public class AlumnoControllerTest {
                 .andExpect(model().attributeExists("profile"))
                 .andExpect(model().attribute("profile", profile));
     }
+
+    @Test
+    @WithMockUser(username = "testalumno", roles = "ALUMNO")
+    public void testDashboardNotas_Success() throws Exception {
+        Usuario usuario = Usuario.builder().id(1).username("testalumno").build();
+        com.tfg.schooledule.domain.DTO.GradeDashboardDTO dashboard = com.tfg.schooledule.domain.DTO.GradeDashboardDTO.builder()
+                .periodoNombre("T1")
+                .gradesByModulo(new java.util.HashMap<>())
+                .build();
+
+        when(usuarioService.buscarPorNombreUsuario("testalumno")).thenReturn(Optional.of(usuario));
+        when(usuarioService.getStudentPeriods(1)).thenReturn(java.util.List.of());
+        when(usuarioService.getStudentGrades(1, 1)).thenReturn(dashboard);
+
+        mockMvc.perform(get("/alumno/notas").param("periodoId", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("alumno/dashboard_notas"))
+                .andExpect(model().attributeExists("dashboard"))
+                .andExpect(model().attribute("dashboard", dashboard));
+    }
 }

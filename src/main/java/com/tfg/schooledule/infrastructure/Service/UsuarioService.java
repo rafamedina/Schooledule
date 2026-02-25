@@ -99,5 +99,19 @@ public class UsuarioService {
         return usuarioRepository.findByUsername(username);
     }
 
+    @Autowired
+    private com.tfg.schooledule.infrastructure.repository.PeriodoEvaluacionRepository periodoRepository;
+
+    public java.util.List<com.tfg.schooledule.domain.entity.PeriodoEvaluacion> getStudentPeriods(Integer usuarioId) {
+        java.util.List<com.tfg.schooledule.domain.entity.Matricula> matriculas = matriculaRepository.findByAlumnoId(usuarioId);
+        java.util.Set<com.tfg.schooledule.domain.entity.PeriodoEvaluacion> periodos = new java.util.HashSet<>();
+        
+        for (com.tfg.schooledule.domain.entity.Matricula m : matriculas) {
+            periodos.addAll(periodoRepository.findByImparticionId(m.getImparticion().getId()));
+        }
+        
+        return new java.util.ArrayList<>(periodos);
+    }
+
 
 }
