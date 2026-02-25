@@ -21,7 +21,7 @@ This plan refactors the authentication flow to use standard Spring Security Filt
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: Controller & Template Alignment
-- [ ] Task: Clean up LoginController
+- [x] Task: Clean up LoginController 63cc002
     - [ ] Remove any manual authentication or session logic that duplicates Spring Security filters.
     - [ ] Keep only the simple `@GetMapping("/login")` to return the view.
     - [ ] Write failing test for login page access.
