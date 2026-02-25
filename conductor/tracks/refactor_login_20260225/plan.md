@@ -10,7 +10,7 @@ This plan refactors the authentication flow to use standard Spring Security Filt
         - Else if user has ROLE_PROFESOR -> redirect to `/profe/menuProfesor`
         - Else if user has ROLE_ALUMNO -> redirect to `/alumno/menuAlumno`
     - [ ] Verify tests pass.
-- [ ] Task: Harden SecurityConfig
+- [x] Task: Harden SecurityConfig 0c443db
     - [ ] Write integration tests verifying that `/admin/**` is blocked for non-admins.
     - [ ] Update `SecurityConfig.java`:
         - Ensure `formLogin()` uses `/login` as the page.
