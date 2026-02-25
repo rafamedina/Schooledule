@@ -26,7 +26,7 @@ This plan refactors the authentication flow to use standard Spring Security Filt
     - [ ] Keep only the simple `@GetMapping("/login")` to return the view.
     - [ ] Write failing test for login page access.
     - [ ] Verify tests pass.
-- [ ] Task: Align Login Template
+- [x] Task: Align Login Template 16ed952
     - [ ] Update `src/main/resources/templates/login.html`:
         - Ensure form `action` is `th:action="@{/login}"`.
         - Ensure input names are `username` (for email) and `password`.
