@@ -24,12 +24,12 @@ This plan follows the TDD-based workflow defined in `conductor/workflow.md`.
     - [ ] Update `AlumnoController` with `@GetMapping("/perfil")`
     - [ ] Create `src/main/resources/templates/alumno/perfil.html`
     - [ ] Write integration test for the profile endpoint
-- [ ] Task: Implement Grade Dashboard Controller & View
+- [~] Task: Implement Grade Dashboard Controller & View
     - [ ] Update `AlumnoController` with `@GetMapping("/notas")`
     - [ ] Create `src/main/resources/templates/alumno/dashboard_notas.html`
     - [ ] Implement period selection dropdown and AJAX/Form submission for filtering
     - [ ] Write integration test for the grades endpoint
-- [ ] Task: Navigation & UI Integration
+- [x] Task: Navigation & UI Integration [3f62369]
     - [ ] Update `src/main/resources/templates/alumno/menuAlumno.html` to link to Perfil and Notas
     - [ ] Apply consistent Bootstrap 5 styling and navigation bar
 - [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
