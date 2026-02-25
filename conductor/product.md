@@ -13,6 +13,7 @@ To provide a secure and flexible platform for academic management that ensures t
 
 ## Core Features
 - **Multi-Site Isolation:** Physical data isolation via `centro_id` while sharing resources (teachers) across sites.
+- **Standard Authentication:** Secure, email-based login system with role-based redirection to specialized dashboards.
 - **Hybrid Evaluation Engine:** Flexible grade calculation using JSONB to support various pedagogical criteria (Weighted Criteria, RA averages, etc.).
 - **Forensic Audit Module:** Database-level immutable logging (PL/pgSQL triggers) to guarantee the legal validity of academic records.
 - **Academic Lifecycle Management:** From student enrollment (`Matricula`) to evaluation and audit.
