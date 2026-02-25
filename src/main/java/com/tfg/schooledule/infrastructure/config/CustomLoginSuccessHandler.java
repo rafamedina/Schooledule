@@ -16,13 +16,13 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         
-        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        java.util.Set<String> roles = org.springframework.security.core.authority.AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         
-        if (role.equals("ROLE_ADMIN")) {
+        if (roles.contains("ROLE_ADMIN")) {
             response.sendRedirect("/admin/dashboard");
-        } else if (role.equals("ROLE_PROFESOR")) {
+        } else if (roles.contains("ROLE_PROFESOR")) {
             response.sendRedirect("/profe/menuProfesor");
-        } else if (role.equals("ROLE_ALUMNO")) {
+        } else if (roles.contains("ROLE_ALUMNO")) {
             response.sendRedirect("/alumno/menuAlumno");
         } else {
             response.sendRedirect("/");
