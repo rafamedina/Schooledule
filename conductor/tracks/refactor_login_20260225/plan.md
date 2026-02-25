@@ -3,7 +3,7 @@
 This plan refactors the authentication flow to use standard Spring Security Filter Chain with role-based redirection.
 
 ## Phase 1: Security Configuration & Handlers
-- [ ] Task: Refactor CustomLoginSuccessHandler
+- [x] Task: Refactor CustomLoginSuccessHandler 74e45ee
     - [ ] Write unit tests for `CustomLoginSuccessHandler` verifying redirects for ADMIN, PROFESOR, and ALUMNO.
     - [ ] Update `com.tfg.schooledule.infrastructure.config.CustomLoginSuccessHandler` to perform logic:
         - If user has ROLE_ADMIN -> redirect to `/admin/dashboard`
