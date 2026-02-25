@@ -33,3 +33,6 @@ This plan follows the TDD-based workflow defined in `conductor/workflow.md`.
     - [ ] Update `src/main/resources/templates/alumno/menuAlumno.html` to link to Perfil and Notas
     - [ ] Apply consistent Bootstrap 5 styling and navigation bar
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) [3f62369]
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions f877c6c
