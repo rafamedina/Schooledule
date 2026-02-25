@@ -1,14 +1,11 @@
-package com.tfg.schooledule.domain.DTO;
+package com.tfg.Schooledule.domain.DTO;
 
-import com.tfg.schooledule.domain.entity.Rol;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor

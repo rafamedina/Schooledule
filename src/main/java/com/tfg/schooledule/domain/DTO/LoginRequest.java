@@ -1,4 +1,4 @@
-package com.tfg.schooledule.domain.DTO;
+package com.tfg.Schooledule.domain.DTO;
 
 import lombok.Data;
 

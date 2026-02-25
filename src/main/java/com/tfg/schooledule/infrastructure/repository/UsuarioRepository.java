@@ -1,8 +1,7 @@
-package com.tfg.schooledule.infrastructure.repository;
+package com.tfg.Schooledule.infrastructure.repository;
 
-import com.tfg.schooledule.domain.entity.Usuario;
+import com.tfg.Schooledule.domain.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

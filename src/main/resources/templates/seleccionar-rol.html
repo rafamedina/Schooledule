@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Schooledule - Seleccionar Rol</title>
+    <!-- Incluye aquí tu CSS, por ejemplo Bootstrap si lo utilizas -->
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; }
+        .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        h2 { margin-top: 0; color: #333; }
+        form { display: flex; flex-direction: column; gap: 1rem; }
+        .role-option { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+        .role-option:hover { background: #f0f0f0; }
+        button { background-color: #0056b3; color: white; border: none; padding: 0.75rem; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        button:hover { background-color: #004494; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Selecciona tu Rol</h2>
+        <p>Tu cuenta tiene múltiples roles. Por favor, elige cómo quieres continuar en esta sesión.</p>
+        
+        <form th:action="@{/seleccionar-rol}" method="post">
+            <!-- 
+               Recorremos los roles (Añadidos al modelo desde el RoleSelectionController) 
+               y creamos un radio button por cada uno 
+            -->
+            <div th:each="rol : ${roles}" class="role-option">
+                <input type="radio" th:id="${rol}" name="rol" th:value="${rol}" required>
+                <!-- Capitalizamos la primera letra del rol para que quede mejor visualmente -->
+                <label th:for="${rol}" th:text="${#strings.capitalize(rol)}"></label>
+            </div>
+            
+            <button type="submit">Continuar</button>
+        </form>
+    </div>
+</body>
+</html>

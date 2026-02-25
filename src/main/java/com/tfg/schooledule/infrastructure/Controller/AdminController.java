@@ -1,4 +1,4 @@
-package com.tfg.schooledule.infrastructure.Controller;
+package com.tfg.Schooledule.infrastructure.Controller;
 
 
 import org.springframework.context.annotation.Role;

@@ -1,13 +1,12 @@
-package com.tfg.schooledule.domain.entity;
+package com.tfg.Schooledule.domain.entity;
 
-import com.tfg.schooledule.domain.enums.TipoActividad;
+import com.tfg.Schooledule.domain.enums.TipoActividad;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.Type;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
