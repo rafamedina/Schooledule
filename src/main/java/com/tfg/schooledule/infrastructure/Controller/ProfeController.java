@@ -1,4 +1,4 @@
-package com.tfg.Schooledule.infrastructure.Controller;
+package com.tfg.schooledule.infrastructure.Controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

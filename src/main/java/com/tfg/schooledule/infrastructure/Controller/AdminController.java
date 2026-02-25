@@ -1,7 +1,6 @@
-package com.tfg.Schooledule.infrastructure.Controller;
+package com.tfg.schooledule.infrastructure.Controller;
 
 
-import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

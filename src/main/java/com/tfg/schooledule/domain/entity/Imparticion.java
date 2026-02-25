@@ -1,6 +1,5 @@
-package com.tfg.Schooledule.domain.entity;
+package com.tfg.schooledule.domain.entity;
 
-import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

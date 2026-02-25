@@ -2,7 +2,6 @@ package com.tfg.schooledule.infrastructure.security;
 
 import com.tfg.schooledule.domain.entity.Usuario;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

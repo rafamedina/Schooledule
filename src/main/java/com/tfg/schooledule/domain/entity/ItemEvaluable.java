@@ -1,6 +1,6 @@
-package com.tfg.Schooledule.domain.entity;
+package com.tfg.schooledule.domain.entity;
 
-import com.tfg.Schooledule.domain.enums.TipoActividad;
+import com.tfg.schooledule.domain.enums.TipoActividad;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

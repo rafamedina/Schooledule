@@ -1,4 +1,4 @@
-package com.tfg.Schooledule.domain.enums;
+package com.tfg.schooledule.domain.enums;
 
 public enum EstadoMatricula {
     ACTIVA,
