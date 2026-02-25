@@ -2,7 +2,7 @@
 
 This plan refactors the authentication flow to use standard Spring Security Filter Chain with role-based redirection.
 
-## Phase 1: Security Configuration & Handlers
+## Phase 1: Security Configuration & Handlers [checkpoint: fe0ce84]
 - [x] Task: Refactor CustomLoginSuccessHandler 74e45ee
     - [ ] Write unit tests for `CustomLoginSuccessHandler` verifying redirects for ADMIN, PROFESOR, and ALUMNO.
     - [ ] Update `com.tfg.schooledule.infrastructure.config.CustomLoginSuccessHandler` to perform logic:
@@ -18,7 +18,7 @@ This plan refactors the authentication flow to use standard Spring Security Filt
         - Verify `successHandler(successHandler)` is active.
         - Enable CSRF protection (standard security) and update template accordingly.
     - [ ] Verify tests pass.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: Controller & Template Alignment
 - [ ] Task: Clean up LoginController
