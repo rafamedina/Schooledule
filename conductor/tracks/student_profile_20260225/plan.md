@@ -20,7 +20,7 @@ This plan follows the TDD-based workflow defined in `conductor/workflow.md`.
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) [ab567e4]
 
 ## Phase 2: Web Layer & User Interface
-- [ ] Task: Implement Profile Controller & View
+- [x] Task: Implement Profile Controller & View [a43e282]
     - [ ] Update `AlumnoController` with `@GetMapping("/perfil")`
     - [ ] Create `src/main/resources/templates/alumno/perfil.html`
     - [ ] Write integration test for the profile endpoint
