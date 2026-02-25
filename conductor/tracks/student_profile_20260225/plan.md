@@ -3,7 +3,7 @@
 This plan follows the TDD-based workflow defined in `conductor/workflow.md`.
 
 ## Phase 1: Data Access & Business Logic
-- [ ] Task: Create DTOs for Alumno Profile and Grade Dashboard
+- [x] Task: Create DTOs for Alumno Profile and Grade Dashboard [37501d0]
     - [ ] Create `com.tfg.schooledule.domain.DTO.AlumnoProfileDTO`
     - [ ] Create `com.tfg.schooledule.domain.DTO.GradeDTO` and `GradeDashboardDTO`
 - [ ] Task: Implement Data Retrieval in Repositories
