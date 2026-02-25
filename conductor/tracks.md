@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Implement student profile view and grade dashboard**
+- [~] **Track: Implement student profile view and grade dashboard**
   *Link: [./tracks/student_profile_20260225/](./tracks/student_profile_20260225/)*

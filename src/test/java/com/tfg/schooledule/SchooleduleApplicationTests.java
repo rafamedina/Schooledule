@@ -1,4 +1,4 @@
-package com.tfg.Schooledule;
+package com.tfg.schooledule;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
