@@ -13,7 +13,7 @@ This plan follows the TDD-based workflow defined in `conductor/workflow.md`.
     - [ ] Write failing tests for `UsuarioService.getAlumnoProfile(Long usuarioId)`
     - [ ] Implement logic to aggregate `Usuario`, `Matricula`, `Grupo`, and `Centro` data into `AlumnoProfileDTO`
     - [ ] Verify tests pass
-- [ ] Task: Implement Grade Retrieval Service Logic
+- [x] Task: Implement Grade Retrieval Service Logic [546230a]
     - [ ] Write failing tests for `UsuarioService.getStudentGrades(Long usuarioId, Long periodoId)`
     - [ ] Implement logic to fetch and map `Calificacion` and `ItemEvaluable` to `GradeDashboardDTO`
     - [ ] Verify tests pass
