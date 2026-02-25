@@ -40,4 +40,4 @@ This plan refactors the authentication flow to use standard Spring Security Filt
     - [ ] Write failing integration test simulating a full login flow for each role.
     - [ ] Implement tests using `spring-security-test`.
     - [ ] Verify successful redirection and session creation.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) [5ed49ca]
