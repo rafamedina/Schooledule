@@ -24,6 +24,9 @@ public class UsuarioServiceTest {
     @Mock
     private MatriculaRepository matriculaRepository;
 
+    @Mock
+    private com.tfg.schooledule.infrastructure.repository.CalificacionRepository calificacionRepository;
+
     @InjectMocks
     private UsuarioService usuarioService;
 
@@ -59,5 +62,32 @@ public class UsuarioServiceTest {
         assertEquals("Centro Test", profile.getCentroNombre());
         assertEquals("DAM2", profile.getGrupoNombre());
         assertEquals("2025/2026", profile.getCursoAcademico());
+    }
+
+    @Test
+    public void testGetStudentGrades_Success() {
+        Integer usuarioId = 1;
+        Integer periodoId = 1;
+
+        PeriodoEvaluacion periodo = PeriodoEvaluacion.builder().id(periodoId).nombre("1er Trimestre").build();
+        Modulo modulo = Modulo.builder().nombre("Programacion").build();
+        Imparticion imparticion = Imparticion.builder().modulo(modulo).build();
+        Matricula matricula = Matricula.builder().imparticion(imparticion).build();
+        ItemEvaluable item = ItemEvaluable.builder().nombre("Examen 1").tipo(com.tfg.schooledule.domain.enums.TipoActividad.EXAMEN).periodoEvaluacion(periodo).build();
+        Calificacion calif = Calificacion.builder()
+                .matricula(matricula)
+                .itemEvaluable(item)
+                .valor(new java.math.BigDecimal("8.5"))
+                .build();
+
+        when(calificacionRepository.findByAlumnoIdAndPeriodoId(usuarioId, periodoId))
+                .thenReturn(java.util.List.of(calif));
+
+        com.tfg.schooledule.domain.DTO.GradeDashboardDTO dashboard = usuarioService.getStudentGrades(usuarioId, periodoId);
+
+        assertNotNull(dashboard);
+        assertTrue(dashboard.getGradesByModulo().containsKey("Programacion"));
+        assertEquals(1, dashboard.getGradesByModulo().get("Programacion").size());
+        assertEquals(new java.math.BigDecimal("8.5"), dashboard.getGradesByModulo().get("Programacion").get(0).getValor());
     }
 }

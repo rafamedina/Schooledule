@@ -22,6 +22,9 @@ public class UsuarioService {
     @Autowired
     private com.tfg.schooledule.infrastructure.repository.MatriculaRepository matriculaRepository;
 
+    @Autowired
+    private com.tfg.schooledule.infrastructure.repository.CalificacionRepository calificacionRepository;
+
     public com.tfg.schooledule.domain.DTO.AlumnoProfileDTO getAlumnoProfile(Integer usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -41,6 +44,40 @@ public class UsuarioService {
                 .centroNombre(matricula.getCentro().getNombre())
                 .grupoNombre(grupo.getNombre())
                 .cursoAcademico(grupo.getCursoAcademico().getNombre())
+                .build();
+    }
+
+    public com.tfg.schooledule.domain.DTO.GradeDashboardDTO getStudentGrades(Integer usuarioId, Integer periodoId) {
+        java.util.List<com.tfg.schooledule.domain.entity.Calificacion> calificaciones = calificacionRepository
+                .findByAlumnoIdAndPeriodoId(usuarioId, periodoId);
+
+        if (calificaciones.isEmpty()) {
+            return com.tfg.schooledule.domain.DTO.GradeDashboardDTO.builder()
+                    .gradesByModulo(new java.util.HashMap<>())
+                    .build();
+        }
+
+        String periodoNombre = calificaciones.get(0).getItemEvaluable().getPeriodoEvaluacion().getNombre();
+
+        java.util.Map<String, java.util.List<com.tfg.schooledule.domain.DTO.GradeDTO>> gradesByModulo = new java.util.HashMap<>();
+
+        for (com.tfg.schooledule.domain.entity.Calificacion calif : calificaciones) {
+            String moduloNombre = calif.getMatricula().getImparticion().getModulo().getNombre();
+
+            com.tfg.schooledule.domain.DTO.GradeDTO gradeDTO = com.tfg.schooledule.domain.DTO.GradeDTO.builder()
+                    .itemNombre(calif.getItemEvaluable().getNombre())
+                    .valor(calif.getValor())
+                    .comentario(calif.getComentario())
+                    .fecha(calif.getItemEvaluable().getFecha())
+                    .tipoActividad(calif.getItemEvaluable().getTipo().name())
+                    .build();
+
+            gradesByModulo.computeIfAbsent(moduloNombre, k -> new java.util.ArrayList<>()).add(gradeDTO);
+        }
+
+        return com.tfg.schooledule.domain.DTO.GradeDashboardDTO.builder()
+                .periodoNombre(periodoNombre)
+                .gradesByModulo(gradesByModulo)
                 .build();
     }
 
