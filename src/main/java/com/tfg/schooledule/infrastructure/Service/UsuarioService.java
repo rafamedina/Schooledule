@@ -1,14 +1,18 @@
 package com.tfg.schooledule.infrastructure.Service;
 
-import com.tfg.schooledule.domain.entity.Usuario;
+import com.tfg.schooledule.domain.DTO.AlumnoProfileDTO;
+import com.tfg.schooledule.domain.DTO.GradeDTO;
+import com.tfg.schooledule.domain.DTO.GradeDashboardDTO;
+import com.tfg.schooledule.domain.entity.*;
+import com.tfg.schooledule.infrastructure.repository.CalificacionRepository;
+import com.tfg.schooledule.infrastructure.repository.MatriculaRepository;
+import com.tfg.schooledule.infrastructure.repository.PeriodoEvaluacionRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UsuarioService {
@@ -20,22 +24,25 @@ public class UsuarioService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private com.tfg.schooledule.infrastructure.repository.MatriculaRepository matriculaRepository;
+    private MatriculaRepository matriculaRepository;
 
     @Autowired
-    private com.tfg.schooledule.infrastructure.repository.CalificacionRepository calificacionRepository;
+    private CalificacionRepository calificacionRepository;
 
-    public com.tfg.schooledule.domain.DTO.AlumnoProfileDTO getAlumnoProfile(Integer usuarioId) {
+    @Autowired
+    private PeriodoEvaluacionRepository periodoRepository;
+
+    public AlumnoProfileDTO getAlumnoProfile(Integer usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        com.tfg.schooledule.domain.entity.Matricula matricula = matriculaRepository
+        Matricula matricula = matriculaRepository
                 .findFirstByAlumnoIdOrderByImparticionGrupoCursoAcademicoIdDesc(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Matricula no encontrada"));
 
-        com.tfg.schooledule.domain.entity.Grupo grupo = matricula.getImparticion().getGrupo();
+        Grupo grupo = matricula.getImparticion().getGrupo();
 
-        return com.tfg.schooledule.domain.DTO.AlumnoProfileDTO.builder()
+        return AlumnoProfileDTO.builder()
                 .id(usuario.getId())
                 .username(usuario.getUsername())
                 .nombre(usuario.getNombre())
@@ -47,24 +54,24 @@ public class UsuarioService {
                 .build();
     }
 
-    public com.tfg.schooledule.domain.DTO.GradeDashboardDTO getStudentGrades(Integer usuarioId, Integer periodoId) {
-        java.util.List<com.tfg.schooledule.domain.entity.Calificacion> calificaciones = calificacionRepository
+    public GradeDashboardDTO getStudentGrades(Integer usuarioId, Integer periodoId) {
+        List<Calificacion> calificaciones = calificacionRepository
                 .findByAlumnoIdAndPeriodoId(usuarioId, periodoId);
 
         if (calificaciones.isEmpty()) {
-            return com.tfg.schooledule.domain.DTO.GradeDashboardDTO.builder()
-                    .gradesByModulo(new java.util.HashMap<>())
+            return GradeDashboardDTO.builder()
+                    .gradesByModulo(new HashMap<>())
                     .build();
         }
 
         String periodoNombre = calificaciones.get(0).getItemEvaluable().getPeriodoEvaluacion().getNombre();
 
-        java.util.Map<String, java.util.List<com.tfg.schooledule.domain.DTO.GradeDTO>> gradesByModulo = new java.util.HashMap<>();
+        Map<String, List<GradeDTO>> gradesByModulo = new HashMap<>();
 
-        for (com.tfg.schooledule.domain.entity.Calificacion calif : calificaciones) {
+        for (Calificacion calif : calificaciones) {
             String moduloNombre = calif.getMatricula().getImparticion().getModulo().getNombre();
 
-            com.tfg.schooledule.domain.DTO.GradeDTO gradeDTO = com.tfg.schooledule.domain.DTO.GradeDTO.builder()
+            GradeDTO gradeDTO = GradeDTO.builder()
                     .itemNombre(calif.getItemEvaluable().getNombre())
                     .valor(calif.getValor())
                     .comentario(calif.getComentario())
@@ -72,26 +79,25 @@ public class UsuarioService {
                     .tipoActividad(calif.getItemEvaluable().getTipo().name())
                     .build();
 
-            gradesByModulo.computeIfAbsent(moduloNombre, k -> new java.util.ArrayList<>()).add(gradeDTO);
+            gradesByModulo.computeIfAbsent(moduloNombre, k -> new ArrayList<>()).add(gradeDTO);
         }
 
-        return com.tfg.schooledule.domain.DTO.GradeDashboardDTO.builder()
+        return GradeDashboardDTO.builder()
                 .periodoNombre(periodoNombre)
                 .gradesByModulo(gradesByModulo)
                 .build();
     }
 
-
-    public boolean comprobarPassword(String email,String password){
-       Optional<Usuario> usuario = usuarioRepository.findUsuarioByEmail(email);
-       if(usuario.isEmpty()){
-        return false;
-       }
+    public boolean comprobarPassword(String email, String password) {
+        Optional<Usuario> usuario = usuarioRepository.findUsuarioByEmail(email);
+        if (usuario.isEmpty()) {
+            return false;
+        }
 
         return passwordEncoder.matches(password, usuario.get().getPasswordHash());
     }
 
-    public Optional<Usuario> buscarPorCorreo(String email){
+    public Optional<Usuario> buscarPorCorreo(String email) {
         return usuarioRepository.findUsuarioByEmail(email);
     }
 
@@ -99,19 +105,15 @@ public class UsuarioService {
         return usuarioRepository.findByUsername(username);
     }
 
-    @Autowired
-    private com.tfg.schooledule.infrastructure.repository.PeriodoEvaluacionRepository periodoRepository;
+    public List<PeriodoEvaluacion> getStudentPeriods(Integer usuarioId) {
+        List<Matricula> matriculas = matriculaRepository.findByAlumnoId(usuarioId);
+        Set<PeriodoEvaluacion> periodos = new HashSet<>();
 
-    public java.util.List<com.tfg.schooledule.domain.entity.PeriodoEvaluacion> getStudentPeriods(Integer usuarioId) {
-        java.util.List<com.tfg.schooledule.domain.entity.Matricula> matriculas = matriculaRepository.findByAlumnoId(usuarioId);
-        java.util.Set<com.tfg.schooledule.domain.entity.PeriodoEvaluacion> periodos = new java.util.HashSet<>();
-        
-        for (com.tfg.schooledule.domain.entity.Matricula m : matriculas) {
+        for (Matricula m : matriculas) {
             periodos.addAll(periodoRepository.findByImparticionId(m.getImparticion().getId()));
         }
-        
-        return new java.util.ArrayList<>(periodos);
-    }
 
+        return new ArrayList<>(periodos);
+    }
 
 }
