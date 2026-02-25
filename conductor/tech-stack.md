@@ -24,4 +24,4 @@
 
 ## Testing
 - **Framework:** JUnit 5 + Mockito
-- **Tools:** Spring Security Test support, AssertJ (standard in Spring Boot test starter)
+- **Tools:** Spring Security Test support, AssertJ (standard in Spring Boot test starter), H2 Database (for in-memory integration testing)
