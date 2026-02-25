@@ -215,10 +215,10 @@ INSERT INTO centros (nombre, ubicacion) VALUES ('IES Tecnológico Central', 'Mad
 
 -- 3. Crear Usuarios
 INSERT INTO usuarios (username, password_hash, nombre, apellidos, email) VALUES
-                                                                             ('admin', '{bcrypt}hash...', 'Super', 'Admin', 'admin@tfg.com'),
-                                                                             ('profe1', '{bcrypt}hash...', 'Juan', 'García', 'juan@tfg.com'),
-                                                                             ('alumno1', '{bcrypt}hash...', 'Ana', 'López', 'ana@tfg.com'),
-                                                                             ('profe_alumno', '{bcrypt}hash...', 'Pedro', 'Mix', 'pedro@tfg.com'); -- Usuario híbrido
+                                                                             ('admin', '$2a$12$o2wIsi9ximnjkAY5UqsqM.b9AXW5zT4DqSbfbdw.e/cZuYg8c5Y4O', 'Super', 'Admin', 'admin@tfg.com'),
+                                                                             ('profe1', '$2a$12$o2wIsi9ximnjkAY5UqsqM.b9AXW5zT4DqSbfbdw.e/cZuYg8c5Y4O', 'Juan', 'García', 'juan@tfg.com'),
+                                                                             ('alumno1', '$2a$12$o2wIsi9ximnjkAY5UqsqM.b9AXW5zT4DqSbfbdw.e/cZuYg8c5Y4O', 'Ana', 'López', 'ana@tfg.com'),
+                                                                             ('profe_alumno', '$2a$12$o2wIsi9ximnjkAY5UqsqM.b9AXW5zT4DqSbfbdw.e/cZuYg8c5Y4O', 'Pedro', 'Mix', 'pedro@tfg.com'); -- Usuario híbrido
 
 -- 4. Asignar Roles (AQUÍ ESTÁ LA MAGIA N:M)
 -- Admin
