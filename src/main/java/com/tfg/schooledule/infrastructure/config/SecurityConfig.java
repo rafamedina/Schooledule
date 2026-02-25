@@ -46,30 +46,25 @@ public class SecurityConfig {
 @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-            // 1. DESACTIVAR CSRF (Vital para desarrollo y Postman)
-            .csrf(csrf -> csrf.disable())
-
             .authorizeHttpRequests(auth -> auth
                     // 2. Roles específicos
                     .requestMatchers("/admin/**").hasRole("ADMIN")
-                    .requestMatchers("/profesor/**").hasRole("PROFESOR")
+                    .requestMatchers("/profe/**").hasRole("PROFESOR")
                     .requestMatchers("/alumno/**").hasRole("ALUMNO")
 
-                    // 3. Rutas públicas (¡OJO! /loginSession debe estar aquí para tu Postman)
-                    .requestMatchers("/","/login", "/loginSession", "/register", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                    // 3. Rutas públicas
+                    .requestMatchers("/","/login", "/register", "/css/**", "/js/**", "/images/**", "/error").permitAll()
 
                     // 4. El resto requiere estar logueado
                     .anyRequest().authenticated())
 
             .formLogin(form -> form
                     .loginPage("/login")
-                    // AQUI ESTA LA MAGIA:
                     .loginProcessingUrl("/login")
                     .successHandler(successHandler)
                     .permitAll())
 
             .logout(logout -> logout
-                    // Configuración para cerrar sesión
                     .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                     .logoutSuccessUrl("/login?logout")
                     .permitAll());
