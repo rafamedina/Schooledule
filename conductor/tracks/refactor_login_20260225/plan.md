@@ -20,7 +20,7 @@ This plan refactors the authentication flow to use standard Spring Security Filt
     - [ ] Verify tests pass.
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
-## Phase 2: Controller & Template Alignment
+## Phase 2: Controller & Template Alignment [checkpoint: 889b9fe]
 - [x] Task: Clean up LoginController 63cc002
     - [ ] Remove any manual authentication or session logic that duplicates Spring Security filters.
     - [ ] Keep only the simple `@GetMapping("/login")` to return the view.
@@ -33,7 +33,7 @@ This plan refactors the authentication flow to use standard Spring Security Filt
         - Add CSRF hidden token: `<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>` (if CSRF enabled).
         - Add logic to display error message if `param.error` is present.
     - [ ] Verify visual consistency.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
 ## Phase 3: Integration & Testing
 - [ ] Task: Full Authentication Integration Test
