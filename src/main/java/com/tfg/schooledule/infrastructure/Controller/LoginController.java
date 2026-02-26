@@ -12,7 +12,9 @@ public class LoginController {
     }
 
     @GetMapping("/seleccionar-rol")
-    public String vistaSeleccionarRol() {
+    public String vistaSeleccionarRol(org.springframework.security.core.Authentication authentication, org.springframework.ui.Model model) {
+        java.util.Set<String> roles = org.springframework.security.core.authority.AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+        model.addAttribute("roles", roles);
         return "seleccionar-rol";
     }
 }

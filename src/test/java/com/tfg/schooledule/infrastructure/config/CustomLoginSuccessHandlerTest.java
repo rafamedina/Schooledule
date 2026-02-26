@@ -57,6 +57,19 @@ class CustomLoginSuccessHandlerTest {
     }
 
     @Test
+    void testRedirectMultipleRoles() throws Exception {
+        java.util.List<SimpleGrantedAuthority> authorities = java.util.Arrays.asList(
+            new SimpleGrantedAuthority("ROLE_ALUMNO"),
+            new SimpleGrantedAuthority("ROLE_PROFESOR")
+        );
+        doReturn(authorities).when(authentication).getAuthorities();
+
+        handler.onAuthenticationSuccess(request, response, authentication);
+
+        verify(response).sendRedirect("/seleccionar-rol");
+    }
+
+    @Test
     void testRedirectDefault() throws Exception {
         doReturn(Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")))
                 .when(authentication).getAuthorities();

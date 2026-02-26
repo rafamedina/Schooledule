@@ -18,6 +18,16 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         
         java.util.Set<String> roles = org.springframework.security.core.authority.AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         
+        // Filter only the relevant roles for selection
+        java.util.Set<String> functionalRoles = roles.stream()
+                .filter(role -> role.equals("ROLE_ADMIN") || role.equals("ROLE_PROFESOR") || role.equals("ROLE_ALUMNO"))
+                .collect(java.util.stream.Collectors.toSet());
+
+        if (functionalRoles.size() > 1) {
+            response.sendRedirect("/seleccionar-rol");
+            return;
+        }
+
         if (roles.contains("ROLE_ADMIN")) {
             response.sendRedirect("/admin/dashboard");
         } else if (roles.contains("ROLE_PROFESOR")) {

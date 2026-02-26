@@ -39,7 +39,7 @@
 
     <div class="row justify-content-center g-4">
         <!-- ADMIN -->
-        <div class="col-md-3">
+        <div class="col-md-3" th:if="${roles.contains('ROLE_ADMIN')}">
             <a href="/admin/dashboard" class="card card-role h-100 p-4 border-0 shadow-sm">
                 <i class="bi bi-shield-lock-fill icon-role"></i>
                 <h4 class="fw-bold">Administrador</h4>
@@ -47,7 +47,7 @@
             </a>
         </div>
         <!-- PROFESOR -->
-        <div class="col-md-3">
+        <div class="col-md-3" th:if="${roles.contains('ROLE_PROFESOR')}">
             <a href="/profe/menuProfesor" class="card card-role h-100 p-4 border-0 shadow-sm">
                 <i class="bi bi-person-workspace icon-role"></i>
                 <h4 class="fw-bold">Profesor</h4>
@@ -55,7 +55,7 @@
             </a>
         </div>
         <!-- ALUMNO -->
-        <div class="col-md-3">
+        <div class="col-md-3" th:if="${roles.contains('ROLE_ALUMNO')}">
             <a href="/alumno/dashboard" class="card card-role h-100 p-4 border-0 shadow-sm">
                 <i class="bi bi-mortarboard-fill icon-role"></i>
                 <h4 class="fw-bold">Alumno</h4>
