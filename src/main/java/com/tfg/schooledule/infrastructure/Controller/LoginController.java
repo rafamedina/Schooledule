@@ -10,4 +10,9 @@ public class LoginController {
     public String vistaLogin() {
         return "login";
     }
+
+    @GetMapping("/seleccionar-rol")
+    public String vistaSeleccionarRol() {
+        return "seleccionar-rol";
+    }
 }
