@@ -7,11 +7,11 @@ This track implements the primary user-facing views for the "Schooledule" platfo
     - [x] Create `src/main/resources/templates/seleccionar-rol.html`
     - [x] Implement a clean interface using Bootstrap 5 to display available roles (ADMIN, PROFESOR, ALUMNO)
     - [x] Ensure buttons link to the appropriate dashboard with a `role` parameter (or session update)
-- [ ] Task: Update LoginController for Role Selection
-    - [ ] Write unit tests for `LoginController` to verify redirection to `/seleccionar-rol` if the user has multiple roles
-    - [ ] Update `LoginController` with a `@GetMapping("/seleccionar-rol")` mapping
-    - [ ] Implement logic to display only the roles assigned to the current authenticated user
-    - [ ] Verify tests pass
+- [x] Task: Update LoginController for Role Selection 76e356d
+    - [x] Write unit tests for `LoginController` to verify redirection to `/seleccionar-rol` if the user has multiple roles
+    - [x] Update `LoginController` with a `@GetMapping("/seleccionar-rol")` mapping
+    - [x] Implement logic to display only the roles assigned to the current authenticated user
+    - [x] Verify tests pass
 - [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: Alumno Dashboard & Sidebar Navigation [checkpoint: ]
