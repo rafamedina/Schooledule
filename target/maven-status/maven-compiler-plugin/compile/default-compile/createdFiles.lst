@@ -26,6 +26,7 @@ com\tfg\schooledule\domain\DTO\AlumnoProfileDTO.class
 com\tfg\schooledule\domain\entity\Matricula.class
 com\tfg\schooledule\domain\DTO\LoginRequest.class
 com\tfg\schooledule\domain\entity\ResultadoAprendizaje$ResultadoAprendizajeBuilder.class
+com\tfg\schooledule\infrastructure\repository\RolRepository.class
 com\tfg\schooledule\domain\entity\ItemEvaluable$ItemEvaluableBuilder.class
 com\tfg\schooledule\domain\DTO\GradeDashboardDTO$GradeDashboardDTOBuilder.class
 com\tfg\schooledule\infrastructure\Service\UsuarioService.class

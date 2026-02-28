@@ -249,3 +249,20 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
                                            CONSTRAINT SPRING_SESSION_ATTRIBUTES_PK PRIMARY KEY (SESSION_PRIMARY_ID, ATTRIBUTE_NAME),
                                            CONSTRAINT SPRING_SESSION_ATTRIBUTES_FK FOREIGN KEY (SESSION_PRIMARY_ID) REFERENCES SPRING_SESSION(PRIMARY_ID) ON DELETE CASCADE
 );
+
+-- 1. Fix the Professor role name
+ UPDATE roles SET nombre = 'ROLE_PROFESOR' WHERE nombre = 'ROFESOR' OR nombre
+    = 'PROFESOR';
+ -- Ensure other roles have the ROLE_ prefix if needed (though the service now handles it)
+     UPDATE roles SET nombre = 'ROLE_ADMIN' WHERE nombre = 'ADMIN';
+UPDATE roles SET nombre = 'ROLE_ALUMNO' WHERE nombre = 'ALUMNO';
+    -- 2. Fix the passwords to '1234' for all default users
+     UPDATE usuarios SET password_hash =
+                              '$2a$10$LwjJeRKHaydg2n5bPd.5guuBwZow7V6dZTfit.vl6Re3xgdR88aLi'
+     WHERE email IN ('admin@tfg.com', 'juan@tfg.com', 'ana@tfg.com',
+          'pedro@tfg.com');
+
+    -- 3. Ensure users are active
+    UPDATE usuarios SET activo = true
+    WHERE email IN ('admin@tfg.com', 'juan@tfg.com', 'ana@tfg.com',
+          'pedro@tfg.com');

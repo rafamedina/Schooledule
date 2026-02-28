@@ -28,6 +28,7 @@ C:\TFG\Schooledule\src\main\java\com\tfg\schooledule\infrastructure\Controller\P
 C:\TFG\Schooledule\src\main\java\com\tfg\schooledule\infrastructure\repository\CalificacionRepository.java
 C:\TFG\Schooledule\src\main\java\com\tfg\schooledule\infrastructure\repository\MatriculaRepository.java
 C:\TFG\Schooledule\src\main\java\com\tfg\schooledule\infrastructure\repository\PeriodoEvaluacionRepository.java
+C:\TFG\Schooledule\src\main\java\com\tfg\schooledule\infrastructure\repository\RolRepository.java
 C:\TFG\Schooledule\src\main\java\com\tfg\schooledule\infrastructure\repository\UsuarioRepository.java
 C:\TFG\Schooledule\src\main\java\com\tfg\schooledule\infrastructure\security\CustomUserDetailsService.java
 C:\TFG\Schooledule\src\main\java\com\tfg\schooledule\infrastructure\Service\UsuarioService.java
