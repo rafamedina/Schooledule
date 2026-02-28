@@ -3,9 +3,7 @@
 This plan focuses on diagnosing and fixing the authentication failures across all roles.
 
 ## Phase 1: Diagnosis & Testing Infrastructure
-- [ ] Task: Enable Debug Logging
-    - [ ] Add `logging.level.org.springframework.security=DEBUG` to `application.properties`.
-    - [ ] Add `logging.level.com.tfg.schooledule.infrastructure.security=DEBUG` to `application.properties`.
+- [x] Task: Enable Debug Logging 7c36a57
 - [ ] Task: Create Login Reproduction Test
     - [ ] Create `src/test/java/com/tfg/schooledule/infrastructure/config/AuthIntegrationTest.java`.
     - [ ] Write a test case for Admin login (`admin@tfg.com` / `1234`).
