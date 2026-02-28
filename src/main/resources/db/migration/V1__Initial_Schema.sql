@@ -1,7 +1,8 @@
 -- ==================================================================
 -- BASE DE DATOS TFG - VERSIÓN FINAL (ROLES N:M + AUDITORÍA PRO)
 -- ==================================================================
-
+DROP SCHEMA IF EXISTS public CASCADE;
+CREATE SCHEMA public;
 -- ENUMS (Solo para estados, ya NO para roles)
 CREATE TYPE estado_matricula AS ENUM ('ACTIVA', 'BAJA', 'CONVALIDADO');
 CREATE TYPE tipo_actividad AS ENUM ('EXAMEN', 'PRACTICA', 'RECUPERACION', 'ACTITUD');
@@ -201,33 +202,30 @@ CREATE TRIGGER trigger_auditoria_notas
     EXECUTE FUNCTION registrar_cambio_nota();
 
 -- ==================================================================
--- 7. DATOS INICIALES (AJUSTADOS A N:M)
+-- 7. DATOS INICIALES (SIN ACENTOS PARA EVITAR PROBLEMAS DE ENCODING)
 -- ==================================================================
 
--- 1. Crear Roles
-INSERT INTO roles (nombre) VALUES ('ROLE_ADMIN'), ('ROLE_PROFESOR'), ('ROLE_ALUMNO');
+-- 1. Roles
+INSERT INTO roles (id, nombre) VALUES (1, 'ADMIN'), (2, 'PROFESOR'), (3, 'ALUMNO');
+-- 2. Centros
+INSERT INTO centros (id, nombre, ubicacion) VALUES (1, 'IES Central', 'Madrid');
 
--- 2. Crear Centros
-INSERT INTO centros (nombre, ubicacion) VALUES ('IES Tecnológico Central', 'Madrid');
+-- 3. Usuarios (Contraseña: 1234 para todos)
+-- Hash: $2a$10$LwjJeRKHaydg2n5bPd.5guuBwZow7V6dZTfit.vl6Re3xgdR88aLi (1234)
+INSERT INTO usuarios (id, username, password_hash, nombre, apellidos, email, activo) VALUES
+(1, 'admin', '$2a$10$LwjJeRKHaydg2n5bPd.5guuBwZow7V6dZTfit.vl6Re3xgdR88aLi', 'Super', 'Admin', 'admin@tfg.com', true),
+(2, 'profe1', '$2a$10$LwjJeRKHaydg2n5bPd.5guuBwZow7V6dZTfit.vl6Re3xgdR88aLi', 'Juan', 'Garcia', 'juan@tfg.com', true),
+(3, 'alumno1', '$2a$10$LwjJeRKHaydg2n5bPd.5guuBwZow7V6dZTfit.vl6Re3xgdR88aLi', 'Ana', 'Lopez', 'ana@tfg.com', true),
+(4, 'profe_alumno', '$2a$10$LwjJeRKHaydg2n5bPd.5guuBwZow7V6dZTfit.vl6Re3xgdR88aLi', 'Pedro', 'Mix', 'pedro@tfg.com', true);
 
--- 3. Crear Usuarios
-INSERT INTO usuarios (username, password_hash, nombre, apellidos, email) VALUES
-                                                                             ('admin', '$2a$12$o2wIsi9ximnjkAY5UqsqM.b9AXW5zT4DqSbfbdw.e/cZuYg8c5Y4O', 'Super', 'Admin', 'admin@tfg.com'),
-                                                                             ('profe1', '$2a$12$o2wIsi9ximnjkAY5UqsqM.b9AXW5zT4DqSbfbdw.e/cZuYg8c5Y4O', 'Juan', 'García', 'juan@tfg.com'),
-                                                                             ('alumno1', '$2a$12$o2wIsi9ximnjkAY5UqsqM.b9AXW5zT4DqSbfbdw.e/cZuYg8c5Y4O', 'Ana', 'López', 'ana@tfg.com'),
-                                                                             ('profe_alumno', '$2a$12$o2wIsi9ximnjkAY5UqsqM.b9AXW5zT4DqSbfbdw.e/cZuYg8c5Y4O', 'Pedro', 'Mix', 'pedro@tfg.com'); -- Usuario híbrido
+-- 4. Asignación de Roles
+INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES 
+(1, 1), (2, 2), (3, 3), (4, 2), (4, 3);
 
--- 4. Asignar Roles (AQUÍ ESTÁ LA MAGIA N:M)
--- Admin
-INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (1, 1);
--- Profe1
-INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (2, 2);
--- Alumno1
-INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (3, 3);
-
--- Pedro es PROFESOR (2) y ALUMNO (3) a la vez
-INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (4, 2);
-INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (4, 3);
+-- Sincronizar secuencias
+SELECT setval('roles_id_seq', (SELECT MAX(id) FROM roles));
+SELECT setval('usuarios_id_seq', (SELECT MAX(id) FROM usuarios));
+SELECT setval('centros_id_seq', (SELECT MAX(id) FROM centros));
 
 CREATE TABLE SPRING_SESSION (
                                 PRIMARY_ID CHAR(36) NOT NULL,
