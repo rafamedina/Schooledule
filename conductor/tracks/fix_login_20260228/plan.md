@@ -4,11 +4,7 @@ This plan focuses on diagnosing and fixing the authentication failures across al
 
 ## Phase 1: Diagnosis & Testing Infrastructure
 - [x] Task: Enable Debug Logging 7c36a57
-- [ ] Task: Create Login Reproduction Test
-    - [ ] Create `src/test/java/com/tfg/schooledule/infrastructure/config/AuthIntegrationTest.java`.
-    - [ ] Write a test case for Admin login (`admin@tfg.com` / `1234`).
-    - [ ] Write a test case for Professor login (`juan@tfg.com` / `1234`).
-    - [ ] Write a test case for Student login (`ana@tfg.com` / `1234`).
+- [x] Task: Create Login Reproduction Test 99ba2e1
 - [ ] Task: Conductor - User Manual Verification 'Diagnosis & Testing Infrastructure' (Protocol in workflow.md)
 
 ## Phase 2: Authentication Fix
