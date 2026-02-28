@@ -43,7 +43,7 @@ class CustomLoginSuccessHandlerTest {
 
         handler.onAuthenticationSuccess(request, response, authentication);
 
-        verify(response).sendRedirect("/profe/menuProfesor");
+        verify(response).sendRedirect("/profe/dashboard");
     }
 
     @Test
@@ -53,7 +53,7 @@ class CustomLoginSuccessHandlerTest {
 
         handler.onAuthenticationSuccess(request, response, authentication);
 
-        verify(response).sendRedirect("/alumno/menuAlumno");
+        verify(response).sendRedirect("/alumno/dashboard");
     }
 
     @Test

@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.tfg.schooledule.infrastructure.config.AuthIntegrationTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.316 s -- in com.tfg.schooledule.infrastructure.config.AuthIntegrationTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.822 s -- in com.tfg.schooledule.infrastructure.config.AuthIntegrationTest
