@@ -26,51 +26,55 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/profesor/**").hasRole("PROFESOR")
-//                        .requestMatchers("/alumno/**").hasRole("ALUMNO")
-//                        .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
-//                        .anyRequest().authenticated())
-//                .formLogin(form -> form
-//                        .loginPage("/login")
-//                        .permitAll())
-//                .logout(logout -> logout
-//                        .permitAll());
-//
-//        return http.build();
-//    }
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-            .authorizeHttpRequests(auth -> auth
-                    // 2. Roles específicos
-                    .requestMatchers("/admin/**").hasRole("ADMIN")
-                    .requestMatchers("/profe/**").hasRole("PROFESOR")
-                    .requestMatchers("/alumno/**").hasRole("ALUMNO")
+    // @Bean
+    // public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
+    // Exception {
+    // http
+    // .authorizeHttpRequests(auth -> auth
+    // .requestMatchers("/admin/**").hasRole("ADMIN")
+    // .requestMatchers("/profesor/**").hasRole("PROFESOR")
+    // .requestMatchers("/alumno/**").hasRole("ALUMNO")
+    // .requestMatchers("/", "/login", "/css/**", "/js/**",
+    // "/images/**").permitAll()
+    // .anyRequest().authenticated())
+    // .formLogin(form -> form
+    // .loginPage("/login")
+    // .permitAll())
+    // .logout(logout -> logout
+    // .permitAll());
+    //
+    // return http.build();
+    // }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authenticationProvider(authenticationProvider())
+                .authorizeHttpRequests(auth -> auth
+                        // 2. Roles específicos
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/profe/**").hasRole("PROFESOR")
+                        .requestMatchers("/alumno/**").hasRole("ALUMNO")
 
-                    // 3. Rutas públicas
-                    .requestMatchers("/","/login", "/register", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                        // 3. Rutas públicas
+                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error")
+                        .permitAll()
 
-                    // 4. El resto requiere estar logueado
-                    .anyRequest().authenticated())
+                        // 4. El resto requiere estar logueado
+                        .anyRequest().authenticated())
 
-            .formLogin(form -> form
-                    .loginPage("/login")
-                    .loginProcessingUrl("/login")
-                    .successHandler(successHandler)
-                    .permitAll())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .successHandler(successHandler)
+                        .permitAll())
 
-            .logout(logout -> logout
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                    .logoutSuccessUrl("/login?logout")
-                    .permitAll());
+                .logout(logout -> logout
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll());
 
-    return http.build();
-}
+        return http.build();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {

@@ -105,7 +105,7 @@ class AuthIntegrationTest {
         mockMvc.perform(formLogin().user("profe@tfg.com").password("1234"))
                 .andExpect(authenticated())
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/profe/menuProfesor"));
+                .andExpect(redirectedUrl("/profe/dashboard"));
     }
 
     @Test
@@ -113,7 +113,7 @@ class AuthIntegrationTest {
         mockMvc.perform(formLogin().user("alumno@tfg.com").password("1234"))
                 .andExpect(authenticated())
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/alumno/menuAlumno"));
+                .andExpect(redirectedUrl("/alumno/dashboard"));
     }
 
     @Test
@@ -136,7 +136,7 @@ class AuthIntegrationTest {
         mockMvc.perform(formLogin().user("rawprofe@tfg.com").password("1234"))
                 .andExpect(authenticated())
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/profe/menuProfesor"));
+                .andExpect(redirectedUrl("/profe/dashboard"));
     }
 
     @Test
