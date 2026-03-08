@@ -2,7 +2,7 @@
 
 This track implements the primary user-facing views for the "Schooledule" platform, specifically focusing on the Role Selection process and the Alumno (Student) Dashboard.
 
-## Phase 1: Role Selection Framework [checkpoint: ]
+## Phase 1: Role Selection Framework [checkpoint: 63a68fb]
 - [x] Task: Create Role Selection Template 8a4e812
     - [x] Create `src/main/resources/templates/seleccionar-rol.html`
     - [x] Implement a clean interface using Bootstrap 5 to display available roles (ADMIN, PROFESOR, ALUMNO)
@@ -12,7 +12,7 @@ This track implements the primary user-facing views for the "Schooledule" platfo
     - [x] Update `LoginController` with a `@GetMapping("/seleccionar-rol")` mapping
     - [x] Implement logic to display only the roles assigned to the current authenticated user
     - [x] Verify tests pass
-- [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) 63a68fb
 
 ## Phase 2: Alumno Dashboard & Sidebar Navigation [checkpoint: ]
 - [ ] Task: Create Base Alumno Layout with Sidebar
