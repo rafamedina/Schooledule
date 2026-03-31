@@ -129,34 +129,42 @@ jobs:
             -e SPRING_DATASOURCE_USERNAME=${{ env.POSTGRES_USER }} \
             -e SPRING_DATASOURCE_PASSWORD=${{ env.POSTGRES_PASSWORD }} \
             -e SPRING_FLYWAY_ENABLED=true \
-            ${{ env.DOCKER_IMAGE }}:latest
+            ${{ env.DOCKER_IMAGE }}:latest 2>&1 | tee maven_build.log
 
-      - name: 📝 Report Test Failures
+      - name: 📝 CI/CD Summary & Reporting
         if: always()
         run: |
           {
             echo "### 📊 CI/CD Execution Summary"
 
-            if [ "${{ job.status }}" == "success" ]; then
-              echo "✅ All tests and validations passed successfully."
-            else
-              echo "❌ Some steps failed. Check details below."
-            fi
-
-            # Report PMD Violations
-            if [ -f "target/pmd.xml" ]; then
-              VIOLATIONS=$(grep -c "<violation" target/pmd.xml || echo "0")
-              if [ "$VIOLATIONS" -gt 0 ]; then
-                echo "#### ⚠️ PMD Analysis: $VIOLATIONS violations found"
-                echo "| File | Line | Rule | Description |"
-                echo "| --- | --- | --- | --- |"
-                # Extract top 10 violations to avoid summary bloat
-                grep "<violation" target/pmd.xml | head -10 | sed -E 's/.*beginline="([^"]*)".*rule="([^"]*)".*ruleset="([^"]*)".*class="([^"]*)".*externalInfoUrl="([^"]*)".*>(.*)<\/violation>.*/| \4 | \1 | \2 | \6 |/'
-                if [ "$VIOLATIONS" -gt 10 ]; then echo "... and $((VIOLATIONS-10)) more."; fi
+            # Check Maven build status from log
+            if [ -f "maven_build.log" ]; then
+              if grep -q "BUILD SUCCESS" maven_build.log; then
+                echo "✅ **Build Success**: Maven completed successfully (PMD audited, Tests passed)."
+              else
+                echo "❌ **Build Failed**: Detectados errores en la ejecución."
+                echo "#### 🔍 Maven Errors"
+                # Extraemos líneas que contienen 'Error: ' ignorando mayúsculas
+                grep -i "Error: " maven_build.log | sed 's/.*Error: //I' | sed 's/^/- /' | head -n 20
               fi
             fi
 
-            # Report Test Failures
+            # Report PMD Violations (Does NOT block the pipeline)
+            if [ -f "target/pmd.xml" ]; then
+              VIOLATIONS=$(grep -c "<violation" target/pmd.xml || echo "0")
+              if [ "$VIOLATIONS" -gt 0 ]; then
+                echo "#### ⚠️ PMD Audit: $VIOLATIONS findings (Not blocking promotion)"
+                echo "| File | Line | Rule | Description |"
+                echo "| --- | --- | --- | --- |"
+                # Parseamos el XML de forma segura evitando Broken Pipe
+                grep "<violation" target/pmd.xml | head -n 15 | sed -E 's/.*beginline="([^"]*)".*rule="([^"]*)".*ruleset="([^"]*)".*class="([^"]*)".*externalInfoUrl="([^"]*)".*>(.*)<\/violation>.*/| \4 | \1 | \2 | \6 |/'
+                if [ "$VIOLATIONS" -gt 15 ]; then echo "... and $((VIOLATIONS-15)) more findings."; fi
+              else
+                echo "✅ **PMD Audit**: No code smells detected."
+              fi
+            fi
+
+            # Report JUnit Test Failures (This IS what blocks the pipeline)
             REPORTS_DIRS=""
             if [ -d "target/surefire-reports" ]; then REPORTS_DIRS="$REPORTS_DIRS target/surefire-reports"; fi
             if [ -d "target/failsafe-reports" ]; then REPORTS_DIRS="$REPORTS_DIRS target/failsafe-reports"; fi
@@ -165,7 +173,7 @@ jobs:
               # shellcheck disable=SC2086
               FAILED_TESTS=$(find $REPORTS_DIRS -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | wc -l)
               if [ "$FAILED_TESTS" -gt 0 ]; then
-                echo "#### ❌ Test Failures: $FAILED_TESTS tests failed"
+                echo "#### ❌ Test Failures: $FAILED_TESTS tests failed (Blocking promotion)"
                 # shellcheck disable=SC2086
                 find $REPORTS_DIRS -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | while read -r file; do
                   echo "- **File**: \`$(basename "$file")\`"
