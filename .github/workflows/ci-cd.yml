@@ -122,12 +122,13 @@ jobs:
       - name: Run Maven Tests in Container
         id: run-tests
         run: |
-          mkdir -p target
+          rm -rf target && mkdir -p target
           docker run --rm --network host \
             -v ${{ github.workspace }}/target:/app/target \
             -e SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/${{ env.POSTGRES_DB }} \
             -e SPRING_DATASOURCE_USERNAME=${{ env.POSTGRES_USER }} \
             -e SPRING_DATASOURCE_PASSWORD=${{ env.POSTGRES_PASSWORD }} \
+            -e SPRING_FLYWAY_ENABLED=true \
             ${{ env.DOCKER_IMAGE }}:latest
 
       - name: 📝 Report Test Failures
