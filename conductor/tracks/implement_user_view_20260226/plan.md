@@ -15,7 +15,7 @@ This track implements the primary user-facing views for the "Schooledule" platfo
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) 63a68fb
 
 ## Phase 2: Alumno Dashboard & Sidebar Navigation [checkpoint: ]
-- [ ] Task: Create Base Alumno Layout with Sidebar
+- [~] Task: Create Base Alumno Layout with Sidebar
     - [ ] Create/Update `src/main/resources/templates/alumno/menuAlumno.html` as the base layout
     - [ ] Implement a fixed Sidebar Navigation using Bootstrap 5 (Dashboard, Profile, Grades, Schedule, Logout)
     - [ ] Use Thymeleaf fragments for common components

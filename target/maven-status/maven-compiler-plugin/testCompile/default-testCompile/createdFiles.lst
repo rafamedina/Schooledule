@@ -1,8 +1,0 @@
-com\tfg\schooledule\infrastructure\Controller\LoginControllerTest.class
-com\tfg\schooledule\infrastructure\config\CustomLoginSuccessHandlerTest.class
-com\tfg\schooledule\infrastructure\Service\UsuarioServiceTest.class
-com\tfg\schooledule\SchooleduleApplicationTests.class
-com\tfg\schooledule\infrastructure\Controller\RoleSelectionControllerTest.class
-com\tfg\schooledule\infrastructure\config\AuthIntegrationTest.class
-com\tfg\schooledule\infrastructure\config\SecurityConfigTest.class
-com\tfg\schooledule\infrastructure\Controller\AlumnoControllerTest.class

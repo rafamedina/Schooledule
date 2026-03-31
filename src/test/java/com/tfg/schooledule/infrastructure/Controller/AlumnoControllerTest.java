@@ -65,4 +65,13 @@ public class AlumnoControllerTest {
                 .andExpect(model().attributeExists("dashboard"))
                 .andExpect(model().attribute("dashboard", dashboard));
     }
+
+    @Test
+    @WithMockUser(username = "testalumno", roles = "ALUMNO")
+    public void testDashboardAlumno_Success() throws Exception {
+        mockMvc.perform(get("/alumno/dashboard"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("alumno/dashboard"))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("id=\"sidebar\"")));
+    }
 }
