@@ -63,9 +63,17 @@ jobs:
           distribution: "temurin"
           cache: "maven"
 
+      - name: ⏳ Wait for Postgres
+        run: |
+          until pg_isready -h localhost -p 5432 -U admin; do
+            echo "Waiting for postgres..."
+            sleep 2
+          done
+        shell: bash
+
       - name: Run Tests & JaCoCo
         id: run-tests
-        run: ./mvnw clean verify -DskipTests=false
+        run: ./mvnw --errors --batch-mode clean verify -DskipTests=false
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/schooledule
           SPRING_DATASOURCE_USERNAME: admin

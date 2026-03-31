@@ -1,8 +1,7 @@
 -- ==================================================================
 -- BASE DE DATOS TFG - VERSIÓN FINAL (ROLES N:M + AUDITORÍA PRO)
 -- ==================================================================
-DROP SCHEMA IF EXISTS public CASCADE;
-CREATE SCHEMA public;
+
 -- ENUMS (Solo para estados, ya NO para roles)
 CREATE TYPE estado_matricula AS ENUM ('ACTIVA', 'BAJA', 'CONVALIDADO');
 CREATE TYPE tipo_actividad AS ENUM ('EXAMEN', 'PRACTICA', 'RECUPERACION', 'ACTITUD');
