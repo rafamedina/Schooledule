@@ -77,11 +77,22 @@ jobs:
           echo "======================================================="
           echo "❌ TEST FAILURES DETECTED"
           echo "======================================================="
-          # Buscar archivos .txt de resultados de test que contienen errores de forma segura
-          find target/surefire-reports target/failsafe-reports -name "*.txt" -type f -exec grep -l "FAILURE" {} + | while read -r file; do
-            echo "--- File: $file ---"
-            cat "$file"
-          done
+
+          REPORTS_DIRS=""
+          if [ -d "target/surefire-reports" ]; then REPORTS_DIRS="$REPORTS_DIRS target/surefire-reports"; fi
+          if [ -d "target/failsafe-reports" ]; then REPORTS_DIRS="$REPORTS_DIRS target/failsafe-reports"; fi
+
+          if [ -n "$REPORTS_DIRS" ]; then
+            # Buscar archivos que contienen fallos y mostrarlos
+            # Redirigimos stderr a /dev/null para evitar ruidos de carpetas vacías
+            find $REPORTS_DIRS -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | while read -r file; do
+              echo "--- File: $file ---"
+              cat "$file"
+            done
+          else
+            echo "No test report directories found. This usually means Maven failed during compilation or setup."
+            echo "Please check the 'Run Tests & JaCoCo' step logs above for details."
+          fi
         shell: bash
 
       - name: 📦 Upload Test Reports (on failure)
