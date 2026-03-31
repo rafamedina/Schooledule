@@ -12,8 +12,8 @@ RUN mvn clean package -DskipTests
 
 # --- STAGE 1.5: Test ---
 FROM builder AS test
-# Preparamos el entorno de tests (las dependencias ya están en el builder)
-ENTRYPOINT ["mvn", "verify", "-DskipTests=false"]
+# Usamos CMD para que sea sobreescribible fácilmente en el CI
+CMD ["mvn", "verify", "-DskipTests=false", "-B"]
 
 # --- STAGE 2: Runtime ---
 FROM eclipse-temurin:21-jre-alpine

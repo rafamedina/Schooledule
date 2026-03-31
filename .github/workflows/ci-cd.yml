@@ -20,12 +20,20 @@ permissions:
   security-events: write
 
 jobs:
-  # 🔍 JOB 1: Lint & Validation
+  # 🔍 JOB 1: Lint & Validation (Checking ALL code)
   lint:
     name: 🔍 Lint & Validation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run Pre-commit (Lint all code)
+        uses: pre-commit/action@v3.0.1
 
       - name: Validate GitHub Actions (actionlint)
         run: |
@@ -39,7 +47,7 @@ jobs:
           ignore: DL3018
           failure-threshold: error
 
-  # 🐳 JOB 2: Build Docker Image (following Odoo pattern)
+  # 🐳 JOB 2: Build Docker Image (following Odoo pattern with caching)
   build:
     name: 🐳 Build Test Container
     needs: lint
@@ -71,7 +79,7 @@ jobs:
           path: /tmp/${{ env.DOCKER_IMAGE }}.tar.gz
           retention-days: 1
 
-  # 🧪 JOB 3: Unit & Integration Tests (Inside Container)
+  # 🧪 JOB 3: Unit & Integration Tests (Running @src/test/** inside Container)
   test:
     name: 🧪 Containerized Tests
     needs: build
@@ -120,8 +128,7 @@ jobs:
             -e SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/${{ env.POSTGRES_DB }} \
             -e SPRING_DATASOURCE_USERNAME=${{ env.POSTGRES_USER }} \
             -e SPRING_DATASOURCE_PASSWORD=${{ env.POSTGRES_PASSWORD }} \
-            ${{ env.DOCKER_IMAGE }}:latest \
-            mvn verify -DskipTests=false -B
+            ${{ env.DOCKER_IMAGE }}:latest
 
       - name: 📝 Report Test Failures
         if: failure()
@@ -226,7 +233,7 @@ jobs:
             **Verification Details:**
             - ✅ All Unit & Integration tests passed inside Docker.
             - ✅ Code Coverage > 80% (JaCoCo).
-            - ✅ Linting (actionlint, hadolint) passed.
+            - ✅ Linting (pre-commit, actionlint, hadolint) passed.
             - 🛡️ All AI/Dev files (conductor, gemini, etc) have been purged.
 
             **Original Dev Commit:** `${{ github.sha }}`
