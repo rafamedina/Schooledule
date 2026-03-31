@@ -1,14 +1,14 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # --- SERVICIO DE BASE DE DATOS (PostgreSQL) ---
   postgres:
     container_name: tfg_db
-    image: postgres:16-alpine  # Versión ligera y estable
+    image: postgres:16-alpine # Versión ligera y estable
     environment:
-      POSTGRES_USER: admin           # Usuario maestro
+      POSTGRES_USER: admin # Usuario maestro
       POSTGRES_PASSWORD: password123 # Contraseña maestra
-      POSTGRES_DB: schooledule       # <--- AQUÍ SE CREA LA BD "schooledule"
+      POSTGRES_DB: schooledule # <--- AQUÍ SE CREA LA BD "schooledule"
     ports:
       - "5432:5432"
     volumes:
@@ -33,7 +33,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: rafael.medina.ayuso@gmail.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "5050:80"  # Entras por http://localhost:5050
+      - "5050:80" # Entras por http://localhost:5050
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:

@@ -6,9 +6,7 @@ metadata:
   platforms: Claude, ChatGPT, Gemini
 ---
 
-
 # API Documentation
-
 
 ## When to use this skill
 
@@ -55,7 +53,7 @@ paths:
             default: 20
             maximum: 100
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -65,11 +63,11 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/User'
+                      $ref: "#/components/schemas/User"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                    $ref: "#/components/schemas/Pagination"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
     post:
       summary: Create a new user
@@ -80,16 +78,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserRequest'
+              $ref: "#/components/schemas/CreateUserRequest"
       responses:
-        '201':
+        "201":
           description: User created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
 components:
   schemas:
@@ -176,6 +174,7 @@ security:
 ### Step 2: Generate Documentation from Code (JSDoc/Decorators)
 
 **Express + TypeScript**:
+
 ```typescript
 /**
  * @swagger
@@ -208,7 +207,7 @@ security:
  *       400:
  *         description: Invalid input
  */
-router.post('/users', async (req, res) => {
+router.post("/users", async (req, res) => {
   const { email, name, password } = req.body;
   const user = await userService.createUser({ email, name, password });
   res.status(201).json(user);
@@ -218,16 +217,21 @@ router.post('/users', async (req, res) => {
 ### Step 3: Interactive Documentation
 
 **Swagger UI Setup**:
+
 ```typescript
-import swaggerUi from 'swagger-ui-express';
-import YAML from 'yamljs';
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
 
-const swaggerDocument = YAML.load('./openapi.yaml');
+const swaggerDocument = YAML.load("./openapi.yaml");
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
-  customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: "My API Documentation"
-}));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, {
+    customCss: ".swagger-ui .topbar { display: none }",
+    customSiteTitle: "My API Documentation",
+  }),
+);
 ```
 
 ### Step 4: Examples & Guides
@@ -240,24 +244,26 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
 All API requests require authentication using JWT tokens.
 
 #### Getting a Token
+
 \`\`\`bash
 curl -X POST https://api.example.com/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "password": "yourpassword"}'
+ -H "Content-Type: application/json" \
+ -d '{"email": "user@example.com", "password": "yourpassword"}'
 \`\`\`
 
 Response:
 \`\`\`json
 {
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refreshToken": "..."
+"accessToken": "YOUR_ACCESS_TOKEN",
+"refreshToken": "YOUR_REFRESH_TOKEN"
 }
 \`\`\`
 
 #### Using the Token
+
 \`\`\`bash
 curl -X GET https://api.example.com/v1/users \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+ -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 \`\`\`
 
 ### Creating a User
@@ -267,34 +273,36 @@ curl -X GET https://api.example.com/v1/users \
 **Request Body**:
 \`\`\`json
 {
-  "email": "john@example.com",
-  "name": "John Doe",
-  "password": "SecurePass123!"
+"email": "john@example.com",
+"name": "John Doe",
+"password": "SecurePass123!"
 }
 \`\`\`
 
 **Success Response** (201):
 \`\`\`json
 {
-  "id": "123e4567-e89b-12d3-a456-426614174000",
-  "email": "john@example.com",
-  "name": "John Doe",
-  "createdAt": "2025-01-15T10:00:00Z"
+"id": "123e4567-e89b-12d3-a456-426614174000",
+"email": "john@example.com",
+"name": "John Doe",
+"createdAt": "2025-01-15T10:00:00Z"
 }
 \`\`\`
 
 **Error Response** (400):
 \`\`\`json
 {
-  "error": "Email already exists"
+"error": "Email already exists"
 }
 \`\`\`
 
 ### Rate Limiting
+
 - 100 requests per 15 minutes per IP
 - Header: `X-RateLimit-Remaining`
 
 ### Pagination
+
 \`\`\`
 GET /v1/users?page=2&limit=20
 \`\`\`
@@ -302,17 +310,18 @@ GET /v1/users?page=2&limit=20
 Response includes pagination info:
 \`\`\`json
 {
-  "data": [...],
-  "pagination": {
-    "page": 2,
-    "limit": 20,
-    "total": 157,
-    "pages": 8
-  }
+"data": [...],
+"pagination": {
+"page": 2,
+"limit": 20,
+"total": 157,
+"pages": 8
+}
 }
 \`\`\`
 
 ### Error Codes
+
 - `400` - Bad Request (validation error)
 - `401` - Unauthorized (missing/invalid token)
 - `403` - Forbidden (insufficient permissions)
@@ -374,17 +383,21 @@ docs/
 ## Metadata
 
 ### Version
+
 - **Current Version**: 1.0.0
 - **Last Updated**: 2025-01-01
 - **Compatible Platforms**: Claude, ChatGPT, Gemini
 
 ### Tags
+
 `#API-documentation` `#OpenAPI` `#Swagger` `#REST` `#developer-docs` `#documentation`
 
 ## Examples
 
 ### Example 1: Basic usage
+
 <!-- Add example content here -->
 
 ### Example 2: Advanced usage
+
 <!-- Add advanced example content here -->

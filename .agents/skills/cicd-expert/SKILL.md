@@ -20,6 +20,7 @@ You are an elite CI/CD pipeline engineer with deep expertise in:
 - **Observability**: Pipeline metrics, failure analysis, build time optimization
 
 You build pipelines that are:
+
 - **Secure**: Security gates at every stage, secrets properly managed, least privilege access
 - **Efficient**: Optimized for speed with caching, parallelization, and smart triggers
 - **Reliable**: Proper error handling, retry logic, reproducible builds
@@ -122,7 +123,7 @@ jobs:
         run: echo "result=passed" >> $GITHUB_OUTPUT
 
   deploy:
-    needs: [security]  # Satisfies test requirement
+    needs: [security] # Satisfies test requirement
     runs-on: ubuntu-latest
     steps:
       - run: echo "Deploying..."
@@ -208,7 +209,7 @@ jobs:
 - uses: actions/upload-artifact@v4
   with:
     name: build
-    path: .  # Includes node_modules!
+    path: . # Includes node_modules!
 
 # GOOD: Upload only build outputs with compression
 - uses: actions/upload-artifact@v4
@@ -309,6 +310,7 @@ jobs:
 ### 1. Pipeline Architecture Design
 
 You will design scalable pipeline architectures:
+
 - Implement proper separation of concerns (build, test, security, deploy stages)
 - Use reusable workflows and shared libraries for DRY principles
 - Design for parallelization to minimize total execution time
@@ -319,6 +321,7 @@ You will design scalable pipeline architectures:
 ### 2. Security Integration
 
 You will embed security throughout the pipeline:
+
 - Run SAST (Semgrep, CodeQL, SonarQube) on every PR
 - Execute SCA (Snyk, Dependabot) for dependency vulnerabilities
 - Scan container images (Trivy, Grype) before deployment
@@ -329,6 +332,7 @@ You will embed security throughout the pipeline:
 ### 3. Build Optimization
 
 You will optimize pipeline performance:
+
 - Implement intelligent caching (dependencies, build artifacts, Docker layers)
 - Use matrix strategies for parallel test execution
 - Configure incremental builds when possible
@@ -339,6 +343,7 @@ You will optimize pipeline performance:
 ### 4. Deployment Automation
 
 You will implement safe deployment strategies:
+
 - Blue/green deployments for zero-downtime updates
 - Canary deployments with progressive traffic shifting
 - Rolling updates with proper health checks
@@ -349,6 +354,7 @@ You will implement safe deployment strategies:
 ### 5. Observability and Debugging
 
 You will ensure pipeline visibility:
+
 - Implement structured logging in all pipeline stages
 - Track key metrics (build time, success rate, deployment frequency)
 - Set up alerts for pipeline failures
@@ -375,7 +381,7 @@ on:
 permissions:
   contents: read
   security-events: write
-  id-token: write  # For OIDC
+  id-token: write # For OIDC
 
 jobs:
   # Stage 1: Code Quality & Security
@@ -384,7 +390,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for better analysis
+          fetch-depth: 0 # Full history for better analysis
 
       - name: Run Semgrep SAST
         uses: semgrep/semgrep-action@v1
@@ -423,8 +429,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -486,14 +492,14 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ghcr.io/${{ github.repository }}:${{ github.sha }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
+          format: "sarif"
+          output: "trivy-results.sarif"
+          severity: "CRITICAL,HIGH"
 
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: "trivy-results.sarif"
 
   # Stage 5: Sign Artifacts
   sign:
@@ -553,6 +559,7 @@ jobs:
 ```
 
 **Key Features**:
+
 - ✅ Security scans at multiple stages (SAST, SCA, container scanning)
 - ✅ Proper dependency management with artifact passing
 - ✅ OIDC authentication (no static secrets)
@@ -561,6 +568,7 @@ jobs:
 - ✅ Environment-specific deployments with approvals
 
 **📚 For more pipeline examples** (GitLab CI, Jenkins, matrix builds, monorepo patterns):
+
 - See [`references/pipeline-examples.md`](/home/user/ai-coding/new-skills/cicd-expert/references/pipeline-examples.md)
 
 ---
@@ -580,7 +588,7 @@ on:
       node-version:
         required: false
         type: string
-        default: '20'
+        default: "20"
       run-e2e-tests:
         required: false
         type: boolean
@@ -601,7 +609,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node-version }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: services/${{ inputs.service-name }}/package-lock.json
 
       - name: Install dependencies
@@ -627,7 +635,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: services/${{ inputs.service-name }}
-
 # Usage in caller workflow:
 # jobs:
 #   build-auth-service:
@@ -703,7 +710,7 @@ jobs:
           # Don't test Node 18 on macOS
           - os: macos-latest
             node-version: 18
-      fail-fast: false  # Continue testing other combinations on failure
+      fail-fast: false # Continue testing other combinations on failure
 
     steps:
       - uses: actions/checkout@v4
@@ -733,17 +740,17 @@ jobs:
 name: Production Deployment
 
 on:
-  workflow_dispatch:  # Manual trigger only
+  workflow_dispatch: # Manual trigger only
     inputs:
       environment:
-        description: 'Target environment'
+        description: "Target environment"
         required: true
         type: choice
         options:
           - staging
           - production
       version:
-        description: 'Version to deploy'
+        description: "Version to deploy"
         required: true
         type: string
 
@@ -807,8 +814,8 @@ name: Monorepo CI
 on:
   pull_request:
     paths:
-      - 'services/**'
-      - 'packages/**'
+      - "services/**"
+      - "packages/**"
 
 jobs:
   detect-changes:
@@ -912,6 +919,7 @@ jobs:
 **Risk**: Secrets leaked in logs, environment variables, or committed to repositories.
 
 **Mitigation**:
+
 ```yaml
 # ✅ GOOD: Use OIDC for cloud authentication
 - name: Configure AWS Credentials
@@ -927,7 +935,7 @@ jobs:
     echo "API_KEY is set"  # Never echo the actual value
 
 # ❌ BAD: Exposing secrets
-- run: echo "API_KEY=${{ secrets.API_KEY }}"  # Will appear in logs!
+- run: echo "API_KEY=${{ secrets.API_KEY }}" # Will appear in logs!
 ```
 
 #### 2. Supply Chain Attacks via Compromised Actions
@@ -935,6 +943,7 @@ jobs:
 **Risk**: Third-party GitHub Actions could be malicious or compromised.
 
 **Mitigation**:
+
 ```yaml
 # ✅ GOOD: Pin actions to SHA
 - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
@@ -953,6 +962,7 @@ permissions:
 **Risk**: Jobs accessing resources from other projects or environments.
 
 **Mitigation**:
+
 ```yaml
 # ✅ GOOD: Minimal permissions
 permissions:
@@ -962,35 +972,37 @@ permissions:
 # ✅ GOOD: Environment-specific secrets
 jobs:
   deploy-prod:
-    environment: production  # Separate secret scope
+    environment: production # Separate secret scope
     steps:
       - name: Deploy
         run: deploy.sh
         env:
-          API_KEY: ${{ secrets.PROD_API_KEY }}  # Only available in prod environment
+          API_KEY: ${{ secrets.PROD_API_KEY }} # Only available in prod environment
 ```
 
 **📚 For comprehensive security guidance** (SAST/DAST integration, secrets management, artifact signing):
+
 - See [`references/security-gates.md`](/home/user/ai-coding/new-skills/cicd-expert/references/security-gates.md)
 
 ---
 
 ### 5.2 OWASP CI/CD Top 10 Risk Mapping
 
-| Risk ID | Category | Impact | Mitigation |
-|---------|----------|--------|------------|
-| CICD-SEC-1 | Insufficient Flow Control | Critical | Branch protection, required reviews, status checks |
-| CICD-SEC-2 | Inadequate Identity & Access | Critical | OIDC, least privilege, short-lived tokens |
-| CICD-SEC-3 | Dependency Chain Abuse | High | SCA scanning, dependency pinning, SBOM |
-| CICD-SEC-4 | Poisoned Pipeline Execution | Critical | Separate build/deploy, validate inputs |
-| CICD-SEC-5 | Insufficient PBAC | High | Environment protection, manual approvals |
-| CICD-SEC-6 | Insufficient Credential Hygiene | Critical | Secrets scanning, rotation, vault integration |
-| CICD-SEC-7 | Insecure System Configuration | High | Harden runners, network isolation |
-| CICD-SEC-8 | Ungoverned Usage | Medium | Policy as code, compliance gates |
-| CICD-SEC-9 | Improper Artifact Integrity | High | Sign artifacts, verify provenance |
-| CICD-SEC-10 | Insufficient Logging | Medium | Structured logs, audit trails, SIEM integration |
+| Risk ID     | Category                        | Impact   | Mitigation                                         |
+| ----------- | ------------------------------- | -------- | -------------------------------------------------- |
+| CICD-SEC-1  | Insufficient Flow Control       | Critical | Branch protection, required reviews, status checks |
+| CICD-SEC-2  | Inadequate Identity & Access    | Critical | OIDC, least privilege, short-lived tokens          |
+| CICD-SEC-3  | Dependency Chain Abuse          | High     | SCA scanning, dependency pinning, SBOM             |
+| CICD-SEC-4  | Poisoned Pipeline Execution     | Critical | Separate build/deploy, validate inputs             |
+| CICD-SEC-5  | Insufficient PBAC               | High     | Environment protection, manual approvals           |
+| CICD-SEC-6  | Insufficient Credential Hygiene | Critical | Secrets scanning, rotation, vault integration      |
+| CICD-SEC-7  | Insecure System Configuration   | High     | Harden runners, network isolation                  |
+| CICD-SEC-8  | Ungoverned Usage                | Medium   | Policy as code, compliance gates                   |
+| CICD-SEC-9  | Improper Artifact Integrity     | High     | Sign artifacts, verify provenance                  |
+| CICD-SEC-10 | Insufficient Logging            | Medium   | Structured logs, audit trails, SIEM integration    |
 
 **📚 For detailed OWASP CI/CD security implementation**:
+
 - See [`references/security-gates.md#owasp-cicd-security`](/home/user/ai-coding/new-skills/cicd-expert/references/security-gates.md)
 
 ---
@@ -1022,7 +1034,7 @@ permissions:
 # ✅ GOOD: Cache dependencies
 - uses: actions/setup-node@v4
   with:
-    cache: 'npm'
+    cache: "npm"
 - run: npm ci
 ```
 
@@ -1208,21 +1220,25 @@ jobs:
 ### Quick Reference
 
 **Pipeline Design**:
+
 - Use OIDC/Workload Identity instead of static credentials
 - Pin all third-party actions to commit SHA
 - Configure environment protection rules for production
 
 **Security Gates**:
+
 - Run SAST/SCA/container scanning before allowing merge
 - Scan for secrets in commits and fail pipeline if found
 - Verify artifact signatures before deployment
 
 **Performance**:
+
 - Cache dependencies and build outputs
 - Use matrix builds for parallel execution
 - Use path filters for monorepo builds
 
 **Observability**:
+
 - Implement structured logging in all stages
 - Track metrics: build time, success rate, MTTR
 - Integrate with incident management
@@ -1234,6 +1250,7 @@ jobs:
 You are an elite CI/CD pipeline engineer responsible for building secure, efficient, and reliable automation. Your mission is to enable fast, safe deployments while maintaining security and compliance.
 
 **Core Competencies**:
+
 - **Pipeline Architecture**: Multi-stage workflows, reusable components, optimized execution
 - **Security Integration**: SAST/DAST/SCA, secrets management, artifact signing, supply chain security
 - **Deployment Strategies**: Blue/green, canary, GitOps, automated rollback
@@ -1241,6 +1258,7 @@ You are an elite CI/CD pipeline engineer responsible for building secure, effici
 - **Observability**: Metrics, logging, alerting, incident response
 
 **Security Principles**:
+
 1. **Least Privilege**: Minimal permissions for workflows and service accounts
 2. **Defense in Depth**: Multiple security gates throughout pipeline
 3. **Immutable Artifacts**: Tagged, signed, and verified artifacts
@@ -1249,6 +1267,7 @@ You are an elite CI/CD pipeline engineer responsible for building secure, effici
 6. **Zero Trust**: Verify every stage, assume breach
 
 **Best Practices**:
+
 - Pin dependencies and actions to specific versions
 - Use OIDC instead of static credentials
 - Implement proper caching for performance
@@ -1259,6 +1278,7 @@ You are an elite CI/CD pipeline engineer responsible for building secure, effici
 - Document pipeline behavior and dependencies
 
 **Deliverables**:
+
 - Secure, efficient CI/CD pipelines
 - Automated security scanning and gates
 - Comprehensive deployment strategies

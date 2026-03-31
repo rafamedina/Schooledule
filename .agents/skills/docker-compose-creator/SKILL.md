@@ -24,18 +24,18 @@ Design and manage multi-container applications with Docker Compose for both deve
 
 ## Docker Compose Versions
 
-| Version | Released | Features | Use Case |
-|---------|----------|----------|----------|
-| v3.x | 2016 | Service definitions, networks | Legacy (avoid for new projects) |
-| v2.x | 2014 | Legacy format | Not recommended |
-| v3.14 | 2023 | Full features, modern syntax | Current default |
+| Version | Released | Features                      | Use Case                        |
+| ------- | -------- | ----------------------------- | ------------------------------- |
+| v3.x    | 2016     | Service definitions, networks | Legacy (avoid for new projects) |
+| v2.x    | 2014     | Legacy format                 | Not recommended                 |
+| v3.14   | 2023     | Full features, modern syntax  | Current default                 |
 
 Use version `3.14` or later for new projects.
 
 ## Basic Structure
 
 ```yaml
-version: '3.14'
+version: "3.14"
 
 services:
   # Service definitions go here
@@ -50,7 +50,7 @@ networks:
 ## Full-Featured Example: Web Application Stack
 
 ```yaml
-version: '3.14'
+version: "3.14"
 
 services:
   # Frontend (Nginx)
@@ -69,7 +69,15 @@ services:
       - frontend
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost/health",
+        ]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -239,7 +247,7 @@ services:
     memswap_limit: 1g
 
     # CPU: 1 core
-    cpus: '1.0'
+    cpus: "1.0"
 
     # File descriptor limit
     ulimits:
@@ -253,7 +261,7 @@ services:
 ```yaml
 services:
   api:
-    restart: unless-stopped  # Restart unless manually stopped
+    restart: unless-stopped # Restart unless manually stopped
     # Options: no, always, unless-stopped, on-failure
 
   worker:
@@ -289,16 +297,16 @@ services:
 services:
   api:
     networks:
-      - frontend  # Can talk to nginx
-      - backend   # Can talk to postgres
+      - frontend # Can talk to nginx
+      - backend # Can talk to postgres
 
   nginx:
     networks:
-      - frontend  # Can talk to api
+      - frontend # Can talk to api
 
   postgres:
     networks:
-      - backend   # Can talk to api, worker
+      - backend # Can talk to api, worker
 
 networks:
   frontend:
@@ -311,8 +319,8 @@ networks:
 services:
   api:
     ports:
-      - "3000:3000"           # Map container 3000 to host 3000
-      - "3001:3000"           # Map container 3000 to host 3001
+      - "3000:3000" # Map container 3000 to host 3000
+      - "3001:3000" # Map container 3000 to host 3001
       - "127.0.0.1:3000:3000" # Bind to localhost only
 ```
 
@@ -439,7 +447,7 @@ services:
 ### Development (docker-compose.yml)
 
 ```yaml
-version: '3.14'
+version: "3.14"
 
 services:
   api:
@@ -447,7 +455,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./api/src:/app/src  # Hot reload
+      - ./api/src:/app/src # Hot reload
     environment:
       - NODE_ENV=development
     command: npm run dev
@@ -456,7 +464,7 @@ services:
 ### Production (docker-compose.prod.yml)
 
 ```yaml
-version: '3.14'
+version: "3.14"
 
 services:
   api:
@@ -530,7 +538,7 @@ docker compose down --rmi all && docker compose up --build
 services:
   api:
     volumes:
-      - ./src:/app/src  # Local development
+      - ./src:/app/src # Local development
     environment:
       - DEBUG=true
 ```

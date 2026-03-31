@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/profe")
 public class ProfeController {
 
-    @GetMapping("/dashboard")
-    public String panelProfesor() {
-        return "profe/menuProfesor"; // Busca panel_profe.html
-    }
+  @GetMapping("/dashboard")
+  public String panelProfesor() {
+    return "profe/menuProfesor"; // Busca panel_profe.html
+  }
 }

@@ -14,17 +14,17 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CriterioEvaluacion {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "resultado_aprendizaje_id", nullable = false)
-    private ResultadoAprendizaje resultadoAprendizaje;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "resultado_aprendizaje_id", nullable = false)
+  private ResultadoAprendizaje resultadoAprendizaje;
 
-    @Column(nullable = false, length = 20)
-    private String codigo;
+  @Column(nullable = false, length = 20)
+  private String codigo;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String descripcion;
+  @Column(nullable = false, columnDefinition = "TEXT")
+  private String descripcion;
 }

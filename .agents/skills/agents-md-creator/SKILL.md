@@ -62,16 +62,16 @@ Detect project structure?
 
 ### Auto-Detection Indicators
 
-| Indicator | Type | Evidence |
-|-----------|------|----------|
-| `apps/` directory exists | Monorepo | Multiple applications |
-| `packages/` directory exists | Monorepo | Shared libraries |
-| `pnpm-workspace.yaml` | Monorepo | pnpm workspace config |
-| `turbo.json` | Monorepo | Turborepo build system |
-| `lerna.json` | Monorepo | Lerna monorepo |
-| `nx.json` | Monorepo | Nx monorepo |
-| Single `package.json` at root | Polyrepo | Single package |
-| Multiple top-level `src/` dirs | Polyrepo | Multiple projects |
+| Indicator                      | Type     | Evidence               |
+| ------------------------------ | -------- | ---------------------- |
+| `apps/` directory exists       | Monorepo | Multiple applications  |
+| `packages/` directory exists   | Monorepo | Shared libraries       |
+| `pnpm-workspace.yaml`          | Monorepo | pnpm workspace config  |
+| `turbo.json`                   | Monorepo | Turborepo build system |
+| `lerna.json`                   | Monorepo | Lerna monorepo         |
+| `nx.json`                      | Monorepo | Nx monorepo            |
+| Single `package.json` at root  | Polyrepo | Single package         |
+| Multiple top-level `src/` dirs | Polyrepo | Multiple projects      |
 
 ### Detection Confidence Levels
 
@@ -109,11 +109,11 @@ Level 3 (Project files) - As needed
 
 The same Level 2 resource can have **multiple entry points** for different discovery paths:
 
-| Entry | Location | Trigger Scenario | User Mindset |
-|-------|----------|------------------|--------------|
-| Reference index | Start | "I have an error/problem" | "What doc has the answer?" |
-| Before-change table | Middle | "About to modify code" | "What should I know first?" |
-| Trigger index | End | "Long conversation, need to re-orient" | "Which doc was that again?" |
+| Entry               | Location | Trigger Scenario                       | User Mindset                |
+| ------------------- | -------- | -------------------------------------- | --------------------------- |
+| Reference index     | Start    | "I have an error/problem"              | "What doc has the answer?"  |
+| Before-change table | Middle   | "About to modify code"                 | "What should I know first?" |
+| Trigger index       | End      | "Long conversation, need to re-orient" | "Which doc was that again?" |
 
 **This is NOT duplication.** It's like a book having a table of contents, an index, and quick reference cards.
 
@@ -138,22 +138,22 @@ CLAUDE.md exists only because Claude Code doesn't load AGENTS.md natively. Keep 
 
 ### Required Sections (Level 1)
 
-| Section | Purpose | Keep Minimal |
-|---------|---------|--------------|
-| Project description | One-line summary | ✅ |
-| Essential commands | run, test, build | ✅ |
-| Repository structure | Top-level directories only | ✅ |
-| Reference index | Pointers to detailed docs | ✅ |
-| Key entry points | Common task starting points | ✅ |
+| Section              | Purpose                     | Keep Minimal |
+| -------------------- | --------------------------- | ------------ |
+| Project description  | One-line summary            | ✅           |
+| Essential commands   | run, test, build            | ✅           |
+| Repository structure | Top-level directories only  | ✅           |
+| Reference index      | Pointers to detailed docs   | ✅           |
+| Key entry points     | Common task starting points | ✅           |
 
 ### Never Include in AGENTS.md (Level 1)
 
-| Content | Why | Where Instead |
-|---------|-----|---------------|
-| Detailed explanations | Bloats context | Level 2 references |
-| Code examples >1 line | Can be looked up | Level 2 references |
-| Duplicated content | Maintenance burden | Single source |
-| Historical decisions | Low frequency | Level 2 references |
+| Content               | Why                | Where Instead      |
+| --------------------- | ------------------ | ------------------ |
+| Detailed explanations | Bloats context     | Level 2 references |
+| Code examples >1 line | Can be looked up   | Level 2 references |
+| Duplicated content    | Maintenance burden | Single source      |
+| Historical decisions  | Low frequency      | Level 2 references |
 
 ## Content Classification Decision Tree
 
@@ -184,11 +184,11 @@ Is there a clear trigger condition?
 ```markdown
 ## Reference Index (When you encounter problems)
 
-| Trigger scenario | Document | Core content |
-|------------------|----------|--------------|
-| Build fails after dependency change | `docs/references/build-sop.md` | Dependency order, clean build |
-| Test environment variables not loading | `docs/references/env-setup.md` | .env files, globalEnv config |
-| Cache not invalidating | `docs/references/caching.md` | outputs, inputs, env keys |
+| Trigger scenario                       | Document                       | Core content                  |
+| -------------------------------------- | ------------------------------ | ----------------------------- |
+| Build fails after dependency change    | `docs/references/build-sop.md` | Dependency order, clean build |
+| Test environment variables not loading | `docs/references/env-setup.md` | .env files, globalEnv config  |
+| Cache not invalidating                 | `docs/references/caching.md`   | outputs, inputs, env keys     |
 ```
 
 ### At Middle (Task-Oriented)
@@ -196,11 +196,11 @@ Is there a clear trigger condition?
 ```markdown
 ## Before Modifying Code
 
-| What you're changing | Read this first | Key gotchas |
-|---------------------|-----------------|-------------|
-| Build configuration | `docs/references/build-sop.md` | dependsOn order matters |
-| Environment setup | `docs/references/env-setup.md` | globalEnv affects all tasks |
-| Cache behavior | `docs/references/caching.md` | outputs required for file-producing tasks |
+| What you're changing | Read this first                | Key gotchas                               |
+| -------------------- | ------------------------------ | ----------------------------------------- |
+| Build configuration  | `docs/references/build-sop.md` | dependsOn order matters                   |
+| Environment setup    | `docs/references/env-setup.md` | globalEnv affects all tasks               |
+| Cache behavior       | `docs/references/caching.md`   | outputs required for file-producing tasks |
 ```
 
 ### At End (Re-Orientation)
@@ -208,22 +208,22 @@ Is there a clear trigger condition?
 ```markdown
 ## Reference Trigger Index
 
-| When to read | Document | What you'll find |
-|--------------|----------|------------------|
-| Build fails | `docs/references/build-sop.md` | Dependency troubleshooting |
-| Env issues | `docs/references/env-setup.md` | .env and variable setup |
-| Cache problems | `docs/references/caching.md` | Hash input debugging |
+| When to read   | Document                       | What you'll find           |
+| -------------- | ------------------------------ | -------------------------- |
+| Build fails    | `docs/references/build-sop.md` | Dependency troubleshooting |
+| Env issues     | `docs/references/env-setup.md` | .env and variable setup    |
+| Cache problems | `docs/references/caching.md`   | Hash input debugging       |
 ```
 
 ## Anti-Patterns to Avoid
 
-| Anti-Pattern | Wrong | Right |
-|------------|-------|-------|
-| **Line count as goal** | "Reduced from 2000 to 500 lines" | Assess by duplication and relevance, not line count |
-| **References without triggers** | `See build-sop.md for details` | Include trigger conditions: "When build fails after dependency changes" |
-| **Moving code patterns to Level 2** | Move frequently-used code examples | Keep copyable patterns in Level 1 |
-| **Deleting instead of moving** | Delete "unimportant" sections | Move to Level 2, keep trigger in Level 1 |
-| **Moving while simplifying** | Move and edit content simultaneously | Move verbatim first, simplify separately with confirmation |
+| Anti-Pattern                        | Wrong                                | Right                                                                   |
+| ----------------------------------- | ------------------------------------ | ----------------------------------------------------------------------- |
+| **Line count as goal**              | "Reduced from 2000 to 500 lines"     | Assess by duplication and relevance, not line count                     |
+| **References without triggers**     | `See build-sop.md for details`       | Include trigger conditions: "When build fails after dependency changes" |
+| **Moving code patterns to Level 2** | Move frequently-used code examples   | Keep copyable patterns in Level 1                                       |
+| **Deleting instead of moving**      | Delete "unimportant" sections        | Move to Level 2, keep trigger in Level 1                                |
+| **Moving while simplifying**        | Move and edit content simultaneously | Move verbatim first, simplify separately with confirmation              |
 
 ## Monorepo-Specific Considerations
 
@@ -231,29 +231,32 @@ Is there a clear trigger condition?
 
 When a monorepo is detected, also extract:
 
-| Information | Source | Purpose |
-|-------------|--------|---------|
-| Package names | `apps/*/package.json`, `packages/*/package.json` | Understanding modules |
-| Package purposes | package.json `description` field, README files | What each package does |
-| Internal dependencies | workspace:* references | Dependency graph |
-| Build system | turbo.json, nx.json, lerna.json | Task orchestration |
-| Shared patterns | across packages/ | Common conventions |
+| Information           | Source                                           | Purpose                |
+| --------------------- | ------------------------------------------------ | ---------------------- |
+| Package names         | `apps/*/package.json`, `packages/*/package.json` | Understanding modules  |
+| Package purposes      | package.json `description` field, README files   | What each package does |
+| Internal dependencies | workspace:\* references                          | Dependency graph       |
+| Build system          | turbo.json, nx.json, lerna.json                  | Task orchestration     |
+| Shared patterns       | across packages/                                 | Common conventions     |
 
 ### Package Name Detection
 
 Package naming varies significantly across monorepos. Detect actual package names from:
 
 1. **Directory patterns:**
+
    - `apps/*` → Application packages
    - `packages/*` → Library packages
    - `services/*` → Backend services
 
 2. **Package naming conventions:**
+
    - Scoped: `@repo/*`, `@company/*`, `@project/*`
    - Unscoped: `backend`, `frontend`, `api`, `web`
    - Mixed: Both scoped and unscoped in same repo
 
 3. **Common backend package names:**
+
    - `@repo/api`, `@repo/backend`, `@repo/server`
    - `apps/api`, `apps/backend`, `apps/server`
    - `services/api`, `services/backend`
@@ -270,11 +273,11 @@ Package naming varies significantly across monorepos. Detect actual package name
 ```markdown
 ## Monorepo Structure
 
-| Package | Location | Purpose | Key commands |
-|---------|----------|---------|--------------|
-| `backend` | apps/backend | REST API server | `turbo run dev --filter=backend` |
-| `frontend` | apps/web | Next.js web app | `turbo run dev --filter=frontend` |
-| `ui` | packages/ui | Shared React components | `turbo run build --filter=ui` |
+| Package    | Location     | Purpose                 | Key commands                      |
+| ---------- | ------------ | ----------------------- | --------------------------------- |
+| `backend`  | apps/backend | REST API server         | `turbo run dev --filter=backend`  |
+| `frontend` | apps/web     | Next.js web app         | `turbo run dev --filter=frontend` |
+| `ui`       | packages/ui  | Shared React components | `turbo run build --filter=ui`     |
 
 ## Working with Packages
 
@@ -327,23 +330,23 @@ This document uses **progressive disclosure** to optimize agent effectiveness.
 
 ### Level 1 (This file) contains only
 
-| Type | Example |
-|------|---------|
-| Core commands | `npm run dev`, `npm test` |
-| Iron rules/prohibitions | Must use lazy loading |
+| Type                     | Example                               |
+| ------------------------ | ------------------------------------- |
+| Core commands            | `npm run dev`, `npm test`             |
+| Iron rules/prohibitions  | Must use lazy loading                 |
 | Common error diagnostics | Symptom → cause → fix (complete flow) |
-| Code patterns | Directly copyable code blocks |
-| Directory navigation | Function → file mapping |
-| Trigger index tables | Pointers to Level 2 |
+| Code patterns            | Directly copyable code blocks         |
+| Directory navigation     | Function → file mapping               |
+| Trigger index tables     | Pointers to Level 2                   |
 
 ### Level 2 (docs/references/) contains
 
-| Type | Example |
-|------|---------|
-| Detailed SOP flows | Complete 20-step guides |
-| Edge case handling | Rare error diagnostics |
-| Complete config examples | All parameter descriptions |
-| Historical decisions | Why it was designed this way |
+| Type                     | Example                      |
+| ------------------------ | ---------------------------- |
+| Detailed SOP flows       | Complete 20-step guides      |
+| Edge case handling       | Rare error diagnostics       |
+| Complete config examples | All parameter descriptions   |
+| Historical decisions     | Why it was designed this way |
 
 ### When recording information
 
@@ -358,9 +361,9 @@ This document uses **progressive disclosure** to optimize agent effectiveness.
 
 ## Reference Files
 
-| File | Purpose |
-|------|---------|
-| [references/project_detection.md](./references/project_detection.md) | Detailed project structure detection |
-| [references/templates.md](./references/templates.md) | AGENTS.md templates for different project types |
-| [references/progressive_disclosure.md](./references/progressive_disclosure.md) | Progressive disclosure deep dive |
-| [references/anti_patterns.md](./references/anti_patterns.md) | Common anti-patterns with examples |
+| File                                                                           | Purpose                                         |
+| ------------------------------------------------------------------------------ | ----------------------------------------------- |
+| [references/project_detection.md](./references/project_detection.md)           | Detailed project structure detection            |
+| [references/templates.md](./references/templates.md)                           | AGENTS.md templates for different project types |
+| [references/progressive_disclosure.md](./references/progressive_disclosure.md) | Progressive disclosure deep dive                |
+| [references/anti_patterns.md](./references/anti_patterns.md)                   | Common anti-patterns with examples              |

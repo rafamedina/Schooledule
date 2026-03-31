@@ -14,18 +14,18 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Grupo {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    @Column(nullable = false, length = 50)
-    private String nombre;
+  @Column(nullable = false, length = 50)
+  private String nombre;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "centro_id", nullable = false)
-    private Centro centro;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "centro_id", nullable = false)
+  private Centro centro;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "curso_academico_id", nullable = false)
-    private CursoAcademico cursoAcademico;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "curso_academico_id", nullable = false)
+  private CursoAcademico cursoAcademico;
 }

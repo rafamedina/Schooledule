@@ -1,15 +1,13 @@
 package com.tfg.schooledule.domain.entity;
 
 import jakarta.persistence.*;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
-import java.util.Map;
 
 @Entity
 @Table(name = "centros")
@@ -19,17 +17,17 @@ import java.util.Map;
 @Builder
 public class Centro {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    @Column(nullable = false, length = 100)
-    private String nombre;
+  @Column(nullable = false, length = 100)
+  private String nombre;
 
-    @Column(length = 200)
-    private String ubicacion;
+  @Column(length = 200)
+  private String ubicacion;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
-    private Map<String, Object> configuracion;
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb")
+  private Map<String, Object> configuracion;
 }

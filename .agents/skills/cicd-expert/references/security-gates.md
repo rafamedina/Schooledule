@@ -55,7 +55,6 @@ jobs:
       # Gate 3: Required status checks
       - name: Tests
         run: npm test
-
 # GitLab - Protected Branches
 # Settings > Repository > Protected Branches
 # - Allowed to merge: Maintainers
@@ -64,6 +63,7 @@ jobs:
 ```
 
 **GitHub Branch Protection Rules**:
+
 - ✅ Require pull request before merging
 - ✅ Require approvals (minimum 2)
 - ✅ Dismiss stale pull request approvals
@@ -145,8 +145,8 @@ jobs:
 ```yaml
 # GitHub Actions - Minimal permissions
 permissions:
-  contents: read  # Only read repository contents
-  packages: write  # Only write packages
+  contents: read # Only read repository contents
+  packages: write # Only write packages
   # NO other permissions!
 
 jobs:
@@ -183,7 +183,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '0 0 * * *'  # Daily scans
+    - cron: "0 0 * * *" # Daily scans
 
 jobs:
   dependency-review:
@@ -240,8 +240,8 @@ jobs:
 // package.json - Pin exact versions
 {
   "dependencies": {
-    "express": "4.18.2",  // ✅ Exact version
-    "react": "^18.2.0"    // ❌ Allows minor updates
+    "express": "4.18.2", // ✅ Exact version
+    "react": "^18.2.0" // ❌ Allows minor updates
   }
 }
 ```
@@ -273,7 +273,7 @@ flask==3.0.0
 name: Secure PR Build
 
 on:
-  pull_request_target:  # Runs in context of base branch
+  pull_request_target: # Runs in context of base branch
     branches: [main]
 
 jobs:
@@ -518,7 +518,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 0 * * 1'  # Weekly
+    - cron: "0 0 * * 1" # Weekly
 
 jobs:
   analyze:
@@ -569,7 +569,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for better analysis
+          fetch-depth: 0 # Full history for better analysis
 
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
@@ -596,7 +596,7 @@ name: DAST - OWASP ZAP
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # Nightly scans
+    - cron: "0 2 * * *" # Nightly scans
   workflow_dispatch:
 
 jobs:
@@ -613,16 +613,16 @@ jobs:
       - name: ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.7.0
         with:
-          target: 'http://localhost:8000'
-          rules_file_name: '.zap/rules.tsv'
-          cmd_options: '-a -j'
+          target: "http://localhost:8000"
+          rules_file_name: ".zap/rules.tsv"
+          cmd_options: "-a -j"
 
       - name: ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.7.0
         with:
-          target: 'http://localhost:8000'
-          rules_file_name: '.zap/rules.tsv'
-          cmd_options: '-j'
+          target: "http://localhost:8000"
+          rules_file_name: ".zap/rules.tsv"
+          cmd_options: "-j"
 
       - name: Upload ZAP results
         uses: github/codeql-action/upload-sarif@v2
@@ -660,7 +660,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 jobs:
   snyk-scan:
@@ -760,24 +760,24 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: myapp:${{ github.sha }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '1'
+          format: "sarif"
+          output: "trivy-results.sarif"
+          severity: "CRITICAL,HIGH"
+          exit-code: "1"
 
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: "trivy-results.sarif"
 
       - name: Scan filesystem
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'table'
-          severity: 'CRITICAL,HIGH'
+          scan-type: "fs"
+          scan-ref: "."
+          format: "table"
+          severity: "CRITICAL,HIGH"
 ```
 
 ### Grype Scanning
@@ -811,7 +811,7 @@ name: Sign Artifacts
 on:
   push:
     branches: [main]
-    tags: ['v*']
+    tags: ["v*"]
 
 permissions:
   packages: write
@@ -886,9 +886,9 @@ name: IaC Security Scan
 on:
   pull_request:
     paths:
-      - 'terraform/**'
-      - 'k8s/**'
-      - 'cloudformation/**'
+      - "terraform/**"
+      - "k8s/**"
+      - "cloudformation/**"
 
 jobs:
   checkov:
@@ -1078,8 +1078,8 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: myapp:${{ github.sha }}
-          severity: 'CRITICAL,HIGH'
-          exit-code: '1'
+          severity: "CRITICAL,HIGH"
+          exit-code: "1"
 
   # Gate 6: IaC Scan
   iac-scan:

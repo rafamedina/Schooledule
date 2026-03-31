@@ -1,8 +1,7 @@
 -- ==================================================================
 -- BASE DE DATOS TFG - VERSIÓN FINAL (ROLES N:M + AUDITORÍA PRO)
 -- ==================================================================
-DROP SCHEMA IF EXISTS public CASCADE;
-CREATE SCHEMA public;
+
 -- ENUMS (Solo para estados, ya NO para roles)
 CREATE TYPE estado_matricula AS ENUM ('ACTIVA', 'BAJA', 'CONVALIDADO');
 CREATE TYPE tipo_actividad AS ENUM ('EXAMEN', 'PRACTICA', 'RECUPERACION', 'ACTITUD');
@@ -219,7 +218,7 @@ INSERT INTO usuarios (id, username, password_hash, nombre, apellidos, email, act
 (4, 'profe_alumno', '$2a$10$LwjJeRKHaydg2n5bPd.5guuBwZow7V6dZTfit.vl6Re3xgdR88aLi', 'Pedro', 'Mix', 'pedro@tfg.com', true);
 
 -- 4. Asignación de Roles
-INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES 
+INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES
 (1, 1), (2, 2), (3, 3), (4, 2), (4, 3);
 
 -- Sincronizar secuencias

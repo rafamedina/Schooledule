@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Rol {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    @Column(nullable = false, unique = true, length = 50)
-    private String nombre;
+  @Column(nullable = false, unique = true, length = 50)
+  private String nombre;
 }

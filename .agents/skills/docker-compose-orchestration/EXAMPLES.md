@@ -168,7 +168,17 @@ services:
       - lamp-network
     command: --default-authentication-plugin=mysql_native_password
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_secret"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-proot_secret",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -996,12 +1006,12 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=30d'
-      - '--web.enable-lifecycle'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-lifecycle"
     ports:
       - "9090:9090"
     volumes:
@@ -1016,8 +1026,8 @@ services:
     image: prom/alertmanager:latest
     container_name: alertmanager
     command:
-      - '--config.file=/etc/alertmanager/config.yml'
-      - '--storage.path=/alertmanager'
+      - "--config.file=/etc/alertmanager/config.yml"
+      - "--storage.path=/alertmanager"
     ports:
       - "9093:9093"
     volumes:
@@ -1051,10 +1061,10 @@ services:
     image: prom/node-exporter:latest
     container_name: node-exporter
     command:
-      - '--path.procfs=/host/proc'
-      - '--path.sysfs=/host/sys'
-      - '--path.rootfs=/rootfs'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/rootfs"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
     ports:
       - "9100:9100"
     volumes:
@@ -1136,7 +1146,8 @@ services:
     networks:
       - elk
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      test:
+        ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -1233,7 +1244,7 @@ services:
       - gitlab-data:/var/opt/gitlab
     networks:
       - gitlab-network
-    shm_size: '256m'
+    shm_size: "256m"
 
   gitlab-runner:
     image: gitlab/gitlab-runner:latest
@@ -1285,6 +1296,7 @@ volumes:
 ```
 
 This comprehensive EXAMPLES.md provides 20+ production-ready Docker Compose examples covering all major use cases. Each example includes:
+
 - Complete service definitions
 - Network configurations
 - Volume management

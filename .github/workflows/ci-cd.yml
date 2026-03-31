@@ -1,0 +1,154 @@
+name: Schooledule Professional CI/CD
+
+on:
+  push:
+    branches: ["dev", "feature/**"]
+  pull_request:
+    branches: ["dev"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+  security-events: write
+
+jobs:
+  # 🔍 JOB 1: Lint & Validation
+  lint:
+    name: 🔍 Lint & Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate GitHub Actions (actionlint)
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint -color
+
+      - name: Lint Dockerfile (hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: infraestructura/Dockerfile
+          ignore: DL3018
+
+  # 🧪 JOB 2: Unit & Integration Tests (Maven)
+  test:
+    name: 🧪 Unit & Integration Tests
+    needs: lint
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: password123
+          POSTGRES_DB: schooledule
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U admin -d schooledule"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Run Tests & JaCoCo
+        run: ./mvnw clean verify -DskipTests=false
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/schooledule
+          SPRING_DATASOURCE_USERNAME: admin
+          SPRING_DATASOURCE_PASSWORD: password123
+
+      - name: Verify JaCoCo Coverage (>80%)
+        run: |
+          REPORT_PATH="target/site/jacoco/index.html"
+          if [ -f "$REPORT_PATH" ]; then
+            COVERAGE=$(grep -oP 'Total.*?(\d+)%' "$REPORT_PATH" | head -1 | grep -oP '\d+')
+            echo "📊 Current Coverage: $COVERAGE%"
+            if [ "$COVERAGE" -lt 80 ]; then
+              echo "❌ ERROR: Coverage is $COVERAGE%, threshold is 80%"
+              exit 1
+            fi
+          fi
+        shell: bash
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+
+  # 🔄 JOB 3: Purge & Promote to Pre-Prod
+  promote-to-preprod:
+    name: 🔄 Purge & Promote to Pre-Prod
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync & Purge
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          TAG_NAME="build-${{ github.run_number }}-${{ github.sha }}"
+          echo "Promoting to Pre-Prod: $TAG_NAME"
+
+          git checkout -B pre-prod
+
+          # PURGA EXHAUSTIVA (Sin rastro de Dev)
+          echo "Cleaning development and AI files..."
+          rm -rf .agents/ conductor/ .gemini/ .gemini_security/ .idea/ .vscode/ target/
+          rm -f GEMINI.md CLAUDE.md plan.md skills-lock.json HELP.md ideaProyecto.txt DefinicionTecnica.txt
+          rm -f .gitignore_gen # Cualquier rastro de generadores
+
+          git add -A
+          git commit -m "build: clean release for pre-prod [skip ci]" || echo "No changes"
+
+          # Crear Tag de Versión
+          git tag $TAG_NAME
+
+          # Push Force a Pre-Prod y Tag
+          git push origin pre-prod --force
+          git push origin $TAG_NAME --force
+
+      - name: Create Pull Request to Main
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: pre-prod
+          base: main
+          title: "🚀 PROD: Release build-${{ github.run_number }}"
+          body: |
+            ## 📦 Production Promotion Request
+
+            This PR contains the **cleaned** production-ready code.
+
+            **Verification Details:**
+            - ✅ All Unit & Integration tests passed.
+            - ✅ Code Coverage > 80% (JaCoCo).
+            - ✅ Linting (actionlint, hadolint) passed.
+            - 🛡️ All AI/Dev files (conductor, gemini, etc) have been purged.
+
+            **Original Dev Commit:** `${{ github.sha }}`
+            **Build Tag:** `build-${{ github.run_number }}-${{ github.sha }}`
+
+            Please review and merge to deploy to **Production (Main)**.
+          labels: |
+            production
+            clean-release
+            automated-pr

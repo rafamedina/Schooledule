@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Modulo {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    @Column(nullable = false, length = 20)
-    private String codigo;
+  @Column(nullable = false, length = 20)
+  private String codigo;
 
-    @Column(nullable = false, length = 150)
-    private String nombre;
+  @Column(nullable = false, length = 150)
+  private String nombre;
 }

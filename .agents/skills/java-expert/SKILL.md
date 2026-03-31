@@ -32,6 +32,7 @@ You are an expert Java developer with deep knowledge of modern Java (21+), Sprin
 ### Modern Java (Java 21+)
 
 **Records (Data Classes):**
+
 ```java
 // Immutable data carrier
 public record User(String name, int age, String email) {
@@ -54,6 +55,7 @@ System.out.println(user.name()); // Alice
 ```
 
 **Sealed Classes:**
+
 ```java
 public sealed interface Shape
     permits Circle, Rectangle, Triangle {
@@ -103,6 +105,7 @@ public non-sealed class Triangle implements Shape {
 ```
 
 **Pattern Matching:**
+
 ```java
 // Pattern matching for instanceof
 public String describe(Object obj) {
@@ -137,6 +140,7 @@ public String categorize(Object obj) {
 ```
 
 **Virtual Threads (Project Loom):**
+
 ```java
 import java.util.concurrent.Executors;
 
@@ -173,6 +177,7 @@ public class VirtualThreadExample {
 ```
 
 **Text Blocks:**
+
 ```java
 String json = """
     {
@@ -195,6 +200,7 @@ String sql = """
 ### Spring Boot
 
 **Modern Spring Boot Application:**
+
 ```java
 @SpringBootApplication
 public class Application {
@@ -317,6 +323,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 ```
 
 **Configuration:**
+
 ```java
 @Configuration
 @EnableCaching
@@ -368,6 +375,7 @@ spring:
 ### Testing
 
 **JUnit 5:**
+
 ```java
 @SpringBootTest
 @ActiveProfiles("test")
@@ -443,6 +451,7 @@ class UserServiceTest {
 ```
 
 **Integration Testing:**
+
 ```java
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -493,6 +502,7 @@ class UserControllerIntegrationTest {
 ### Build Tools
 
 **Maven (pom.xml):**
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -551,6 +561,7 @@ class UserControllerIntegrationTest {
 ```
 
 **Gradle (build.gradle.kts):**
+
 ```kotlin
 plugins {
     java
@@ -585,6 +596,7 @@ tasks.test {
 ## Best Practices
 
 ### 1. Use Modern Java Features
+
 ```java
 // Records for DTOs
 public record UserDTO(Long id, String name, String email) {}
@@ -605,6 +617,7 @@ public String process(Result<String> result) {
 ```
 
 ### 2. Dependency Injection
+
 ```java
 // Constructor injection (preferred)
 @Service
@@ -627,6 +640,7 @@ public class BadService {
 ```
 
 ### 3. Exception Handling
+
 ```java
 // Custom exceptions
 public class ResourceNotFoundException extends RuntimeException {
@@ -662,6 +676,7 @@ public class GlobalExceptionHandler {
 ```
 
 ### 4. Validation
+
 ```java
 public record CreateUserRequest(
         @NotBlank(message = "Name is required")
@@ -678,6 +693,7 @@ public record CreateUserRequest(
 ```
 
 ### 5. Resource Management
+
 ```java
 // Try-with-resources
 try (var connection = dataSource.getConnection();
@@ -697,6 +713,7 @@ try (var input = new FileInputStream("input.txt");
 ```
 
 ### 6. Immutability
+
 ```java
 // Immutable collections
 var list = List.of(1, 2, 3); // Unmodifiable
@@ -716,6 +733,7 @@ public void process(String input) {
 ```
 
 ### 7. Stream API
+
 ```java
 var activeUsers = users.stream()
         .filter(User::isActive)
@@ -741,6 +759,7 @@ var result = largeList.parallelStream()
 ## Common Patterns
 
 ### Repository Pattern
+
 ```java
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -751,6 +770,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 ```
 
 ### Service Layer Pattern
+
 ```java
 @Service
 @Transactional(readOnly = true)
@@ -770,6 +790,7 @@ public class UserService {
 ```
 
 ### DTO Pattern
+
 ```java
 // Entity
 @Entity
@@ -806,6 +827,7 @@ public class UserMapper {
 ## Anti-Patterns to Avoid
 
 ### 1. Null Pointer Exceptions
+
 ```java
 // Bad
 public String getUserName(User user) {
@@ -821,6 +843,7 @@ public String getUserName(User user) {
 ```
 
 ### 2. Magic Numbers/Strings
+
 ```java
 // Bad
 if (user.getStatus() == 1) { ... }
@@ -831,6 +854,7 @@ if (user.getStatus() == UserStatus.ACTIVE) { ... }
 ```
 
 ### 3. God Classes
+
 ```java
 // Bad - one class doing everything
 public class UserManager {
@@ -849,6 +873,7 @@ public class ReportService { }
 ```
 
 ### 4. Catching Generic Exceptions
+
 ```java
 // Bad
 try {
@@ -870,6 +895,7 @@ try {
 ## Development Workflow
 
 ### Maven Commands
+
 ```bash
 mvn clean install          # Build and install
 mvn spring-boot:run        # Run application
@@ -879,6 +905,7 @@ mvn package                # Create JAR
 ```
 
 ### Gradle Commands
+
 ```bash
 ./gradlew build           # Build project
 ./gradlew bootRun         # Run application

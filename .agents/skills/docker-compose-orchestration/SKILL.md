@@ -49,25 +49,25 @@ Docker Compose simplifies multi-container application management through:
 ### Compose File Structure
 
 ```yaml
-version: "3.8"  # Compose file format version
+version: "3.8" # Compose file format version
 
-services:       # Define containers
+services: # Define containers
   service-name:
     # Service configuration
 
-networks:       # Define custom networks
+networks: # Define custom networks
   network-name:
     # Network configuration
 
-volumes:        # Define named volumes
+volumes: # Define named volumes
   volume-name:
     # Volume configuration
 
-configs:        # Application configs (optional)
+configs: # Application configs (optional)
   config-name:
     # Config source
 
-secrets:        # Sensitive data (optional)
+secrets: # Sensitive data (optional)
   secret-name:
     # Secret source
 ```
@@ -79,17 +79,17 @@ secrets:        # Sensitive data (optional)
 ```yaml
 services:
   web:
-    image: nginx:alpine           # Use existing image
-    container_name: my-web        # Custom container name
-    restart: unless-stopped       # Restart policy
+    image: nginx:alpine # Use existing image
+    container_name: my-web # Custom container name
+    restart: unless-stopped # Restart policy
     ports:
-      - "80:80"                   # Host:Container port mapping
+      - "80:80" # Host:Container port mapping
     environment:
-      - ENV_VAR=value             # Environment variables
+      - ENV_VAR=value # Environment variables
     volumes:
-      - ./html:/usr/share/nginx/html  # Volume mount
+      - ./html:/usr/share/nginx/html # Volume mount
     networks:
-      - frontend                  # Connect to network
+      - frontend # Connect to network
 ```
 
 ### Build-Based Service
@@ -98,12 +98,12 @@ services:
 services:
   app:
     build:
-      context: ./app              # Build context directory
-      dockerfile: Dockerfile      # Custom Dockerfile
-      args:                       # Build arguments
+      context: ./app # Build context directory
+      dockerfile: Dockerfile # Custom Dockerfile
+      args: # Build arguments
         NODE_ENV: development
-      target: development         # Multi-stage build target
-    image: myapp:latest           # Tag resulting image
+      target: development # Multi-stage build target
+    image: myapp:latest # Tag resulting image
     ports:
       - "3000:3000"
 ```
@@ -116,9 +116,9 @@ services:
     image: nginx
     depends_on:
       db:
-        condition: service_healthy  # Wait for health check
+        condition: service_healthy # Wait for health check
       redis:
-        condition: service_started  # Wait for start only
+        condition: service_started # Wait for start only
 
   db:
     image: postgres:15
@@ -139,26 +139,26 @@ services:
 services:
   backend:
     build: ./backend
-    command: npm run dev          # Override default command
-    working_dir: /app             # Set working directory
-    user: "1000:1000"             # Run as specific user
-    hostname: api-server          # Custom hostname
-    domainname: example.com       # Domain name
+    command: npm run dev # Override default command
+    working_dir: /app # Set working directory
+    user: "1000:1000" # Run as specific user
+    hostname: api-server # Custom hostname
+    domainname: example.com # Domain name
     env_file:
-      - .env                      # Load env from file
+      - .env # Load env from file
       - .env.local
     environment:
       DATABASE_URL: "postgresql://db:5432/myapp"
       REDIS_URL: "redis://cache:6379"
     volumes:
-      - ./backend:/app            # Source code mount
-      - /app/node_modules         # Preserve node_modules
-      - app-data:/data            # Named volume
+      - ./backend:/app # Source code mount
+      - /app/node_modules # Preserve node_modules
+      - app-data:/data # Named volume
     ports:
-      - "3000:3000"               # Application port
-      - "9229:9229"               # Debug port
+      - "3000:3000" # Application port
+      - "9229:9229" # Debug port
     expose:
-      - "8080"                    # Expose to other services only
+      - "8080" # Expose to other services only
     networks:
       - backend
       - frontend
@@ -173,10 +173,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 1G
         reservations:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
 ```
 
@@ -203,7 +203,7 @@ services:
       - /app/node_modules
     environment:
       - REACT_APP_API_URL=http://localhost:4000/api
-      - CHOKIDAR_USEPOLLING=true  # For hot reload
+      - CHOKIDAR_USEPOLLING=true # For hot reload
     networks:
       - frontend
     depends_on:
@@ -216,7 +216,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "4000:4000"
-      - "9229:9229"  # Debugger
+      - "9229:9229" # Debugger
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -408,7 +408,7 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     ports:
-      - "5672:5672"   # AMQP
+      - "5672:5672" # AMQP
       - "15672:15672" # Management UI
     environment:
       - RABBITMQ_DEFAULT_USER=admin
@@ -428,7 +428,7 @@ networks:
     driver: bridge
   internal:
     driver: bridge
-    internal: true  # No external access
+    internal: true # No external access
 
 volumes:
   postgres-data:
@@ -450,11 +450,11 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
-      - "9222:9222"  # Chrome DevTools
+      - "9222:9222" # Chrome DevTools
     volumes:
       - ./frontend:/app
       - /app/node_modules
-      - /app/.next  # Next.js build cache
+      - /app/.next # Next.js build cache
     environment:
       - NODE_ENV=development
       - WATCHPACK_POLLING=true
@@ -472,7 +472,7 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "4000:4000"
-      - "9229:9229"  # Node.js debugger
+      - "9229:9229" # Node.js debugger
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -516,8 +516,8 @@ services:
   mailhog:
     image: mailhog/mailhog:latest
     ports:
-      - "1025:1025"  # SMTP
-      - "8025:8025"  # Web UI
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
     networks:
       - dev-network
 
@@ -558,20 +558,20 @@ services:
   backend:
     image: api-server
     networks:
-      - public    # Accessible from frontend
-      - private   # Accessible from database
+      - public # Accessible from frontend
+      - private # Accessible from database
 
   database:
     image: postgres
     networks:
-      - private   # Isolated from frontend
+      - private # Isolated from frontend
 
 networks:
   public:
     driver: bridge
   private:
     driver: bridge
-    internal: true  # No internet access
+    internal: true # No internet access
 ```
 
 ### Network Aliases
@@ -598,7 +598,7 @@ networks:
 services:
   app:
     image: myapp
-    network_mode: "host"  # Use host network stack
+    network_mode: "host" # Use host network stack
     # No port mapping needed, uses host ports directly
 ```
 
@@ -630,12 +630,12 @@ services:
   db:
     image: postgres:15
     volumes:
-      - postgres-data:/var/lib/postgresql/data  # Named volume
+      - postgres-data:/var/lib/postgresql/data # Named volume
 
   backup:
     image: postgres:15
     volumes:
-      - postgres-data:/backup:ro  # Read-only mount
+      - postgres-data:/backup:ro # Read-only mount
     command: pg_dump -U postgres > /backup/dump.sql
 
 volumes:
@@ -678,7 +678,7 @@ services:
       - type: tmpfs
         target: /app/cache
         tmpfs:
-          size: 1000000000  # 1GB
+          size: 1000000000 # 1GB
 ```
 
 ### Volume Sharing Between Services
@@ -723,7 +723,7 @@ volumes:
       o: "size=100m,uid=1000"
 
   external-volume:
-    external: true  # Volume created outside Compose
+    external: true # Volume created outside Compose
     name: my-existing-volume
 ```
 
@@ -789,7 +789,11 @@ services:
   api:
     build: ./api
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -849,11 +853,11 @@ services:
       context: .
       target: development
     volumes:
-      - ./src:/app/src  # Live code reload
+      - ./src:/app/src # Live code reload
       - /app/node_modules
     ports:
-      - "3000:3000"     # Expose for local access
-      - "9229:9229"     # Debugger port
+      - "3000:3000" # Expose for local access
+      - "9229:9229" # Debugger port
     environment:
       - NODE_ENV=development
       - DEBUG=*
@@ -861,7 +865,7 @@ services:
 
   db:
     ports:
-      - "5432:5432"     # Expose for local tools
+      - "5432:5432" # Expose for local tools
     environment:
       - POSTGRES_PASSWORD=dev
     volumes:
@@ -883,10 +887,10 @@ services:
       replicas: 3
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 2G
         reservations:
-          cpus: '1'
+          cpus: "1"
           memory: 1G
       update_config:
         parallelism: 1
@@ -913,7 +917,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 4G
 
   # Production additions
@@ -955,7 +959,7 @@ services:
       replicas: 2
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 1G
 
   db:
@@ -1499,8 +1503,8 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
     networks:
       - monitoring
 
@@ -1531,9 +1535,9 @@ services:
       - /sys:/host/sys:ro
       - /:/rootfs:ro
     command:
-      - '--path.procfs=/host/proc'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
     networks:
       - monitoring
 
@@ -1555,7 +1559,7 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     ports:
-      - "5672:5672"   # AMQP
+      - "5672:5672" # AMQP
       - "15672:15672" # Management UI
     environment:
       RABBITMQ_DEFAULT_USER: admin
@@ -1630,7 +1634,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"  # Traefik dashboard
+      - "8080:8080" # Traefik dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
@@ -1954,29 +1958,34 @@ volumes:
 ### Common Issues
 
 **Services can't communicate**
+
 - Check network configuration
 - Verify service names are correct
 - Ensure services are on same network
 - Check firewall rules
 
 **Volumes not persisting**
+
 - Verify named volumes are defined
 - Check volume mount paths
 - Ensure proper permissions
 - Review Docker volume driver
 
 **Services failing health checks**
+
 - Increase start_period
 - Verify health check command
 - Check service logs
 - Ensure dependencies are ready
 
 **Port conflicts**
+
 - Check for existing services on ports
 - Use different host ports
 - Review port mapping syntax
 
 **Build failures**
+
 - Clear build cache: `docker compose build --no-cache`
 - Check Dockerfile syntax
 - Verify build context
@@ -2086,12 +2095,12 @@ services:
   debug:
     image: debug-tools
     profiles:
-      - debug  # Only starts with --profile debug
+      - debug # Only starts with --profile debug
 
   test:
     build: .
     profiles:
-      - test   # Only starts with --profile test
+      - test # Only starts with --profile test
 ```
 
 ```bash

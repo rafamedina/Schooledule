@@ -7,6 +7,7 @@ A comprehensive skill for managing multi-container applications with Docker Comp
 Docker Compose is a tool for defining and running multi-container Docker applications. With Compose, you use a YAML file to configure your application's services, networks, and volumes. Then, with a single command, you create and start all the services from your configuration.
 
 This skill provides comprehensive knowledge for:
+
 - Building and orchestrating multi-container applications
 - Configuring service dependencies and startup order
 - Managing networks and inter-service communication
@@ -28,7 +29,9 @@ Docker Compose simplifies the management of multi-container Docker applications 
 ## Core Concepts
 
 ### Services
+
 A service is a container configuration that defines:
+
 - Which Docker image to use
 - Port mappings
 - Environment variables
@@ -38,14 +41,18 @@ A service is a container configuration that defines:
 - Health checks
 
 ### Networks
+
 Networks enable communication between containers:
+
 - **Bridge Networks**: Default network type for isolated communication
 - **Custom Networks**: Better isolation and service discovery
 - **Host Networks**: Use host's networking stack
 - **Overlay Networks**: Multi-host networking for swarm mode
 
 ### Volumes
+
 Volumes provide persistent storage:
+
 - **Named Volumes**: Managed by Docker, persisted across containers
 - **Bind Mounts**: Map host directories to container paths
 - **tmpfs Mounts**: In-memory storage for temporary data
@@ -95,18 +102,22 @@ volumes:
 ## Common Use Cases
 
 ### 1. Full-Stack Web Applications
+
 Orchestrate frontend, backend, and database services together:
+
 ```yaml
 services:
-  frontend:    # React/Vue/Angular
-  backend:     # Node.js/Python/Java
-  database:    # PostgreSQL/MySQL/MongoDB
-  cache:       # Redis/Memcached
+  frontend: # React/Vue/Angular
+  backend: # Node.js/Python/Java
+  database: # PostgreSQL/MySQL/MongoDB
+  cache: # Redis/Memcached
   reverse-proxy: # NGINX/Traefik
 ```
 
 ### 2. Microservices Architecture
+
 Manage multiple independent services:
+
 ```yaml
 services:
   auth-service:
@@ -120,30 +131,35 @@ services:
 ```
 
 ### 3. Development Environments
+
 Create reproducible dev environments:
+
 ```yaml
 services:
-  app:         # Application with hot reload
-  db:          # Database
-  adminer:     # Database UI
-  mailhog:     # Email testing
-  redis:       # Caching
+  app: # Application with hot reload
+  db: # Database
+  adminer: # Database UI
+  mailhog: # Email testing
+  redis: # Caching
 ```
 
 ### 4. Data Processing Pipelines
+
 Build ETL and data processing systems:
+
 ```yaml
 services:
-  producer:    # Data source
-  kafka:       # Message queue
-  consumer:    # Data processor
-  database:    # Data storage
-  analytics:   # Data visualization
+  producer: # Data source
+  kafka: # Message queue
+  consumer: # Data processor
+  database: # Data storage
+  analytics: # Data visualization
 ```
 
 ## Essential Commands
 
 ### Starting and Stopping
+
 ```bash
 docker compose up              # Start services
 docker compose up -d           # Start in background
@@ -153,6 +169,7 @@ docker compose restart         # Restart services
 ```
 
 ### Building and Pulling
+
 ```bash
 docker compose build           # Build all images
 docker compose pull            # Pull all images
@@ -160,6 +177,7 @@ docker compose build --no-cache  # Clean build
 ```
 
 ### Viewing and Monitoring
+
 ```bash
 docker compose ps              # List containers
 docker compose logs -f         # Follow logs
@@ -168,6 +186,7 @@ docker compose events          # Real-time events
 ```
 
 ### Executing Commands
+
 ```bash
 docker compose exec web sh     # Interactive shell
 docker compose run --rm app test  # Run one-off command
@@ -176,32 +195,35 @@ docker compose run --rm app test  # Run one-off command
 ## Service Configuration Options
 
 ### Image and Build
+
 ```yaml
 services:
   web:
-    image: nginx:alpine        # Use existing image
+    image: nginx:alpine # Use existing image
     # OR
     build:
-      context: ./app           # Build from Dockerfile
+      context: ./app # Build from Dockerfile
       dockerfile: Dockerfile.prod
       args:
         NODE_ENV: production
 ```
 
 ### Ports and Networking
+
 ```yaml
 services:
   web:
     ports:
-      - "8080:80"              # Host:Container
+      - "8080:80" # Host:Container
     expose:
-      - "8080"                 # Internal only
+      - "8080" # Internal only
     networks:
       - frontend
       - backend
 ```
 
 ### Environment Variables
+
 ```yaml
 services:
   app:
@@ -214,17 +236,19 @@ services:
 ```
 
 ### Volumes and Storage
+
 ```yaml
 services:
   db:
     volumes:
-      - db-data:/var/lib/postgresql/data    # Named volume
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Bind mount
-      - type: tmpfs                          # In-memory
+      - db-data:/var/lib/postgresql/data # Named volume
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # Bind mount
+      - type: tmpfs # In-memory
         target: /tmp
 ```
 
 ### Dependencies
+
 ```yaml
 services:
   web:
@@ -236,6 +260,7 @@ services:
 ```
 
 ### Health Checks
+
 ```yaml
 services:
   web:
@@ -248,36 +273,39 @@ services:
 ```
 
 ### Resource Limits
+
 ```yaml
 services:
   app:
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 2G
         reservations:
-          cpus: '1'
+          cpus: "1"
           memory: 1G
 ```
 
 ## Environment-Specific Configurations
 
 ### Development (compose.override.yaml)
+
 ```yaml
 services:
   app:
     build:
       target: development
     volumes:
-      - ./src:/app/src        # Hot reload
+      - ./src:/app/src # Hot reload
     ports:
-      - "3000:3000"           # Expose for debugging
+      - "3000:3000" # Expose for debugging
     environment:
       - DEBUG=*
 ```
 
 ### Production (compose.prod.yaml)
+
 ```yaml
 services:
   app:
@@ -287,11 +315,12 @@ services:
       replicas: 3
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 2G
 ```
 
 ### Usage
+
 ```bash
 # Development (auto-loads compose.override.yaml)
 docker compose up
@@ -306,13 +335,14 @@ docker compose -f compose.yaml -f compose.staging.yaml up -d
 ## Networking Patterns
 
 ### Frontend-Backend Separation
+
 ```yaml
 networks:
   frontend:
     driver: bridge
   backend:
     driver: bridge
-    internal: true  # No external access
+    internal: true # No external access
 
 services:
   web:
@@ -326,11 +356,13 @@ services:
 
   db:
     networks:
-      - backend     # Isolated from frontend
+      - backend # Isolated from frontend
 ```
 
 ### Service Discovery
+
 Services can communicate using service names:
+
 ```yaml
 services:
   api:
@@ -348,9 +380,10 @@ services:
 ## Volume Patterns
 
 ### Named Volumes
+
 ```yaml
 volumes:
-  db-data:         # Docker-managed
+  db-data: # Docker-managed
   uploads:
   cache:
 
@@ -361,16 +394,18 @@ services:
 ```
 
 ### Bind Mounts (Development)
+
 ```yaml
 services:
   app:
     volumes:
-      - ./src:/app/src              # Source code
-      - ./config:/app/config:ro     # Read-only config
-      - /app/node_modules           # Preserve dependencies
+      - ./src:/app/src # Source code
+      - ./config:/app/config:ro # Read-only config
+      - /app/node_modules # Preserve dependencies
 ```
 
 ### Shared Volumes
+
 ```yaml
 services:
   app:
@@ -388,6 +423,7 @@ volumes:
 ## Health Check Strategies
 
 ### HTTP Endpoint
+
 ```yaml
 healthcheck:
   test: ["CMD", "curl", "-f", "http://localhost/health"]
@@ -397,6 +433,7 @@ healthcheck:
 ```
 
 ### Database Check
+
 ```yaml
 # PostgreSQL
 healthcheck:
@@ -412,6 +449,7 @@ healthcheck:
 ```
 
 ### Custom Script
+
 ```yaml
 healthcheck:
   test: ["CMD", "node", "healthcheck.js"]
@@ -423,6 +461,7 @@ healthcheck:
 ## Best Practices
 
 ### 1. Use Specific Image Tags
+
 ```yaml
 # Good
 image: postgres:15-alpine
@@ -432,6 +471,7 @@ image: postgres:latest
 ```
 
 ### 2. Define Health Checks
+
 ```yaml
 services:
   db:
@@ -441,6 +481,7 @@ services:
 ```
 
 ### 3. Separate Networks
+
 ```yaml
 networks:
   frontend:
@@ -449,31 +490,35 @@ networks:
 ```
 
 ### 4. Use Named Volumes
+
 ```yaml
 volumes:
-  db-data:    # Managed by Docker
+  db-data: # Managed by Docker
   uploads:
 ```
 
 ### 5. Environment Files
+
 ```yaml
 services:
   app:
     env_file:
-      - .env              # Base configuration
-      - .env.local        # Local overrides
+      - .env # Base configuration
+      - .env.local # Local overrides
 ```
 
 ### 6. Resource Limits
+
 ```yaml
 deploy:
   resources:
     limits:
-      cpus: '2'
+      cpus: "2"
       memory: 2G
 ```
 
 ### 7. Logging Configuration
+
 ```yaml
 logging:
   driver: json-file
@@ -485,6 +530,7 @@ logging:
 ## Common Patterns
 
 ### NGINX Reverse Proxy
+
 ```yaml
 services:
   nginx:
@@ -502,6 +548,7 @@ services:
 ```
 
 ### Database with Adminer
+
 ```yaml
 services:
   db:
@@ -514,6 +561,7 @@ services:
 ```
 
 ### Cache Layer
+
 ```yaml
 services:
   app:
@@ -551,6 +599,7 @@ services:
 ## Troubleshooting
 
 ### Services Can't Communicate
+
 ```bash
 # Check network configuration
 docker compose config
@@ -563,6 +612,7 @@ docker compose exec service1 ping service2
 ```
 
 ### Volume Issues
+
 ```bash
 # List volumes
 docker volume ls
@@ -575,6 +625,7 @@ docker compose down -v
 ```
 
 ### Build Problems
+
 ```bash
 # Clean build
 docker compose build --no-cache
@@ -587,6 +638,7 @@ docker compose up --build --force-recreate
 ```
 
 ### View Logs
+
 ```bash
 # All services
 docker compose logs -f
@@ -601,6 +653,7 @@ docker compose logs --tail=100 web
 ## Integration with CI/CD
 
 ### GitHub Actions Example
+
 ```yaml
 name: Deploy
 
@@ -621,6 +674,7 @@ jobs:
 ```
 
 ### GitLab CI Example
+
 ```yaml
 deploy:
   stage: deploy
@@ -634,6 +688,7 @@ deploy:
 ## When to Use Docker Compose
 
 ### Ideal For:
+
 - Local development environments
 - Single-host deployments
 - Testing and CI/CD
@@ -642,6 +697,7 @@ deploy:
 - Development team consistency
 
 ### Consider Alternatives For:
+
 - Large-scale production clusters (use Kubernetes)
 - Multi-host deployments (use Docker Swarm or Kubernetes)
 - Complex orchestration requirements
@@ -651,6 +707,7 @@ deploy:
 ## Quick Start Example
 
 1. Create `compose.yaml`:
+
 ```yaml
 version: "3.8"
 
@@ -664,12 +721,14 @@ services:
 ```
 
 2. Create HTML content:
+
 ```bash
 mkdir html
 echo "<h1>Hello from Docker Compose!</h1>" > html/index.html
 ```
 
 3. Start the application:
+
 ```bash
 docker compose up -d
 ```
@@ -677,6 +736,7 @@ docker compose up -d
 4. Visit http://localhost
 
 5. Stop the application:
+
 ```bash
 docker compose down
 ```

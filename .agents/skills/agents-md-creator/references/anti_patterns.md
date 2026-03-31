@@ -17,10 +17,13 @@ Using "reduced lines" or percentage reduction as a measure of success.
 ### Real Example
 
 **Wrong:**
+
 > "Optimized AGENTS.md from 2,114 lines to ~580 lines — a 73% reduction!"
 
 **Right:**
+
 > "Reorganized AGENTS.md using progressive disclosure:
+>
 > - Eliminated duplication (same info in 3 places → 1 canonical source)
 > - Moved low-frequency content to references (detailed SOPs)
 > - Kept high-signal info in Level 1 (commands, errors, patterns)
@@ -28,11 +31,11 @@ Using "reduced lines" or percentage reduction as a measure of success.
 
 ### Correct Metrics
 
-| Metric | How to assess |
-|--------|---------------|
-| Single source of truth | Is any info duplicated? |
-| Cognitive relevance | Is this info needed for most tasks? |
-| Maintainability | Does changing this require updating elsewhere? |
+| Metric                 | How to assess                                  |
+| ---------------------- | ---------------------------------------------- |
+| Single source of truth | Is any info duplicated?                        |
+| Cognitive relevance    | Is this info needed for most tasks?            |
+| Maintainability        | Does changing this require updating elsewhere? |
 
 ---
 
@@ -51,13 +54,16 @@ Pointing to reference files without saying when or why to read them.
 ### Real Example
 
 **Wrong:**
+
 ```markdown
 See `docs/references/build-sop.md` for build configuration details.
 ```
 
 **Right:**
+
 ```markdown
 **📖 When to read `docs/references/build-sop.md`:**
+
 - Build fails after dependency changes
 - Need to add a new build task
 - Troubleshooting cache issues
@@ -83,12 +89,15 @@ Moving frequently-used code examples to reference files.
 ### Real Example
 
 **Wrong:**
-```markdown
+
+````markdown
 ## Level 1 (AGENTS.md)
+
 Use lazy loading for database connections.
 See `docs/references/database.md` for implementation.
 
 ## Level 2 (references/database.md)
+
 ```javascript
 let _Database = null;
 function getDatabase() {
@@ -98,7 +107,9 @@ function getDatabase() {
   return _Database;
 }
 ```
-```
+````
+
+````
 
 **Right:**
 ```markdown
@@ -112,10 +123,11 @@ function getDatabase() {
   }
   return _Database;
 }
-```
+````
 
 For database setup and migration guides, see `database-sop.md`.
-```
+
+````
 
 ---
 
@@ -174,22 +186,30 @@ A 2503-line CLAUDE.md was being optimized. During the move to Level 2:
 # Copy original content exactly
 cp original.md references/new-file.md
 # Don't change a single word
-```
+````
 
 **Step 2: Update Level 1**
+
 ```markdown
 # Add reference with trigger
+
 **📖 When to read `references/new-file.md`:**
+
 - [specific trigger condition]
-> Contains: [content summary]
+  > Contains: [content summary]
 ```
 
 **Step 3: (Optional) Simplify as separate step**
+
 ```markdown
 # If simplification is needed:
+
 # 1. List what you want to remove
+
 # 2. Explain why for each item
+
 # 3. Get user confirmation
+
 # 4. Only THEN simplify
 ```
 
@@ -210,10 +230,12 @@ Only having one way to discover Level 2 references.
 ### Real Example
 
 **Wrong:**
+
 ```markdown
 ## Reference Index (only at start)
+
 | Trigger | Document |
-|---------|----------|
+| ------- | -------- |
 | Error A | fix-a.md |
 | Error B | fix-b.md |
 
@@ -221,26 +243,30 @@ Only having one way to discover Level 2 references.
 ```
 
 **Right:**
+
 ```markdown
 ## Reference Index (start — for problems)
-| Trigger | Document | Content |
-|---------|----------|---------|
+
+| Trigger | Document | Content        |
+| ------- | -------- | -------------- |
 | Error A | fix-a.md | Solution steps |
 
 [... content ...]
 
 ## Before Modifying Code (middle — for tasks)
-| What you change | Read first | Gotcha |
-|----------------|-----------|--------|
-| Build config | build-sop.md | Order matters |
+
+| What you change | Read first   | Gotcha        |
+| --------------- | ------------ | ------------- |
+| Build config    | build-sop.md | Order matters |
 
 [... content ...]
 
 ## Reference Trigger Index (end — for re-orientation)
+
 | When to read | Document |
-|--------------|----------|
-| Error A | fix-a.md |
-| Error B | fix-b.md |
+| ------------ | -------- |
+| Error A      | fix-a.md |
+| Error B      | fix-b.md |
 ```
 
 ---
@@ -260,9 +286,11 @@ Optimizing AGENTS.md without adding rules for future additions.
 ### Real Example
 
 **Wrong:**
+
 > "AGENTS.md is now optimized and well-structured!"
 
 **Right:**
+
 > "AGENTS.md is now optimized. Added 'Information Recording Principles' section
 > at the top to guide future additions and prevent re-bloat."
 
@@ -274,6 +302,7 @@ Optimizing AGENTS.md without adding rules for future additions.
 This document uses **progressive disclosure**.
 
 ### Level 1 contains:
+
 - Core commands (run, test, build)
 - Iron rules/prohibitions
 - Error diagnostics (symptom → cause → fix)
@@ -281,12 +310,14 @@ This document uses **progressive disclosure**.
 - Trigger indexes
 
 ### Level 2 contains:
+
 - Detailed SOP flows
 - Edge cases
 - Complete examples
 - Historical decisions
 
 ### When adding information:
+
 1. High frequency? → Level 1
 2. Low frequency but has trigger? → Level 2 + trigger in Level 1
 3. No clear trigger and low frequency? → Consider not adding
@@ -309,19 +340,21 @@ Assuming specific package names like `@repo/api` or `@repo/web`.
 ### Real Example
 
 **Wrong:**
+
 ```markdown
-| Package | Purpose | Commands |
-|---------|---------|----------|
+| Package   | Purpose  | Commands                         |
+| --------- | -------- | -------------------------------- |
 | @repo/web | Frontend | turbo run dev --filter=@repo/web |
-| @repo/api | Backend | turbo run dev --filter=@repo/api |
+| @repo/api | Backend  | turbo run dev --filter=@repo/api |
 ```
 
 **Right:**
+
 ```markdown
-| Package | Location | Purpose | Commands |
-|---------|----------|---------|----------|
+| Package             | Location   | Purpose      | Commands                         |
+| ------------------- | ---------- | ------------ | -------------------------------- |
 | [detected-frontend] | apps/[dir] | Frontend app | turbo run dev --filter=[package] |
-| [detected-backend] | apps/[dir] | Backend API | turbo run dev --filter=[package] |
+| [detected-backend]  | apps/[dir] | Backend API  | turbo run dev --filter=[package] |
 ```
 
 Or even better, generate dynamically from actual package.json files.
@@ -343,19 +376,26 @@ Treating all projects as monorepos or all as polyrepos.
 ### Real Example
 
 **Wrong (for polyrepo):**
+
 ```markdown
 ## Working with Packages
+
 - Run task in specific package: turbo run <task> --filter=<package>
 ```
 
 **Right (detect first):**
+
 ```markdown
 # If monorepo detected:
+
 ## Working with Packages
+
 - Run task in specific package: turbo run <task> --filter=<package>
 
 # If polyrepo detected:
+
 ## Available Scripts
+
 - npm run dev
 - npm run build
 - npm test
@@ -378,6 +418,7 @@ Creating too many Level 2 files for narrow topics.
 ### Real Example
 
 **Wrong:**
+
 ```
 docs/references/
 ├── build-dependency-order.md
@@ -388,6 +429,7 @@ docs/references/
 ```
 
 **Right:**
+
 ```
 docs/references/
 └── build.md  # Contains all build-related topics with sections
@@ -396,6 +438,7 @@ docs/references/
 ### Guideline
 
 Group related topics. Split files only when:
+
 - Topics are genuinely independent
 - Different users would need different topics
 - File would be >500 lines otherwise
@@ -406,13 +449,13 @@ Group related topics. Split files only when:
 
 Use this checklist to detect anti-patterns quickly:
 
-| Check | Pass | Fail |
-|-------|------|------|
-| No line count statistics? | ✅ | ⚠️ |
-| Every reference has trigger? | ✅ | ⚠️ |
-| High-freq code in Level 1? | ✅ | ⚠️ |
-| Multiple entry points? | ✅ | ⚠️ |
-| Info recording principles present? | ✅ | ⚠️ |
-| Package names are detected not hardcoded? | ✅ | ⚠️ |
-- Project structure detected? | ✅ | ⚠️ |
-- References reasonably grouped? | ✅ | ⚠️ |
+| Check                                     | Pass | Fail |
+| ----------------------------------------- | ---- | ---- |
+| No line count statistics?                 | ✅   | ⚠️   |
+| Every reference has trigger?              | ✅   | ⚠️   |
+| High-freq code in Level 1?                | ✅   | ⚠️   |
+| Multiple entry points?                    | ✅   | ⚠️   |
+| Info recording principles present?        | ✅   | ⚠️   |
+| Package names are detected not hardcoded? | ✅   | ⚠️   |
+| - Project structure detected?             | ✅   | ⚠️   |
+| - References reasonably grouped?          | ✅   | ⚠️   |

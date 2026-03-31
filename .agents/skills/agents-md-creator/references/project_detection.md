@@ -51,15 +51,15 @@ done
 
 ### Infer Purpose from Package Name
 
-| Name Pattern | Likely Purpose | Verification |
-|--------------|----------------|--------------|
-| `*api*`, `*backend*`, `*server*` | Backend/API | Check for server frameworks (express, fastify, etc.) |
-| `*web*`, `*frontend*`, `*app*`, `*client*` | Frontend app | Check for React, Vue, Angular, Next.js |
-| `*ui*`, `*components*`, `*design*` | Component library | Check for React components, Storybook |
-| `*util*`, `*helper*`, `*common*` | Utilities | Check for utility functions |
-| `*types*`, `*tsconfig*` | TypeScript types | Check for .d.ts files |
-| `*config*`, `*settings*` | Configuration | Check for config files |
-| `*cli*`, `*command*` | CLI tool | Check for bin entry |
+| Name Pattern                               | Likely Purpose    | Verification                                         |
+| ------------------------------------------ | ----------------- | ---------------------------------------------------- |
+| `*api*`, `*backend*`, `*server*`           | Backend/API       | Check for server frameworks (express, fastify, etc.) |
+| `*web*`, `*frontend*`, `*app*`, `*client*` | Frontend app      | Check for React, Vue, Angular, Next.js               |
+| `*ui*`, `*components*`, `*design*`         | Component library | Check for React components, Storybook                |
+| `*util*`, `*helper*`, `*common*`           | Utilities         | Check for utility functions                          |
+| `*types*`, `*tsconfig*`                    | TypeScript types  | Check for .d.ts files                                |
+| `*config*`, `*settings*`                   | Configuration     | Check for config files                               |
+| `*cli*`, `*command*`                       | CLI tool          | Check for bin entry                                  |
 
 ### Infer Purpose from Dependencies
 
@@ -91,20 +91,20 @@ jq -r '.description // empty' package.json
 
 ### Monorepo Types
 
-| Type | Characteristics | Example Commands |
-|------|-----------------|------------------|
-| **Apps + Packages** | `apps/` for applications, `packages/` for libraries | Turborepo, Nx |
-| **Workspace Only** | Single-level with workspace dependencies | pnpm, Yarn workspaces |
-| **Multi-Repo** | Independent repos linked via git | Lerna, no workspace config |
-| **Service-Based** | `services/` instead of packages | Docker-based, microservices |
+| Type                | Characteristics                                     | Example Commands            |
+| ------------------- | --------------------------------------------------- | --------------------------- |
+| **Apps + Packages** | `apps/` for applications, `packages/` for libraries | Turborepo, Nx               |
+| **Workspace Only**  | Single-level with workspace dependencies            | pnpm, Yarn workspaces       |
+| **Multi-Repo**      | Independent repos linked via git                    | Lerna, no workspace config  |
+| **Service-Based**   | `services/` instead of packages                     | Docker-based, microservices |
 
 ### Polyrepo Types
 
-| Type | Characteristics |
-|------|-----------------|
-| **Single Package** | One package.json at root |
-| **Multi-Project** | Multiple unrelated projects in one repo |
-| **Monolith** | Large single application |
+| Type               | Characteristics                         |
+| ------------------ | --------------------------------------- |
+| **Single Package** | One package.json at root                |
+| **Multi-Project**  | Multiple unrelated projects in one repo |
+| **Monolith**       | Large single application                |
 
 ## Confidence Assessment
 
@@ -137,12 +137,14 @@ When reporting detection results to user:
 **Confidence:** High
 
 **Evidence:**
+
 - ✅ `apps/` directory with 3 applications
 - ✅ `packages/` directory with 5 libraries
 - ✅ `pnpm-workspace.yaml` workspace config
 - ✅ `turbo.json` build system
 
 **Discovered Packages:**
+
 - `@myapp/web` (apps/web) - Frontend application
 - `@myapp/api` (apps/api) - Backend API
 - `@myapp/backend` (apps/backend) - Alternative backend
@@ -211,6 +213,7 @@ my-project/
 ```
 
 **Detection Strategy:**
+
 1. Identify the primary pattern (usually the majority)
 2. Note the exception separately in AGENTS.md
 3. Provide commands for each pattern
