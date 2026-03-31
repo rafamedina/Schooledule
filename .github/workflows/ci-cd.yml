@@ -63,13 +63,35 @@ jobs:
           cache: "maven"
 
       - name: Run Tests & JaCoCo
+        id: run-tests
         run: ./mvnw clean verify -DskipTests=false
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/schooledule
           SPRING_DATASOURCE_USERNAME: admin
           SPRING_DATASOURCE_PASSWORD: password123
 
+      - name: 📝 Report Test Failures
+        if: failure()
+        run: |
+          echo "======================================================="
+          echo "❌ TEST FAILURES DETECTED"
+          echo "======================================================="
+          # Buscar archivos .txt de resultados de test que contienen errores
+          find target/surefire-reports target/failsafe-reports -name "*.txt" -exec grep -l "FAILURE" {} + | xargs cat
+        shell: bash
+
+      - name: 📦 Upload Test Reports (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-execution-reports
+          path: |
+            target/surefire-reports/
+            target/failsafe-reports/
+          retention-days: 5
+
       - name: Verify JaCoCo Coverage (>80%)
+        if: success()
         run: |
           REPORT_PATH="target/site/jacoco/index.html"
           if [ -f "$REPORT_PATH" ]; then
