@@ -73,7 +73,7 @@ public class AlumnoControllerTest {
     mockMvc
         .perform(get("/alumno/dashboard"))
         .andExpect(status().isOk())
-        .andExpect(view().name("alumno/dashboard"))
+        .andExpect(view().name("alumno/menuAlumno"))
         .andExpect(content().string(org.hamcrest.Matchers.containsString("id=\"sidebar\"")));
   }
 }

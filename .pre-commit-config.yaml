@@ -17,13 +17,15 @@ repos:
     hooks:
       - id: gitleaks
 
-  # --- JAVA: Formateo Google Style (Corregido ID) ---
-  - repo: https://gitlab.developers.cam.ac.uk/uis/devops/continuous-delivery/precommit-google-java-format
-    rev: v1.2.0
+  # --- JAVA: Spotless (Google Style via Maven) ---
+  - repo: local
     hooks:
-      - id: google-java-format
+      - id: spotless-apply
+        name: ✨ Spotless Apply
+        entry: pwsh -NoProfile -Command "./mvnw spotless:apply"
+        language: system
         files: "\\.java$"
-        args: ["-i"]
+        pass_filenames: false
 
   # --- FRONTEND & CONFIG ---
   - repo: https://github.com/pre-commit/mirrors-prettier
