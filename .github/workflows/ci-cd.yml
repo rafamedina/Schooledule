@@ -85,7 +85,7 @@ jobs:
           if [ -n "$REPORTS_DIRS" ]; then
             # Buscar archivos que contienen fallos y mostrarlos
             # Redirigimos stderr a /dev/null para evitar ruidos de carpetas vacías
-            find $REPORTS_DIRS -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | while read -r file; do
+            find "$REPORTS_DIRS" -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | while read -r file; do
               echo "--- File: $file ---"
               cat "$file"
             done
