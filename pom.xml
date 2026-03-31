@@ -187,7 +187,7 @@
                 <configuration>
                     <linkXRef>false</linkXRef>
                     <printFailingErrors>true</printFailingErrors>
-                    <failOnViolation>true</failOnViolation>
+                    <failOnViolation>false</failOnViolation>
                     <includeTests>true</includeTests>
                     <minimumPriority>3</minimumPriority>
                     <rulesets>

@@ -132,22 +132,45 @@ jobs:
             ${{ env.DOCKER_IMAGE }}:latest
 
       - name: 📝 Report Test Failures
-        if: failure()
+        if: always()
         run: |
-          echo "======================================================="
-          echo "❌ TEST FAILURES DETECTED IN CONTAINER"
-          echo "======================================================="
+          echo "### 📊 CI/CD Execution Summary" >> $GITHUB_STEP_SUMMARY
 
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ All tests and validations passed successfully." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some steps failed. Check details below." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Report PMD Violations
+          if [ -f "target/pmd.xml" ]; then
+            VIOLATIONS=$(grep -c "<violation" target/pmd.xml || echo "0")
+            if [ "$VIOLATIONS" -gt 0 ]; then
+              echo "#### ⚠️ PMD Analysis: $VIOLATIONS violations found" >> $GITHUB_STEP_SUMMARY
+              echo "| File | Line | Rule | Description |" >> $GITHUB_STEP_SUMMARY
+              echo "| --- | --- | --- | --- |" >> $GITHUB_STEP_SUMMARY
+              # Extract top 10 violations to avoid summary bloat
+              grep "<violation" target/pmd.xml | head -10 | sed -E 's/.*beginline="([^"]*)".*rule="([^"]*)".*ruleset="([^"]*)".*class="([^"]*)".*externalInfoUrl="([^"]*)".*>(.*)<\/violation>.*/| \4 | \1 | \2 | \6 |/' >> $GITHUB_STEP_SUMMARY
+              if [ "$VIOLATIONS" -gt 10 ]; then echo "... and $((VIOLATIONS-10)) more." >> $GITHUB_STEP_SUMMARY; fi
+            fi
+          fi
+
+          # Report Test Failures
           REPORTS_DIRS=""
           if [ -d "target/surefire-reports" ]; then REPORTS_DIRS="$REPORTS_DIRS target/surefire-reports"; fi
           if [ -d "target/failsafe-reports" ]; then REPORTS_DIRS="$REPORTS_DIRS target/failsafe-reports"; fi
 
           if [ -n "$REPORTS_DIRS" ]; then
-            # Buscar archivos que contienen fallos y mostrarlos
-            find "$REPORTS_DIRS" -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | while read -r file; do
-              echo "--- File: $file ---"
-              cat "$file"
-            done
+            FAILED_TESTS=$(find "$REPORTS_DIRS" -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | wc -l)
+            if [ "$FAILED_TESTS" -gt 0 ]; then
+              echo "#### ❌ Test Failures: $FAILED_TESTS tests failed" >> $GITHUB_STEP_SUMMARY
+              find "$REPORTS_DIRS" -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | while read -r file; do
+                echo "- **File**: \`$(basename $file)\`" >> $GITHUB_STEP_SUMMARY
+                echo "  \`\`\`text" >> $GITHUB_STEP_SUMMARY
+                grep "FAILURE" "$file" -A 5 | head -n 10 >> $GITHUB_STEP_SUMMARY
+                echo "  \`\`\`" >> $GITHUB_STEP_SUMMARY
+              done
+            fi
           fi
         shell: bash
 
