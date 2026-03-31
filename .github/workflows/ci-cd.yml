@@ -7,6 +7,12 @@ on:
     branches: ["dev"]
   workflow_dispatch:
 
+env:
+  DOCKER_IMAGE: schooledule-test
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: password123
+  POSTGRES_DB: schooledule
+
 permissions:
   contents: write
   pull-requests: write
@@ -33,18 +39,50 @@ jobs:
           ignore: DL3018
           failure-threshold: error
 
-  # 🧪 JOB 2: Unit & Integration Tests (Maven)
-  test:
-    name: 🧪 Unit & Integration Tests
+  # 🐳 JOB 2: Build Docker Image (following Odoo pattern)
+  build:
+    name: 🐳 Build Test Container
     needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infraestructura/Dockerfile
+          target: test
+          tags: ${{ env.DOCKER_IMAGE }}:latest
+          outputs: type=docker,dest=/tmp/${{ env.DOCKER_IMAGE }}.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Gzip Image
+        run: gzip /tmp/${{ env.DOCKER_IMAGE }}.tar
+
+      - name: Upload Docker Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-image
+          path: /tmp/${{ env.DOCKER_IMAGE }}.tar.gz
+          retention-days: 1
+
+  # 🧪 JOB 3: Unit & Integration Tests (Inside Container)
+  test:
+    name: 🧪 Containerized Tests
+    needs: build
     runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: password123
-          POSTGRES_DB: schooledule
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
         ports:
           - 5432:5432
         options: >-
@@ -56,12 +94,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+      - name: Download Docker Image
+        uses: actions/download-artifact@v4
         with:
-          java-version: "21"
-          distribution: "temurin"
-          cache: "maven"
+          name: test-image
+          path: /tmp
+
+      - name: Load Docker Image
+        run: gunzip -c /tmp/${{ env.DOCKER_IMAGE }}.tar.gz | docker load
 
       - name: ⏳ Wait for Postgres
         run: |
@@ -71,19 +111,23 @@ jobs:
           done
         shell: bash
 
-      - name: Run Tests & JaCoCo
+      - name: Run Maven Tests in Container
         id: run-tests
-        run: ./mvnw --errors --batch-mode clean verify -DskipTests=false
-        env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/schooledule
-          SPRING_DATASOURCE_USERNAME: admin
-          SPRING_DATASOURCE_PASSWORD: password123
+        run: |
+          mkdir -p target
+          docker run --rm --network host \
+            -v ${{ github.workspace }}/target:/app/target \
+            -e SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/${{ env.POSTGRES_DB }} \
+            -e SPRING_DATASOURCE_USERNAME=${{ env.POSTGRES_USER }} \
+            -e SPRING_DATASOURCE_PASSWORD=${{ env.POSTGRES_PASSWORD }} \
+            ${{ env.DOCKER_IMAGE }}:latest \
+            mvn verify -DskipTests=false -B
 
       - name: 📝 Report Test Failures
         if: failure()
         run: |
           echo "======================================================="
-          echo "❌ TEST FAILURES DETECTED"
+          echo "❌ TEST FAILURES DETECTED IN CONTAINER"
           echo "======================================================="
 
           REPORTS_DIRS=""
@@ -92,14 +136,10 @@ jobs:
 
           if [ -n "$REPORTS_DIRS" ]; then
             # Buscar archivos que contienen fallos y mostrarlos
-            # Redirigimos stderr a /dev/null para evitar ruidos de carpetas vacías
             find "$REPORTS_DIRS" -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | while read -r file; do
               echo "--- File: $file ---"
               cat "$file"
             done
-          else
-            echo "No test report directories found. This usually means Maven failed during compilation or setup."
-            echo "Please check the 'Run Tests & JaCoCo' step logs above for details."
           fi
         shell: bash
 
@@ -133,7 +173,7 @@ jobs:
           name: jacoco-report
           path: target/site/jacoco/
 
-  # 🔄 JOB 3: Purge & Promote to Pre-Prod
+  # 🔄 JOB 4: Purge & Promote to Pre-Prod
   promote-to-preprod:
     name: 🔄 Purge & Promote to Pre-Prod
     needs: test
@@ -184,7 +224,7 @@ jobs:
             This PR contains the **cleaned** production-ready code.
 
             **Verification Details:**
-            - ✅ All Unit & Integration tests passed.
+            - ✅ All Unit & Integration tests passed inside Docker.
             - ✅ Code Coverage > 80% (JaCoCo).
             - ✅ Linting (actionlint, hadolint) passed.
             - 🛡️ All AI/Dev files (conductor, gemini, etc) have been purged.

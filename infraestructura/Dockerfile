@@ -10,6 +10,11 @@ RUN mvn dependency:go-offline -B
 COPY src ./src
 RUN mvn clean package -DskipTests
 
+# --- STAGE 1.5: Test ---
+FROM builder AS test
+# Preparamos el entorno de tests (las dependencias ya están en el builder)
+ENTRYPOINT ["mvn", "verify", "-DskipTests=false"]
+
 # --- STAGE 2: Runtime ---
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
