@@ -174,14 +174,14 @@ jobs:
 
             if [ -n "$REPORTS_DIRS" ]; then
               # shellcheck disable=SC2086
-              FAILED_TESTS=$(find $REPORTS_DIRS -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | wc -l)
+              FAILED_TESTS=$(find $REPORTS_DIRS -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | wc -l || echo "0")
               if [ "$FAILED_TESTS" -gt 0 ]; then
                 echo "#### ❌ Test Failures: $FAILED_TESTS tests failed (Blocking promotion)"
                 # shellcheck disable=SC2086
                 find $REPORTS_DIRS -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | while read -r file; do
                   echo "- **File**: \`$(basename "$file")\`"
                   echo "  \`\`\`text"
-                  grep -m 1 "FAILURE" "$file" -A 5
+                  grep -m 1 "FAILURE" "$file" -A 5 || true
                   echo "  \`\`\`"
                 done
               fi
@@ -203,7 +203,8 @@ jobs:
         run: |
           REPORT_PATH="target/site/jacoco/index.html"
           if [ -f "$REPORT_PATH" ]; then
-            COVERAGE=$(grep -m 1 -oP 'Total.*?(\d+)%' "$REPORT_PATH" | grep -oP '\d+')
+            # El uso de '|| echo 0' evita que el pipeline falle si no encuentra la linea
+            COVERAGE=$(grep -m 1 -oP 'Total.*?(\d+)%' "$REPORT_PATH" | grep -oP '\d+' || echo "0")
             echo "📊 Current Coverage: $COVERAGE%"
             if [ "$COVERAGE" -lt 80 ]; then
               echo "❌ ERROR: Coverage is $COVERAGE%, threshold is 80%"
