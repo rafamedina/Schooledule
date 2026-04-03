@@ -233,69 +233,38 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Sync & Purge
-        id: purge
+      - name: Purge Development Files
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          # Asegurarnos de estar en una rama limpia basada en dev
-          git checkout -B pre-prod-staging
-
           echo "Cleaning development and AI files..."
-          # Lista de archivos/carpetas a eliminar
           CLEAN_LIST=".agents/ conductor/ .gemini/ .gemini_security/ .idea/ .vscode/ target/ GEMINI.md CLAUDE.md plan.md skills-lock.json HELP.md ideaProyecto.txt DefinicionTecnica.txt .gitignore_gen"
-
           for item in $CLEAN_LIST; do
             if [ -e "$item" ]; then
-              echo "Removing $item"
               rm -rf "$item"
             fi
           done
-
-          git add -A
-
-          # Verificar si hay cambios reales tras la purga
-          if git diff --staged --quiet; then
-            echo "has_changes=false" >> "$GITHUB_OUTPUT"
-            echo "No changes to promote."
-          else
-            echo "has_changes=true" >> "$GITHUB_OUTPUT"
-            git commit -m "build: clean release for pre-prod [skip ci]"
-
-            # Subir solo el tag para trazabilidad
-            TAG_NAME="build-${{ github.run_number }}-${{ github.sha }}"
-            git tag "$TAG_NAME"
-            git push origin "$TAG_NAME"
-          fi
         shell: bash
 
-      - name: Create Pull Request to Main
-        if: steps.purge.outputs.has_changes == 'true'
+      - name: Create Pull Request to Main (and update pre-prod)
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: pre-prod
           base: main
-          push-to-fork: ""
-          delete-branch: false # Mantenemos pre-prod como rama permanente
+          commit-message: "build: clean release for pre-prod [skip ci]"
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
           title: "🚀 PROD: Release build-${{ github.run_number }}"
           body: |
             ## 📦 Production Promotion Request
-
             This PR contains the **cleaned** production-ready code from `dev`.
-
             **Verification Details:**
             - ✅ All Unit & Integration tests passed inside Docker.
             - ✅ Code Coverage > 80% (JaCoCo).
-            - ✅ Linting (pre-commit, actionlint, hadolint) passed.
-            - 🛡️ All AI/Dev files (conductor, gemini, etc) have been purged.
-
-            **Original Dev Commit:** `${{ github.sha }}`
+            - ✅ Linting passed.
+            - 🛡️ All AI/Dev files have been purged.
             **Build Tag:** `build-${{ github.run_number }}-${{ github.sha }}`
-
-            Please review and merge to deploy to **Production (Main)**.
           labels: |
             production
-            clean-release
             automated-pr
+          draft: false
