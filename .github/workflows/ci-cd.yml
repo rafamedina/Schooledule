@@ -225,49 +225,65 @@ jobs:
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Sync & Purge
+        id: purge
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          TAG_NAME="build-${{ github.run_number }}-${{ github.sha }}"
-          echo "Promoting to Pre-Prod: $TAG_NAME"
+          # Asegurarnos de estar en una rama limpia basada en dev
+          git checkout -B pre-prod-staging
 
-          git checkout -B pre-prod
-
-          # PURGA EXHAUSTIVA (Sin rastro de Dev)
           echo "Cleaning development and AI files..."
-          rm -rf .agents/ conductor/ .gemini/ .gemini_security/ .idea/ .vscode/ target/
-          rm -f GEMINI.md CLAUDE.md plan.md skills-lock.json HELP.md ideaProyecto.txt DefinicionTecnica.txt
-          rm -f .gitignore_gen # Cualquier rastro de generadores
+          # Lista de archivos/carpetas a eliminar
+          CLEAN_LIST=".agents/ conductor/ .gemini/ .gemini_security/ .idea/ .vscode/ target/ GEMINI.md CLAUDE.md plan.md skills-lock.json HELP.md ideaProyecto.txt DefinicionTecnica.txt .gitignore_gen"
+
+          for item in $CLEAN_LIST; do
+            if [ -e "$item" ]; then
+              echo "Removing $item"
+              rm -rf "$item"
+            fi
+          done
 
           git add -A
-          git commit -m "build: clean release for pre-prod [skip ci]" || echo "No changes"
 
-          # Crear Tag de Versión
-          git tag $TAG_NAME
+          # Verificar si hay cambios reales tras la purga
+          if git diff --staged --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "No changes to promote."
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            git commit -m "build: clean release for pre-prod [skip ci]"
 
-          # Push Force a Pre-Prod y Tag
-          git push origin pre-prod --force
-          git push origin $TAG_NAME --force
+            # Subir solo el tag para trazabilidad
+            TAG_NAME="build-${{ github.run_number }}-${{ github.sha }}"
+            git tag "$TAG_NAME"
+            git push origin "$TAG_NAME"
+          fi
+        shell: bash
 
       - name: Create Pull Request to Main
+        if: steps.purge.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: pre-prod
           base: main
+          push-to-fork: ""
+          delete-branch: false # Mantenemos pre-prod como rama permanente
           title: "🚀 PROD: Release build-${{ github.run_number }}"
           body: |
             ## 📦 Production Promotion Request
 
-            This PR contains the **cleaned** production-ready code.
+            This PR contains the **cleaned** production-ready code from `dev`.
 
             **Verification Details:**
             - ✅ All Unit & Integration tests passed inside Docker.
