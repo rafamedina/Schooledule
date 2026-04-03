@@ -20,7 +20,6 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         org.springframework.security.core.authority.AuthorityUtils.authorityListToSet(
             authentication.getAuthorities());
 
-    // Filter only the relevant roles for selection
     java.util.Set<String> functionalRoles =
         roles.stream()
             .filter(

@@ -73,6 +73,7 @@ conductor/
 gha-creds-*.json
 .site/
 skills-lock.json
+.agents/
 
 # --- OS Specific ---
 *.swp

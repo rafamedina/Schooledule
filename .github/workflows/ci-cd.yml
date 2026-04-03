@@ -24,6 +24,7 @@ jobs:
   lint:
     name: 🔍 Lint & Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
 
@@ -31,6 +32,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
 
       - name: Run Pre-commit (Lint all code)
         uses: pre-commit/action@v3.0.1
@@ -52,6 +54,7 @@ jobs:
     name: 🐳 Build Test Container
     needs: lint
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -84,6 +87,7 @@ jobs:
     name: 🧪 Containerized Tests
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:16-alpine
@@ -145,7 +149,7 @@ jobs:
                 echo "❌ **Build Failed**: Detectados errores en la ejecución."
                 echo "#### 🔍 Maven Errors"
                 # Extraemos líneas que contienen 'Error: ' ignorando mayúsculas
-                grep -i "Error: " maven_build.log | sed 's/.*Error: //I' | sed 's/^/- /' | head -n 20
+                grep -i -m 20 "Error: " maven_build.log | sed 's/.*Error: //I' | sed 's/^/- /'
               fi
             fi
 
@@ -157,7 +161,7 @@ jobs:
                 echo "| File | Line | Rule | Description |"
                 echo "| --- | --- | --- | --- |"
                 # Parseamos el XML de forma segura evitando Broken Pipe
-                grep "<violation" target/pmd.xml | head -n 15 | sed -E 's/.*beginline="([^"]*)".*rule="([^"]*)".*ruleset="([^"]*)".*class="([^"]*)".*externalInfoUrl="([^"]*)".*>(.*)<\/violation>.*/| \4 | \1 | \2 | \6 |/'
+                grep -m 15 "<violation" target/pmd.xml | sed -E 's/.*beginline="([^"]*)".*rule="([^"]*)".*ruleset="([^"]*)".*class="([^"]*)".*externalInfoUrl="([^"]*)".*>(.*)<\/violation>.*/| \4 | \1 | \2 | \6 |/'
                 if [ "$VIOLATIONS" -gt 15 ]; then echo "... and $((VIOLATIONS-15)) more findings."; fi
               else
                 echo "✅ **PMD Audit**: No code smells detected."
@@ -178,7 +182,7 @@ jobs:
                 find $REPORTS_DIRS -name "*.txt" -type f -exec grep -l "FAILURE" {} + 2>/dev/null | while read -r file; do
                   echo "- **File**: \`$(basename "$file")\`"
                   echo "  \`\`\`text"
-                  grep "FAILURE" "$file" -A 5 | head -n 10
+                  grep -m 1 "FAILURE" "$file" -A 5
                   echo "  \`\`\`"
                 done
               fi
@@ -200,7 +204,7 @@ jobs:
         run: |
           REPORT_PATH="target/site/jacoco/index.html"
           if [ -f "$REPORT_PATH" ]; then
-            COVERAGE=$(grep -oP 'Total.*?(\d+)%' "$REPORT_PATH" | head -1 | grep -oP '\d+')
+            COVERAGE=$(grep -m 1 -oP 'Total.*?(\d+)%' "$REPORT_PATH" | grep -oP '\d+')
             echo "📊 Current Coverage: $COVERAGE%"
             if [ "$COVERAGE" -lt 80 ]; then
               echo "❌ ERROR: Coverage is $COVERAGE%, threshold is 80%"
