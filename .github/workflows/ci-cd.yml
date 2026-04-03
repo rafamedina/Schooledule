@@ -253,7 +253,6 @@ jobs:
           commit-message: "build: clean release for pre-prod [skip ci]"
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          signoff: false
           title: "🚀 PROD: Release build-${{ github.run_number }}"
           body: |
             ## 📦 Production Promotion Request
@@ -267,4 +266,5 @@ jobs:
           labels: |
             production
             automated-pr
-          draft: false
+          push-to-fork: ""
+          delete-branch: false
