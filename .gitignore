@@ -1,16 +1,12 @@
-# Compiled class file
+# --- Compiled class files ---
 *.class
 
-# Log file
+# --- Log files ---
 *.log
+logs/
+*.log.*
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+# --- Package Files ---
 *.jar
 *.war
 *.nar
@@ -19,6 +15,68 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# --- Virtual machine crash logs ---
 hs_err_pid*
 replay_pid*
+
+# --- Maven ---
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# --- IDEs (IntelliJ, Eclipse, VS Code, NetBeans) ---
+.idea/
+*.iml
+*.iws
+*.ipr
+.apt_generated/
+.apt_generated_tests/
+.settings/
+.project/
+.classpath/
+.factorypath/
+.nb-gradle/
+nbproject/
+build/
+bin/
+.vscode/
+*.code-workspace
+.history/
+.recommenders/
+
+# --- Docker & Environment ---
+.docker/
+.env
+.env.local
+.env.*.local
+docker-compose.override.yml
+
+# --- System Files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+ehthumbs.db
+[Dd]esktop.ini
+
+# --- Agent & Workspace Tools ---
+.gemini/
+conductor/
+.gemini_security/
+gha-creds-*.json
+.site/
+skills-lock.json
+.agents/
+
+# --- OS Specific ---
+*.swp
+*.bak
+*~
+.directory

@@ -1,0 +1,259 @@
+name: Odoo Module CI/CD Professional
+
+on:
+  push:
+    branches: ["18.0-dev", "master"]
+  pull_request:
+    branches: ["18.0-dev", "master"]
+  workflow_dispatch:
+
+env:
+  ODOO_DB: test_ci_db
+  POSTGRES_USER: odoo
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  DOCKER_IMAGE: odoo-inventario-test
+
+permissions:
+  contents: read
+
+jobs:
+  # 🔍 Job 1: Lint (Ruff)
+  lint:
+    name: 🔍 Lint (Ruff)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - name: Run Ruff
+        run: |
+          pip install ruff
+          ruff check . --output-format=github
+
+  # 🐳 Job 2: Build Docker Image
+  build:
+    name: 🐳 Build Docker Image
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: test
+          tags: ${{ env.DOCKER_IMAGE }}:latest
+          outputs: type=docker,dest=/tmp/odoo-image.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Gzip Image
+        run: gzip /tmp/odoo-image.tar
+      - name: Upload Docker Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp/odoo-image.tar.gz
+          retention-days: 1
+
+  # 🧪 Job 3: Unit Tests
+  test-unit:
+    name: 🧪 Unit Tests
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U odoo"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Docker Image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+      - name: Load Docker Image
+        run: gunzip -c /tmp/odoo-image.tar.gz | docker load
+      - name: Run Unit Tests
+        run: |
+          docker run --rm --network host \
+            -e HOST=127.0.0.1 \
+            -e USER=${{ env.POSTGRES_USER }} \
+            -e PASSWORD=${{ env.POSTGRES_PASSWORD }} \
+            ${{ env.DOCKER_IMAGE }}:latest \
+            odoo \
+              --test-enable \
+              --stop-after-init \
+              --db_host=127.0.0.1 \
+              --db_user=${{ env.POSTGRES_USER }} \
+              --db_password=${{ env.POSTGRES_PASSWORD }} \
+              --addons-path=/usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons \
+              -d ${{ env.ODOO_DB }}_unit \
+              -i Inventario \
+              --test-tags=/Inventario,-ui \
+              --log-level=test \
+              -c /dev/null \
+            2>&1 | tee /tmp/odoo_unit_tests.log
+      - name: Analyze Test Results
+        if: always()
+        run: |
+          echo "═══════════════════════════════════════════════"
+          echo "         ODOO UNIT TEST RESULTS ANALYSIS"
+          echo "═══════════════════════════════════════════════"
+          LOG="/tmp/odoo_unit_tests.log"
+          EXIT_CODE=0
+          # 1. Extraer resumen
+          TOTAL_LINE=$(grep -oP "\d+ failed, \d+ error\(s\) of \d+ tests" "$LOG" | tail -1)
+          if [ -n "$TOTAL_LINE" ]; then echo "📊 Test Summary: $TOTAL_LINE"; fi
+          # 2. Detectar fallos
+          FAIL_LINES=$(grep -P "(FAIL|ERROR): Test|ERROR: setUpClass" "$LOG" || true)
+          if [ -n "$FAIL_LINES" ]; then
+            echo "❌ DETECTED:"; echo "$FAIL_LINES" | grep -oP "(FAIL|ERROR): \S+" | sort -u
+            EXIT_CODE=1
+          else
+            echo "✅ All tests passed."
+          fi
+          # 3. Validar logs por errores críticos
+          ERROR_COUNT=$(grep -c " ERROR " "$LOG" 2>/dev/null) || ERROR_COUNT=0
+          if [ "$ERROR_COUNT" -gt 0 ]; then echo "⚠️ ERROR entries: $ERROR_COUNT"; EXIT_CODE=1; fi
+          exit $EXIT_CODE
+      - name: Upload Test Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-logs
+          path: /tmp/odoo_unit_tests.log
+
+  # 🌐 Job 4: Integration Tests
+  test-integration:
+    name: 🌐 Integration Tests
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U odoo"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Docker Image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+      - name: Load Docker Image
+        run: gunzip -c /tmp/odoo-image.tar.gz | docker load
+      - name: Run Integration Tests
+        run: |
+          docker run --rm --network host \
+            -e HOST=127.0.0.1 \
+            -e USER=${{ env.POSTGRES_USER }} \
+            -e PASSWORD=${{ env.POSTGRES_PASSWORD }} \
+            -e ODOO_CHROME_BIN=/usr/bin/chromium-browser \
+            -e ODOO_CHROME_TIMEOUT=120 \
+            ${{ env.DOCKER_IMAGE }}:latest \
+            odoo \
+              --test-enable \
+              --stop-after-init \
+              --db_host=127.0.0.1 \
+              --db_user=${{ env.POSTGRES_USER }} \
+              --db_password=${{ env.POSTGRES_PASSWORD }} \
+              --addons-path=/usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons \
+              -d ${{ env.ODOO_DB }}_int \
+              -i Inventario \
+              --test-tags=ui \
+              --log-level=test \
+              -c /dev/null \
+            2>&1 | tee /tmp/odoo_int_tests.log
+      - name: Analyze Test Results
+        if: always()
+        run: |
+          echo "═══════════════════════════════════════════════"
+          echo "      ODOO INTEGRATION TEST RESULTS"
+          echo "═══════════════════════════════════════════════"
+          LOG="/tmp/odoo_int_tests.log"
+          EXIT_CODE=0
+          # 1. Extraer resumen
+          TOTAL_LINE=$(grep -oP "\d+ failed, \d+ error\(s\) of \d+ tests" "$LOG" | tail -1)
+          if [ -n "$TOTAL_LINE" ]; then echo "📊 Test Summary: $TOTAL_LINE"; fi
+          # 2. Detectar fallos en tests y tours
+          FAIL_LINES=$(grep -P "(FAIL|ERROR): Test|ERROR: setUpClass" "$LOG" || true)
+          if [ -n "$FAIL_LINES" ]; then echo "❌ DETECTED:"; echo "$FAIL_LINES"; EXIT_CODE=1; fi
+          TOUR_FAILS=$(grep "FAILED:" "$LOG" || true)
+          if [ -n "$TOUR_FAILS" ]; then echo "❌ TOUR FAILURES:"; echo "$TOUR_FAILS"; EXIT_CODE=1; fi
+          # 3. Mostrar éxito si no hay fallos
+          if [ -z "$FAIL_LINES" ] && [ -z "$TOUR_FAILS" ]; then
+            echo "✅ All integration tests and tours passed."
+          fi
+          # 4. Validar logs
+          ERROR_COUNT=$(grep -c " ERROR " "$LOG" 2>/dev/null) || ERROR_COUNT=0
+          if [ "$ERROR_COUNT" -gt 0 ]; then echo "⚠️ ERROR entries: $ERROR_COUNT"; EXIT_CODE=1; fi
+          exit $EXIT_CODE
+      - name: Upload Test Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-logs
+          path: /tmp/odoo_int_tests.log
+
+  # 🔄 Job 5: Promote to Pre-Prod
+  promote-to-preprod:
+    name: 🔄 Sync & Clean Pre-Prod
+    needs: [test-unit, test-integration]
+    if: github.event_name == 'push' && success() && (github.ref == 'refs/heads/18.0-dev' || github.ref == 'refs/heads/master')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Sincronizar con Pre-Prod
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Crear tag único para esta promoción
+          TAG_NAME="v18.0-build-${{ github.run_number }}"
+          echo "Promoting to Pre-Prod with tag: $TAG_NAME"
+
+          git checkout -B 18.0-pre-prod
+          rm -rf .agents/ tests/ conductor/ .github/ .ruff_cache/ Ejemplo/ scripts/
+          rm -f skills-lock.json .gitignore .pre-commit-config.yaml Dockerfile pytest.ini pyproject.toml requirements.txt image.png
+          git add -A
+          git commit -m "build: clean staging release [skip ci]" || echo "No changes"
+
+          # Crear tag en el commit de pre-prod
+          git tag $TAG_NAME
+
+          # Push branch y tag
+          git push origin 18.0-pre-prod --force
+          git push origin $TAG_NAME --force
