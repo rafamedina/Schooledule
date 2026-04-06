@@ -1,6 +1,8 @@
 package com.tfg.schooledule.infrastructure.Controller;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -12,9 +14,7 @@ public class LoginController {
   }
 
   @GetMapping("/seleccionar-rol")
-  public String vistaSeleccionarRol(
-      org.springframework.security.core.Authentication authentication,
-      org.springframework.ui.Model model) {
+  public String vistaSeleccionarRol(Authentication authentication, Model model) {
     java.util.Set<String> roles =
         org.springframework.security.core.authority.AuthorityUtils.authorityListToSet(
             authentication.getAuthorities());

@@ -10,6 +10,6 @@ public class ProfeController {
 
   @GetMapping("/dashboard")
   public String panelProfesor() {
-    return "profe/menuProfesor"; // Busca panel_profe.html
+    return "profe/menuProfesor";
   }
 }

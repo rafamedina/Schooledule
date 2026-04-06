@@ -2,7 +2,7 @@
 -- BASE DE DATOS TFG - VERSIÓN FINAL (ROLES N:M + AUDITORÍA PRO)
 -- ==================================================================
 
--- ENUMS (Solo para estados, ya NO para roles)
+-- ENUMS
 CREATE TYPE estado_matricula AS ENUM ('ACTIVA', 'BAJA', 'CONVALIDADO');
 CREATE TYPE tipo_actividad AS ENUM ('EXAMEN', 'PRACTICA', 'RECUPERACION', 'ACTITUD');
 
@@ -16,7 +16,7 @@ CREATE TABLE roles (
                        nombre VARCHAR(50) NOT NULL UNIQUE -- 'ADMIN', 'PROFESOR', 'ALUMNO'
 );
 
--- 1.2 Usuarios (Sin columna de rol directa)
+-- 1.2 Usuarios
 CREATE TABLE usuarios (
                           id SERIAL PRIMARY KEY,
                           username VARCHAR(50) NOT NULL UNIQUE,
@@ -28,7 +28,6 @@ CREATE TABLE usuarios (
                           fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 1.3 Tabla Intermedia (Muchos a Muchos: Usuarios <-> Roles)
 CREATE TABLE usuarios_roles (
                                 usuario_id INT NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
                                 rol_id INT NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
@@ -54,7 +53,6 @@ CREATE TABLE cursos_academicos (
                                    activo BOOLEAN DEFAULT FALSE
 );
 
--- Relación Profesor <-> Sede (Contexto de trabajo)
 CREATE TABLE profesores_sedes (
                                   usuario_id INT NOT NULL REFERENCES usuarios(id),
                                   centro_id INT NOT NULL REFERENCES centros(id),
@@ -88,7 +86,7 @@ CREATE TABLE criterios_evaluacion (
 );
 
 -- ==================================================================
--- 4. EJECUCIÓN (CON CORTAFUEGOS DE SEGURIDAD)
+-- 4. EJECUCIÓN
 -- ==================================================================
 
 CREATE TABLE grupos (
@@ -103,11 +101,7 @@ CREATE TABLE imparticiones (
                                modulo_id INT NOT NULL REFERENCES modulos(id),
                                grupo_id INT NOT NULL REFERENCES grupos(id),
                                profesor_id INT NOT NULL REFERENCES usuarios(id),
-
-    -- CORTAFUEGOS: Redundancia para seguridad por filas (RLS)
                                centro_id INT NOT NULL REFERENCES centros(id),
-
-    -- Configuración de evaluación (Pesos, Teoría/Práctica)
                                configuracion_evaluacion JSONB
 );
 
@@ -115,10 +109,7 @@ CREATE TABLE matriculas (
                             id SERIAL PRIMARY KEY,
                             alumno_id INT NOT NULL REFERENCES usuarios(id),
                             imparticion_id INT NOT NULL REFERENCES imparticiones(id),
-
-    -- CORTAFUEGOS
                             centro_id INT NOT NULL REFERENCES centros(id),
-
                             es_repetidor BOOLEAN DEFAULT FALSE,
                             estado estado_matricula DEFAULT 'ACTIVA',
                             UNIQUE(alumno_id, imparticion_id)
@@ -142,7 +133,7 @@ CREATE TABLE items_evaluables (
                                   periodo_evaluacion_id INT NOT NULL REFERENCES periodos_evaluacion(id),
                                   nombre VARCHAR(100) NOT NULL,
                                   fecha DATE,
-                                  tipo tipo_actividad NOT NULL, -- EXAMEN, RECUPERACION...
+                                  tipo tipo_actividad NOT NULL,
                                   configuracion_rubrica JSONB
 );
 
@@ -157,7 +148,7 @@ CREATE TABLE calificaciones (
 );
 
 -- ==================================================================
--- 6. AUDITORÍA FORENSE (TRIGGER)
+-- 6. AUDITORÍA FORENSE
 -- ==================================================================
 
 CREATE TABLE auditoria_notas (
