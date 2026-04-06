@@ -74,6 +74,11 @@ gha-creds-*.json
 .site/
 skills-lock.json
 .agents/
+GEMINI.md
+HELP.md
+app_logs.txt
+backlog.md
+skills-lock.json
 
 # --- OS Specific ---
 *.swp

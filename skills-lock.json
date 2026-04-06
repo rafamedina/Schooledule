@@ -11,6 +11,11 @@
       "sourceType": "github",
       "computedHash": "2a51008550e58b079b38dbbbf91bb3c45945a5b2d7f3ec638b34104694c7b715"
     },
+    "docx": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "150be87ff7b18f273ad07da303adb1cf2ca21cc3e76db7a2cf0373405178a278"
+    },
     "frontend-design": {
       "source": "anthropics/skills",
       "sourceType": "github",
