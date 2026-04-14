@@ -1,4 +1,4 @@
-package com.tfg.schooledule.domain.DTO;
+package com.tfg.schooledule.domain.dto;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

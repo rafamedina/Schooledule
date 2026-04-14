@@ -65,6 +65,7 @@ desktop.ini
 $RECYCLE.BIN/
 ehthumbs.db
 [Dd]esktop.ini
+memoria_tfg.pdf
 
 # --- Agent & Workspace Tools ---
 .gemini/
@@ -74,6 +75,18 @@ gha-creds-*.json
 .site/
 skills-lock.json
 .agents/
+GEMINI.md
+HELP.md
+app_logs.txt
+backlog.md
+skills-lock.json
+node_modules/
+CLAUDE.md
+config-tone.md
+Package-lock.json
+Package.json
+skills-lock.json
+
 
 # --- OS Specific ---
 *.swp

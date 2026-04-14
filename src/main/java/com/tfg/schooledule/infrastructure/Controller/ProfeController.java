@@ -1,4 +1,4 @@
-package com.tfg.schooledule.infrastructure.Controller;
+package com.tfg.schooledule.infrastructure.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +10,6 @@ public class ProfeController {
 
   @GetMapping("/dashboard")
   public String panelProfesor() {
-    return "profe/menuProfesor"; // Busca panel_profe.html
+    return "profe/menuProfesor";
   }
 }

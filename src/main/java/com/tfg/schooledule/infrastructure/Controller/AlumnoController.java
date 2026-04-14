@@ -1,10 +1,10 @@
-package com.tfg.schooledule.infrastructure.Controller;
+package com.tfg.schooledule.infrastructure.controller;
 
-import com.tfg.schooledule.domain.DTO.AlumnoProfileDTO;
-import com.tfg.schooledule.domain.DTO.GradeDashboardDTO;
+import com.tfg.schooledule.domain.dto.AlumnoProfileDTO;
+import com.tfg.schooledule.domain.dto.GradeDashboardDTO;
 import com.tfg.schooledule.domain.entity.PeriodoEvaluacion;
 import com.tfg.schooledule.domain.entity.Usuario;
-import com.tfg.schooledule.infrastructure.Service.UsuarioService;
+import com.tfg.schooledule.infrastructure.service.UsuarioService;
 import java.security.Principal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +27,10 @@ public class AlumnoController {
 
   @GetMapping("/perfil")
   public String perfilAlumno(Principal principal, Model model) {
-    String username = principal.getName();
+    String email = principal.getName();
     Usuario usuario =
         usuarioService
-            .buscarPorNombreUsuario(username)
+            .buscarPorCorreo(email)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
     AlumnoProfileDTO profile = usuarioService.getAlumnoProfile(usuario.getId());
@@ -41,10 +41,10 @@ public class AlumnoController {
   @GetMapping("/notas")
   public String dashboardNotas(
       @RequestParam(required = false) Integer periodoId, Principal principal, Model model) {
-    String username = principal.getName();
+    String email = principal.getName();
     Usuario usuario =
         usuarioService
-            .buscarPorNombreUsuario(username)
+            .buscarPorCorreo(email)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
     List<PeriodoEvaluacion> periodos = usuarioService.getStudentPeriods(usuario.getId());

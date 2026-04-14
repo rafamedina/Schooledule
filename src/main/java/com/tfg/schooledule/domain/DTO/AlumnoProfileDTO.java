@@ -1,4 +1,4 @@
-package com.tfg.schooledule.domain.DTO;
+package com.tfg.schooledule.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
