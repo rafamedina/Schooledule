@@ -86,6 +86,7 @@ config-tone.md
 Package-lock.json
 Package.json
 skills-lock.json
+sonarqube_issues.json
 
 
 # --- OS Specific ---
