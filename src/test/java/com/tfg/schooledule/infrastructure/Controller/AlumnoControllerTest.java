@@ -1,12 +1,12 @@
-package com.tfg.schooledule.infrastructure.Controller;
+package com.tfg.schooledule.infrastructure.controller;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.tfg.schooledule.domain.DTO.AlumnoProfileDTO;
+import com.tfg.schooledule.domain.dto.AlumnoProfileDTO;
 import com.tfg.schooledule.domain.entity.Usuario;
-import com.tfg.schooledule.infrastructure.Service.UsuarioService;
+import com.tfg.schooledule.infrastructure.service.UsuarioService;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class AlumnoControllerTest {
             .centroNombre("Centro Test")
             .build();
 
-    when(usuarioService.buscarPorNombreUsuario("testalumno")).thenReturn(Optional.of(usuario));
+    when(usuarioService.buscarPorCorreo("testalumno")).thenReturn(Optional.of(usuario));
     when(usuarioService.getAlumnoProfile(1)).thenReturn(profile);
 
     mockMvc
@@ -49,13 +49,13 @@ public class AlumnoControllerTest {
   @WithMockUser(username = "testalumno", roles = "ALUMNO")
   public void testDashboardNotas_Success() throws Exception {
     Usuario usuario = Usuario.builder().id(1).username("testalumno").build();
-    com.tfg.schooledule.domain.DTO.GradeDashboardDTO dashboard =
-        com.tfg.schooledule.domain.DTO.GradeDashboardDTO.builder()
+    com.tfg.schooledule.domain.dto.GradeDashboardDTO dashboard =
+        com.tfg.schooledule.domain.dto.GradeDashboardDTO.builder()
             .periodoNombre("T1")
             .gradesByModulo(new java.util.HashMap<>())
             .build();
 
-    when(usuarioService.buscarPorNombreUsuario("testalumno")).thenReturn(Optional.of(usuario));
+    when(usuarioService.buscarPorCorreo("testalumno")).thenReturn(Optional.of(usuario));
     when(usuarioService.getStudentPeriods(1)).thenReturn(java.util.List.of());
     when(usuarioService.getStudentGrades(1, 1)).thenReturn(dashboard);
 

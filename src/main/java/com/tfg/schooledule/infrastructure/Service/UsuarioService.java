@@ -1,8 +1,8 @@
-package com.tfg.schooledule.infrastructure.Service;
+package com.tfg.schooledule.infrastructure.service;
 
-import com.tfg.schooledule.domain.DTO.AlumnoProfileDTO;
-import com.tfg.schooledule.domain.DTO.GradeDTO;
-import com.tfg.schooledule.domain.DTO.GradeDashboardDTO;
+import com.tfg.schooledule.domain.dto.AlumnoProfileDTO;
+import com.tfg.schooledule.domain.dto.GradeDTO;
+import com.tfg.schooledule.domain.dto.GradeDashboardDTO;
 import com.tfg.schooledule.domain.entity.*;
 import com.tfg.schooledule.infrastructure.repository.CalificacionRepository;
 import com.tfg.schooledule.infrastructure.repository.MatriculaRepository;

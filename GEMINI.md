@@ -1,3 +1,8 @@
+## Memory
+You have access to Engram persistent memory via MCP tools (mem_save, mem_search, mem_session_summary, etc.).
+- Save proactively after significant work — don't wait to be asked.
+- After any compaction or context reset, call `mem_context` to recover session state before continuing.
+
 # GEMINI.md (Schooledule)
 
 Multi-Site Academic Management Platform (ERP) built with Java 21 and Spring Boot 3.3.5.

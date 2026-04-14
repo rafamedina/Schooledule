@@ -1,4 +1,4 @@
-package com.tfg.schooledule.domain.DTO;
+package com.tfg.schooledule.domain.dto;
 
 import java.util.List;
 import java.util.Map;

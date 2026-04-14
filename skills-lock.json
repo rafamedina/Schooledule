@@ -11,10 +11,20 @@
       "sourceType": "github",
       "computedHash": "2a51008550e58b079b38dbbbf91bb3c45945a5b2d7f3ec638b34104694c7b715"
     },
+    "create-readme": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "computedHash": "d0ece1b2164ce1376e4ab6e98d6ac079df3a2a94f5f02224362b6a1ce2516ae9"
+    },
     "docx": {
       "source": "anthropics/skills",
       "sourceType": "github",
       "computedHash": "150be87ff7b18f273ad07da303adb1cf2ca21cc3e76db7a2cf0373405178a278"
+    },
+    "flyway-migrations": {
+      "source": "ashchupliak/dream-team",
+      "sourceType": "github",
+      "computedHash": "a10d2e32687a746ec30bcd97c070216453c772c6a8633f9a1da8198fecb73d6a"
     },
     "frontend-design": {
       "source": "anthropics/skills",
@@ -40,6 +50,11 @@
       "source": "github/awesome-copilot",
       "sourceType": "github",
       "computedHash": "f1b9c6b1277178fc33e5a612761c1cd1cf6ab5f946d05d69d52026d142c0a0c1"
+    },
+    "mermaid-diagram-specialist": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4fd9576e76e89e17d72891fb63e11741bf34c72390058baeb42812e396698525"
     }
   }
 }

@@ -1,10 +1,10 @@
-package com.tfg.schooledule.infrastructure.Service;
+package com.tfg.schooledule.infrastructure.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.tfg.schooledule.domain.DTO.AlumnoProfileDTO;
-import com.tfg.schooledule.domain.DTO.GradeDashboardDTO;
+import com.tfg.schooledule.domain.dto.AlumnoProfileDTO;
+import com.tfg.schooledule.domain.dto.GradeDashboardDTO;
 import com.tfg.schooledule.domain.entity.*;
 import com.tfg.schooledule.domain.enums.TipoActividad;
 import com.tfg.schooledule.infrastructure.repository.CalificacionRepository;
