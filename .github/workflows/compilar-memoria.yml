@@ -16,7 +16,7 @@ jobs:
       - name: Compilar LaTeX
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: memoria/main.tex
+          root_file: main.tex
           working_directory: memoria
           # Instalamos dependencias comunes para TFG
           args: "-pdf -interaction=nonstopmode -halt-on-error -shell-escape"
