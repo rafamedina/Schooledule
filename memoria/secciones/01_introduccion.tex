@@ -1,0 +1,20 @@
+Schooledule es una plataforma de gesti\'{o}n acad\'{e}mica multi-centro dise\~{n}ada para optimizar la administraci\'{o}n de centros educativos de Formaci\'{o}n Profesional. Este TFG se centra en la robustez de la base de datos, la seguridad basada en roles (RBAC) y la integridad inmutable de los datos acadÃ©micos.
+
+\section{Justificaci\'{o}n del Proyecto}
+Actualmente, muchos centros educativos encuentran dificultades para digitalizar procesos complejos, recurriendo a menudo a hojas de c\'{a}lculo o software obsoleto. Las plataformas est\'{a}ndar suelen fallar en tres aspectos cr\'{i}ticos que este proyecto viene a resolver:
+
+\begin{description}
+    \item[Gesti\'{o}n Multi-Sede] La dificultad de gestionar profesores que imparten docencia en varios centros distintos con un \'{u}nico usuario, sin mezclar datos de alumnos ni grupos.
+    \item[Integridad del Dato (Auditor\'{i}a)] La necesidad de garantizar que las notas y faltas no se modifican por error o malintencionadamente sin dejar rastro.
+    \item[Cambios Normativos] La capacidad de adaptar los criterios de evaluaci\'{o}n a nuevas leyes educativas a\~{n}o tras a\~{n}o sin alterar los expedientes hist\'{o}ricos de los alumnos antiguos.
+\end{description}
+
+\section{Cronograma y Planificaci\'{o}n}
+La ejecuci\'{o}n del proyecto se ha estructurado en cuatro fases cr\'{i}ticas, alineadas con los porcentajes de entrega acad\'{e}mica:
+
+\begin{description}
+    \item[Hito 1: Cimentaci\'{o}n y Dise\~{n}o (25\%)] Establecimiento de la base t\'{e}cnica, dise\~{n}o del modelo de datos y arquitectura (diagramas C4, Casos de Uso, Clases y ERD). Configuraci\'{o}n del entorno de desarrollo con Docker y Flyway.
+    \item[Hito 2: Implementaci\'{o}n del N\'{u}cleo y Seguridad (50\%)] Desarrollo del backend con Spring Security (RBAC) y servicios b\'{a}sicos de gesti\'{o}n de usuarios y centros. Validaci\'{o}n mediante TDD.
+    \item[Hito 3: Funcionalidad Avanzada y Auditor\'{i}a (75\%)] Desarrollo del m\'{o}dulo de Auditor\'{i}a Forense para calificaciones y gesti\'{o}n acad\'{e}mica compleja. Frontend integrado con Thymeleaf y pipeline de CI/CD operativo.
+    \item[Hito 4: Consolidaci\'{o}n, Pulido y Entrega Final (100\%)] Correcci\'{o}n de errores, optimizaci\'{o}n de consultas y preparaci\'{o}n de la defensa final.
+\end{description}

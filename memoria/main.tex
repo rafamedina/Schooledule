@@ -1,0 +1,43 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+% Incluimos el preÃÂ¡mbulo con toda la configuraciÃÂ³n
+\input{preamble}
+
+\title{Schooledule: Plataforma de GestiÃÂ³n AcadÃÂ©mica Multi-Centro}
+\author{Rafael Medina Ayuso}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    \input{secciones/abstract}
+\end{abstract}
+
+\tableofcontents
+
+\chapter{IntroducciÃÂ³n}
+\label{chap:introduccion}
+\input{secciones/01_introduccion}
+
+\chapter{TecnologÃÂ­as y MetodologÃÂ­a}
+\label{chap:tecnologias}
+\input{secciones/02_tecnologias}
+
+\chapter{AnÃÂ¡lisis y DiseÃÂ±o}
+\label{chap:analisis_diseno}
+\input{secciones/03_analisis_diseno}
+
+\chapter{GestiÃÂ³n del Proyecto y Calidad}
+\label{chap:calidad}
+\input{secciones/04_calidad_gestion}
+
+\chapter{Conclusiones}
+\label{chap:conclusiones}
+\input{secciones/05_conclusiones}
+
+% BibliografÃÂ­a
+\printbibliography[heading=bibintoc, title={BibliografÃÂ­a}]
+
+\end{document}

@@ -1,0 +1,8 @@
+Para asegurar una entrega profesional, se ha dise\~{n}ado un flujo de automatizaci\'{o}n en GitHub Actions dividido en cuatro fases cr\'{i}ticas:
+
+\begin{description}
+    \item[Validaci\'{o}n y Estilo (Linting)] Audita cada l\'{i}nea de c\'{o}digo. Utiliza Spotless para Java y Hadolint para Dockerfiles.
+    \item[Construcci\'{o}n en Contenedor (Build)] La aplicaci\'{o}n se compila dentro de una imagen Docker aislada, garantizando paridad entre entornos.
+    \item[Pruebas Reales (Test \& Quality Gate)] Se levanta una base de datos PostgreSQL real y se ejecutan las pruebas. El despliegue se bloquea si la cobertura de c\'{o}digo (JaCoCo) es inferior al 80\%.
+    \item[Purga y Promoci\'{o}n (Purge Policy)] Fase final que elimina herramientas de soporte y documentaci\'{o}n tÃ©cnica interna, creando una versi\'{o}n de producci\'{o}n pura en la rama final.
+\end{description}

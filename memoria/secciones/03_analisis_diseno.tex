@@ -1,0 +1,50 @@
+El modelo de Schooledule se fundamenta en un modelo de capas que separa responsabilidades y garantiza el aislamiento de datos entre centros educativos.
+
+\section{Casos de Uso Principales}
+Se han identificado tres roles fundamentales en el sistema:
+
+\begin{description}
+    \item[Administrador] GestiÃ³n global de sedes, usuarios y auditorÃ­a del sistema.
+    \item[Profesor] GestiÃ³n de mÃ³dulos asignados, definiciÃ³n de Ã­tems evaluables y calificaciÃ³n de alumnos.
+    \item[Alumno] Consulta de progreso acadÃ©mico, horarios y perfil personal.
+\end{description}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figuras/image6.png}
+    \caption{Diagrama de Casos de Uso del sistema Schooledule.}
+    \label{fig:casos_uso}
+\end{figure}
+
+\section{Modelo de Datos y Entidades}
+El diseÃ±o del modelo de dominio sigue principios de DiseÃ±o Orientado al Dominio (DDD):
+
+\begin{description}
+    \item[Centro] Representa la sede fÃ­sica y lÃ³gica. Eje del aislamiento multi-sede mediante el campo \texttt{centro\_id}.
+    \item[Usuario y Rol] RelaciÃ³n N:M que permite que un usuario posea varios perfiles (ej. administrador y profesor) en una misma sede.
+    \item[ImparticiÃ³n] Nodo central que vincula el MÃ³dulo, el Profesor, el Grupo y el Centro.
+    \item[CalificaciÃ³n y AuditorÃ­a] Almacenamiento de notas vinculado a un registro de \texttt{AuditoriaNota} inmutable.
+\end{description}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figuras/image13.png}
+    \caption{Diagrama de Clases del dominio Schooledule.}
+    \label{fig:diagrama_clases}
+\end{figure}
+
+\section{Arquitectura de la SoluciÃ³n}
+La soluciÃ³n se divide en tres capas principales:
+
+\begin{enumerate}
+    \item \textbf{Capa de PresentaciÃ³n}: Thymeleaf con Vanilla CSS y JavaScript para una interfaz limpia y eficiente.
+    \item \textbf{Capa de LÃ³gica de Negocio}: Spring Boot 3.3.5 orquestando todas las reglas acadÃ©micas y validaciones RBAC.
+    \item \textbf{Capa de Datos}: Persistencia en PostgreSQL con un sistema de auditorÃ­a forense inmutable.
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figuras/image19.png}
+    \caption{Diagrama Entidad-RelaciÃ³n (E/R) de la base de datos.}
+    \label{fig:erd}
+\end{figure}

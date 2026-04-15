@@ -51,6 +51,11 @@
       "sourceType": "github",
       "computedHash": "f1b9c6b1277178fc33e5a612761c1cd1cf6ab5f946d05d69d52026d142c0a0c1"
     },
+    "latex-writing": {
+      "source": "dbosk/claude-skills",
+      "sourceType": "github",
+      "computedHash": "77ffa172dd942543c6dca7e5b25f6bca84ab68f802128e696e45105188e5063f"
+    },
     "mermaid-diagram-specialist": {
       "source": "davila7/claude-code-templates",
       "sourceType": "github",
