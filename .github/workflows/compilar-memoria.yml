@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "memoria/**"
+      - ".github/workflows/compilar-memoria.yml"
   workflow_dispatch: # Permite ejecución manual
 
 jobs:
