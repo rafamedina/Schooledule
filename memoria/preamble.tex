@@ -1,0 +1,27 @@
+% Configuración básica de idioma y codificación
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish, es-tabla]{babel}
+
+% Paquetes para diseño y tipografía
+\usepackage{lmodern}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+\usepackage{csquotes} % Recomendado por la skill para citas: \enquote{...}
+
+% Gestión de imágenes y gráficos
+\usepackage{graphicx}
+\graphicspath{{figuras/}}
+\usepackage{float}
+
+% Bibliografía
+\usepackage[backend=biber, style=numeric, sorting=none]{biblatex}
+\addbibresource{bibliografia/referencias.bib}
+
+% Referencias inteligentes (siempre al final del preámbulo)
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+% Configuración de párrafos
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0.5em}
