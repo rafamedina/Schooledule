@@ -14,6 +14,7 @@ logs/
 *.zip
 *.tar.gz
 *.rar
+memoria/
 
 # --- Virtual machine crash logs ---
 hs_err_pid*
@@ -69,6 +70,8 @@ memoria_tfg.pdf
 
 # --- Agent & Workspace Tools ---
 .gemini/
+.claude/
+.agents/
 conductor/
 .gemini_security/
 gha-creds-*.json

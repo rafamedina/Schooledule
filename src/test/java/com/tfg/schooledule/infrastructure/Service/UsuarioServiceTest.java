@@ -1,12 +1,15 @@
 package com.tfg.schooledule.infrastructure.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.tfg.schooledule.domain.dto.AlumnoProfileDTO;
 import com.tfg.schooledule.domain.dto.GradeDashboardDTO;
 import com.tfg.schooledule.domain.entity.*;
 import com.tfg.schooledule.domain.enums.TipoActividad;
+import com.tfg.schooledule.infrastructure.mapper.AlumnoProfileMapper;
+import com.tfg.schooledule.infrastructure.mapper.GradeDashboardMapper;
 import com.tfg.schooledule.infrastructure.repository.CalificacionRepository;
 import com.tfg.schooledule.infrastructure.repository.MatriculaRepository;
 import com.tfg.schooledule.infrastructure.repository.PeriodoEvaluacionRepository;
@@ -24,29 +27,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UsuarioServiceTest {
 
   @Mock private UsuarioRepository usuarioRepository;
-
   @Mock private MatriculaRepository matriculaRepository;
-
   @Mock private CalificacionRepository calificacionRepository;
-
   @Mock private PeriodoEvaluacionRepository periodoRepository;
-
   @Mock private PasswordEncoder passwordEncoder;
+  @Mock private AlumnoProfileMapper alumnoProfileMapper;
+  @Mock private GradeDashboardMapper gradeDashboardMapper;
 
   @InjectMocks private UsuarioService usuarioService;
 
   @Test
   public void testGetAlumnoProfile_Success() {
     Integer usuarioId = 1;
-    Usuario usuario =
-        Usuario.builder()
-            .id(usuarioId)
-            .username("testuser")
-            .nombre("Test")
-            .apellidos("User")
-            .email("test@example.com")
-            .build();
-
+    Usuario usuario = Usuario.builder().id(usuarioId).username("testuser").build();
     Centro centro = Centro.builder().nombre("Centro Test").build();
     CursoAcademico curso = CursoAcademico.builder().nombre("2025/2026").build();
     Grupo grupo = Grupo.builder().nombre("DAM2").centro(centro).cursoAcademico(curso).build();
@@ -54,18 +47,30 @@ public class UsuarioServiceTest {
     Matricula matricula =
         Matricula.builder().alumno(usuario).imparticion(imparticion).centro(centro).build();
 
+    AlumnoProfileDTO expected =
+        new AlumnoProfileDTO(
+            usuarioId,
+            "testuser",
+            "Test",
+            "User",
+            "test@example.com",
+            "Centro Test",
+            "DAM2",
+            "2025/2026");
+
     when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
     when(matriculaRepository.findFirstByAlumnoIdOrderByImparticionGrupoCursoAcademicoIdDesc(
             usuarioId))
         .thenReturn(Optional.of(matricula));
+    when(alumnoProfileMapper.toDto(usuario, matricula)).thenReturn(expected);
 
     AlumnoProfileDTO profile = usuarioService.getAlumnoProfile(usuarioId);
 
     assertNotNull(profile);
-    assertEquals("testuser", profile.getUsername());
-    assertEquals("Centro Test", profile.getCentroNombre());
-    assertEquals("DAM2", profile.getGrupoNombre());
-    assertEquals("2025/2026", profile.getCursoAcademico());
+    assertEquals("testuser", profile.username());
+    assertEquals("Centro Test", profile.centroNombre());
+    assertEquals("DAM2", profile.grupoNombre());
+    assertEquals("2025/2026", profile.cursoAcademico());
   }
 
   @Test
@@ -74,11 +79,7 @@ public class UsuarioServiceTest {
     when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.empty());
 
     Exception exception =
-        assertThrows(
-            RuntimeException.class,
-            () -> {
-              usuarioService.getAlumnoProfile(usuarioId);
-            });
+        assertThrows(RuntimeException.class, () -> usuarioService.getAlumnoProfile(usuarioId));
 
     assertEquals("Usuario no encontrado", exception.getMessage());
   }
@@ -93,11 +94,7 @@ public class UsuarioServiceTest {
         .thenReturn(Optional.empty());
 
     Exception exception =
-        assertThrows(
-            RuntimeException.class,
-            () -> {
-              usuarioService.getAlumnoProfile(usuarioId);
-            });
+        assertThrows(RuntimeException.class, () -> usuarioService.getAlumnoProfile(usuarioId));
 
     assertEquals("Matricula no encontrada", exception.getMessage());
   }
@@ -125,29 +122,35 @@ public class UsuarioServiceTest {
             .valor(new BigDecimal("8.5"))
             .build();
 
+    GradeDashboardDTO expected =
+        new GradeDashboardDTO("1er Trimestre", Map.of("Programacion", List.of()));
+
     when(calificacionRepository.findByAlumnoIdAndPeriodoId(usuarioId, periodoId))
         .thenReturn(List.of(calif));
+    when(gradeDashboardMapper.toDto(any(), eq("1er Trimestre"))).thenReturn(expected);
 
     GradeDashboardDTO dashboard = usuarioService.getStudentGrades(usuarioId, periodoId);
 
     assertNotNull(dashboard);
-    assertEquals("1er Trimestre", dashboard.getPeriodoNombre());
-    assertTrue(dashboard.getGradesByModulo().containsKey("Programacion"));
-    assertEquals(1, dashboard.getGradesByModulo().get("Programacion").size());
+    assertEquals("1er Trimestre", dashboard.periodoNombre());
+    assertTrue(dashboard.gradesByModulo().containsKey("Programacion"));
   }
 
   @Test
   public void testGetStudentGrades_Empty() {
     Integer usuarioId = 1;
     Integer periodoId = 1;
+    GradeDashboardDTO expected = new GradeDashboardDTO(null, new HashMap<>());
+
     when(calificacionRepository.findByAlumnoIdAndPeriodoId(usuarioId, periodoId))
         .thenReturn(Collections.emptyList());
+    when(gradeDashboardMapper.toDto(Collections.emptyList(), null)).thenReturn(expected);
 
     GradeDashboardDTO dashboard = usuarioService.getStudentGrades(usuarioId, periodoId);
 
     assertNotNull(dashboard);
-    assertTrue(dashboard.getGradesByModulo().isEmpty());
-    assertNull(dashboard.getPeriodoNombre());
+    assertTrue(dashboard.gradesByModulo().isEmpty());
+    assertNull(dashboard.periodoNombre());
   }
 
   @Test

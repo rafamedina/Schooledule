@@ -1,12 +1,13 @@
 # Tech Stack
 
 ## Backend
-- **Language:** Java 21 (with Lombok for boilerplate reduction)
+- **Language:** Java 21 (with Lombok for boilerplate reduction on entities)
 - **Framework:** Spring Boot 3.3.5
 - **Security:** Spring Security 6 (using RBAC)
 - **Data Access:** Spring Data JPA + Hibernate 6
 - **Validation:** Spring Boot Starter Validation
 - **Session Management:** Spring Session for JDBC
+- **DTO Mapping:** MapStruct 1.5.5.Final (compile-time, `componentModel = "spring"`). DTOs are Java `record` types.
 
 ## Frontend
 - **Templating Engine:** Thymeleaf (with Spring Security 6 integration)
