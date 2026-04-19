@@ -2,6 +2,7 @@ package com.tfg.schooledule.infrastructure.repository;
 
 import com.tfg.schooledule.domain.entity.Calificacion;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,4 +22,9 @@ public interface CalificacionRepository extends JpaRepository<Calificacion, Inte
 
   @Query("SELECT c FROM Calificacion c " + "JOIN c.matricula m " + "WHERE m.alumno.id = :alumnoId")
   List<Calificacion> findByAlumnoId(@Param("alumnoId") Integer alumnoId);
+
+  Optional<Calificacion> findByMatriculaIdAndItemEvaluableId(
+      Integer matriculaId, Integer itemEvaluableId);
+
+  List<Calificacion> findByMatriculaId(Integer matriculaId);
 }

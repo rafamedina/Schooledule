@@ -1,0 +1,13 @@
+package com.tfg.schooledule.domain.dto;
+
+import jakarta.validation.constraints.*;
+import java.math.BigDecimal;
+import java.util.List;
+
+public record GradeUpsertRequest(@NotNull Integer matriculaId, @NotEmpty List<Entry> entries) {
+
+  public record Entry(
+      @NotNull Integer itemEvaluableId,
+      @DecimalMin("0.00") @DecimalMax("10.00") BigDecimal valor,
+      @Size(max = 1000) String comentario) {}
+}
