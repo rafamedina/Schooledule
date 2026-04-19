@@ -218,16 +218,15 @@ class TeacherDashboardServiceTest {
             new TeacherGradeItemDTO(
                 1, "Examen", "EXAMEN", LocalDate.now(), new BigDecimal("9.00"), "Muy bien", 1));
 
-    // SET LOCAL app.current_user debe llamarse
+    // set_config debe llamarse para inyectar el usuario de auditoría
     when(entityManager.createNativeQuery(anyString())).thenReturn(nativeQuery);
     when(nativeQuery.setParameter(anyString(), anyString())).thenReturn(nativeQuery);
-    when(nativeQuery.executeUpdate()).thenReturn(1);
+    when(nativeQuery.getSingleResult()).thenReturn("juan@tfg.com");
 
     TeacherStudentGradesDTO result = service.upsertGrades(2, "juan@tfg.com", req);
 
     assertThat(result).isNotNull();
-    // Verifica que se configuró el usuario de auditoría
-    verify(entityManager).createNativeQuery("SET LOCAL app.current_user = :u");
+    verify(entityManager).createNativeQuery("SELECT set_config('app.usuario_actual', :u, true)");
     verify(nativeQuery).setParameter("u", "juan@tfg.com");
     verify(calificacionRepo).save(any(Calificacion.class));
   }
@@ -258,7 +257,7 @@ class TeacherDashboardServiceTest {
     when(itemEvaluableRepo.findById(1)).thenReturn(Optional.of(item));
     when(entityManager.createNativeQuery(anyString())).thenReturn(nativeQuery);
     when(nativeQuery.setParameter(anyString(), anyString())).thenReturn(nativeQuery);
-    when(nativeQuery.executeUpdate()).thenReturn(1);
+    when(nativeQuery.getSingleResult()).thenReturn("juan@tfg.com");
 
     assertThatThrownBy(() -> service.upsertGrades(2, "juan@tfg.com", req))
         .isInstanceOf(IllegalStateException.class)
@@ -292,7 +291,7 @@ class TeacherDashboardServiceTest {
     when(itemEvaluableRepo.findById(1)).thenReturn(Optional.of(itemAjeno));
     when(entityManager.createNativeQuery(anyString())).thenReturn(nativeQuery);
     when(nativeQuery.setParameter(anyString(), anyString())).thenReturn(nativeQuery);
-    when(nativeQuery.executeUpdate()).thenReturn(1);
+    when(nativeQuery.getSingleResult()).thenReturn("juan@tfg.com");
 
     assertThatThrownBy(() -> service.upsertGrades(2, "juan@tfg.com", req))
         .isInstanceOf(IllegalArgumentException.class);

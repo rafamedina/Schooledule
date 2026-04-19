@@ -324,7 +324,7 @@ Include CSRF token: Thymeleaf emits `<meta name="_csrf" .../>` + `<meta name="_c
   - Note: @MockBean usado para servicio (incompatibilidad H2 NAMED_ENUM con Matricula); verifica SecurityConfig + GlobalApiExceptionHandler en contexto completo.
 
 ### Task 5.2 — Audit trail verification
-- [ ] Add `AuditoriaNotaRepository` (if not existing) and a test that after a successful `POST` update, a row exists in `auditoria_notas` with `usuario_responsable = 'juan@tfg.com'`. Use Testcontainers Postgres (project convention — see `tech-stack.md`). **Do not** mock the DB for this assertion; the trigger is PL/pgSQL.
+- [x] `AuditoriaNotaRepository` creado + `AuditoriaNotaIntegrationTest` con Testcontainers Postgres. Verifica que el trigger PL/pgSQL escribe en `auditoria_notas` con `usuario_responsable = 'juan@tfg.com'` tras un upsert real. Deps añadidas: `spring-boot-testcontainers`, `testcontainers:junit-jupiter`, `testcontainers:postgresql`.
 
 ### Task 5.3 — Remove obsolete files
 - [x] Delete `src/main/resources/templates/profe/menuProfesor.html` once unused.
@@ -342,6 +342,9 @@ Include CSRF token: Thymeleaf emits `<meta name="_csrf" .../>` + `<meta name="_c
 - [ ] Manual smoke: log in as `juan@tfg.com` / `1234` → dashboard shows 2 centros → pick one → shows subjects → pick one → shows alumno1 → open modal → edit a grade → save → reopen → value persisted → `SELECT * FROM auditoria_notas` shows the change with `usuario_responsable = 'juan@tfg.com'`.
 - [ ] Log in as `pedro@tfg.com` (multi-role); pick `PROFESOR`; verify isolation — only sees his own imparticion.
 - [ ] Lighthouse (desktop): Accessibility ≥ 95, Performance ≥ 90.
+
+## Design decisions locked (do not reopen)
+- **Recuperaciones**: `TipoActividad.RECUPERACION` existe en el enum y el DB ENUM pero no tiene lógica especial. Se trata como un ítem evaluable más dentro de su periodo. El profesor crea el ítem, pone la nota, y la media se recalcula incluyéndola. Lógica de sustitución automática está fuera del scope del TFG.
 
 ## Deliverable checklist
 - [ ] All tasks above marked `[x] <sha7>`.

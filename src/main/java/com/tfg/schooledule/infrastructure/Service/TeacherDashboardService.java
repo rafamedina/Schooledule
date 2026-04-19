@@ -99,11 +99,12 @@ public class TeacherDashboardService {
       Integer profesorId, String profesorEmail, GradeUpsertRequest req) {
     Matricula matricula = loadMatriculaWithOwnershipCheck(profesorId, req.matriculaId());
 
-    // Inyecta el email del profesor en la sesión de Postgres para el trigger de auditoría
+    // Inyecta el email del profesor en la sesión de Postgres para el trigger de auditoría.
+    // SET LOCAL no acepta bind params; set_config(name, value, is_local=true) sí los admite.
     entityManager
-        .createNativeQuery("SET LOCAL app.current_user = :u")
+        .createNativeQuery("SELECT set_config('app.usuario_actual', :u, true)")
         .setParameter("u", profesorEmail)
-        .executeUpdate();
+        .getSingleResult();
 
     for (GradeUpsertRequest.Entry entry : req.entries()) {
       ItemEvaluable item =
