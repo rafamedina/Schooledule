@@ -1,10 +1,12 @@
 package com.tfg.schooledule.domain.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-public record GradeUpsertRequest(@NotNull Integer matriculaId, @NotEmpty List<Entry> entries) {
+public record GradeUpsertRequest(
+    @NotNull Integer matriculaId, @NotEmpty @Valid List<Entry> entries) {
 
   public record Entry(
       @NotNull Integer itemEvaluableId,

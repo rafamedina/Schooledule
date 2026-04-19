@@ -3,10 +3,12 @@ package com.tfg.schooledule.infrastructure.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.tfg.schooledule.domain.entity.*;
+import com.tfg.schooledule.domain.enums.EstadoMatricula;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +22,7 @@ class ImparticionRepositoryTest {
 
   @PersistenceContext private EntityManager em;
   @Autowired private ImparticionRepository imparticionRepository;
+  @Autowired private MatriculaRepository matriculaRepository;
 
   private <T> T save(T entity) {
     em.persist(entity);
