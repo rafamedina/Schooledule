@@ -44,9 +44,7 @@ public class UsuarioService {
         calificacionRepository.findByAlumnoIdAndPeriodoId(usuarioId, periodoId);
 
     String periodoNombre =
-        calificaciones.isEmpty()
-            ? null
-            : calificaciones.get(0).getItemEvaluable().getPeriodoEvaluacion().getNombre();
+        periodoRepository.findById(periodoId).map(p -> p.getNombre()).orElse(null);
 
     return gradeDashboardMapper.toDto(calificaciones, periodoNombre);
   }

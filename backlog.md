@@ -1,22 +1,22 @@
 16/04
-    mapear dto con mapstruct,
-    crear los dto con record,
+    -[x]  mapear dto con mapstruct,
+    -[x] crear los dto con record,
 
 17/04
-    dashboard admin
-    funcionalidades de admin
+    -[] dashboard admin
+    -[] funcionalidades de admin
 
 18/04
-    dashboard alumno
-    empezar con memoria
+    -[] dashboard alumno
+    -[] empezar con memoria
 
 19/04
-    memoria
-    video
+    -[] memoria
+    -[] video
 
 
 TOTAL ENTREGA 50%
-    Login, Security Config, admin panel funcional, vista de usuario funcional y correcion de errores
+    -[] Login, Security Config, admin panel funcional, vista de usuario funcional y correcion de errores
 
 
 dashboard profesor
