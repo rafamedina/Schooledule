@@ -1,5 +1,6 @@
 /**
  * Lógica del modal de calificaciones del profesor.
+ * Jerarquía: Periodo → RA (ItemEvaluable) → CE (CriterioEvaluacion).
  * Vanilla JS, sin frameworks. CSRF leído de meta tags (Spring Security).
  */
 
@@ -35,7 +36,6 @@ function wireModalButtons() {
     .addEventListener("click", closeModal);
   document.getElementById("saveGrades").addEventListener("click", saveGrades);
 
-  // ESC cierra el modal nativo del dialog
   modal.addEventListener("cancel", (e) => {
     e.preventDefault();
     closeModal();
@@ -61,7 +61,9 @@ async function openModal(matriculaId) {
     currentData = await resp.json();
     renderModal(currentData);
   } catch (err) {
-    body.innerHTML = `<p style="padding:1rem;color:var(--hot)">Error al cargar las notas: ${err.message}</p>`;
+    body.innerHTML = `<p style="padding:1rem;color:var(--hot)">Error al cargar las notas: ${escHtml(
+      err.message,
+    )}</p>`;
   }
 }
 
@@ -80,12 +82,13 @@ function renderModal(data) {
   });
 }
 
-/** Construye el DOM de un periodo con su tabla de items evaluables. */
+/** Construye el DOM de un periodo con sus bloques de RA. */
 function renderPeriodo(periodo) {
   const section = document.createElement("section");
   section.className =
     "periodo-section" + (periodo.cerrado ? " periodo-section--cerrado" : "");
   section.dataset.periodoId = periodo.id;
+  section.dataset.peso = periodo.peso != null ? periodo.peso : "1";
 
   const pesoLabel = periodo.peso != null ? `${periodo.peso}%` : "—";
   const mediaFmt = periodo.media != null ? formatNota(periodo.media) : "—";
@@ -98,111 +101,187 @@ function renderPeriodo(periodo) {
       <span class="periodo-media" data-periodo-media="${
         periodo.id
       }">${mediaFmt}</span>
-    </div>
-    <table class="grade-table" aria-label="Items evaluables de ${escHtml(
-      periodo.periodoNombre,
-    )}">
-      <thead>
-        <tr>
-          <th scope="col">Ítem</th>
-          <th scope="col">Tipo</th>
-          <th scope="col">Fecha</th>
-          <th scope="col">Nota</th>
-          <th scope="col">Comentario</th>
-        </tr>
-      </thead>
-      <tbody id="periodo-body-${periodo.id}"></tbody>
-    </table>`;
+    </div>`;
 
-  const tbody = section.querySelector(`#periodo-body-${periodo.id}`);
   periodo.items.forEach((item) => {
-    const tr = renderItemRow(item, periodo);
-    tbody.appendChild(tr);
+    section.appendChild(renderRaBlock(periodo, item));
   });
 
   return section;
 }
 
-/** Construye una fila de la tabla para un item evaluable. */
-function renderItemRow(item, periodo) {
+/** Construye un bloque <details> para un RA con sus CEs. */
+function renderRaBlock(periodo, item) {
+  const details = document.createElement("details");
+  details.className = "ra-block";
+  details.open = true;
+  details.dataset.raId = item.resultadoAprendizajeId;
+  details.dataset.periodoId = periodo.id;
+
+  const mediaRaFmt = item.mediaRa != null ? formatNota(item.mediaRa) : "—";
+
+  const summary = document.createElement("summary");
+  summary.className = "ra-block__summary";
+  summary.innerHTML = `
+    <span class="ra-block__toggle">▸</span>
+    <span class="ra-block__code">${escHtml(item.raCodigo)}</span>
+    <span class="ra-block__name" title="${escHtml(
+      item.raDescripcion,
+    )}">${escHtml(item.itemNombre)}</span>
+    <span class="ra-block__media" data-ra-media="${
+      item.resultadoAprendizajeId
+    }-${periodo.id}">${mediaRaFmt}</span>`;
+
+  details.appendChild(summary);
+
+  // Tabla de CEs
+  const table = document.createElement("table");
+  table.className = "ce-table";
+  table.setAttribute(
+    "aria-label",
+    `Criterios de evaluación de ${escHtml(item.raCodigo)}`,
+  );
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th scope="col">CE</th>
+        <th scope="col">Descripción</th>
+        <th scope="col">Nota</th>
+        <th scope="col">Comentario</th>
+      </tr>
+    </thead>
+    <tbody></tbody>`;
+
+  const tbody = table.querySelector("tbody");
+  item.criterios.forEach((ce) => {
+    tbody.appendChild(renderCeRow(periodo, item, ce));
+  });
+
+  details.appendChild(table);
+  return details;
+}
+
+/** Construye una fila para un criterio de evaluación. */
+function renderCeRow(periodo, item, ce) {
   const tr = document.createElement("tr");
-  const fechaFmt = item.fecha
-    ? new Date(item.fecha).toLocaleDateString("es-ES")
-    : "—";
-  const valorStr = item.valor != null ? item.valor : "";
+  const valorStr = ce.valor != null ? ce.valor : "";
+  const ceKey = `${item.resultadoAprendizajeId}-${periodo.id}`;
 
   tr.innerHTML = `
-    <td>${escHtml(item.itemNombre)}</td>
-    <td><span class="grade-table__tipo">${escHtml(
-      item.tipoActividad,
-    )}</span></td>
-    <td>${fechaFmt}</td>
+    <td class="ce-table__code">${escHtml(ce.codigo)}</td>
+    <td class="ce-table__desc">${escHtml(ce.descripcion)}</td>
     <td>
-      <label class="sr-only" for="nota-${item.itemEvaluableId}">
-        Nota para ${escHtml(item.itemNombre)} en ${escHtml(
-          periodo.periodoNombre,
-        )}
+      <label class="sr-only" for="nota-ce-${ce.criterioEvaluacionId}">
+        Nota para CE ${escHtml(ce.codigo)} de ${escHtml(
+          item.raCodigo,
+        )} en ${escHtml(periodo.periodoNombre)}
       </label>
       <input
-        class="grade-input"
+        class="ce-nota-input grade-input"
         type="number"
-        id="nota-${item.itemEvaluableId}"
-        name="nota-${item.itemEvaluableId}"
+        id="nota-ce-${ce.criterioEvaluacionId}"
+        name="nota-ce-${ce.criterioEvaluacionId}"
         step="0.01" min="0" max="10"
-        data-item-id="${item.itemEvaluableId}"
+        data-ce-id="${ce.criterioEvaluacionId}"
+        data-ra-key="${ceKey}"
         data-periodo-id="${periodo.id}"
-        data-calificacion-id="${item.calificacionId ?? ""}"
+        data-calificacion-id="${ce.calificacionId ?? ""}"
         value="${valorStr}"
         ${periodo.cerrado ? 'disabled aria-disabled="true"' : ""}
-        aria-label="Nota para ${escHtml(item.itemNombre)}"/>
+        aria-label="Nota para criterio ${escHtml(ce.codigo)} de ${escHtml(
+          item.raCodigo,
+        )}"/>
     </td>
     <td>
-      <label class="sr-only" for="comment-${item.itemEvaluableId}">
-        Comentario para ${escHtml(item.itemNombre)}
+      <label class="sr-only" for="comment-ce-${ce.criterioEvaluacionId}">
+        Comentario para CE ${escHtml(ce.codigo)} de ${escHtml(item.raCodigo)}
       </label>
       <input
-        class="comment-input"
+        class="ce-comment-input comment-input"
         type="text"
-        id="comment-${item.itemEvaluableId}"
-        name="comment-${item.itemEvaluableId}"
-        data-item-id="${item.itemEvaluableId}"
+        id="comment-ce-${ce.criterioEvaluacionId}"
+        name="comment-ce-${ce.criterioEvaluacionId}"
+        data-ce-id="${ce.criterioEvaluacionId}"
         maxlength="1000"
-        value="${escHtml(item.comentario ?? "")}"
+        value="${escHtml(ce.comentario ?? "")}"
         ${periodo.cerrado ? 'disabled aria-disabled="true"' : ""}
         placeholder="Comentario opcional"/>
     </td>`;
 
-  // Recalculo reactivo de la media del periodo al editar
-  tr.querySelector(".grade-input").addEventListener("input", () => {
-    recomputeClientMedias(periodo.id);
+  tr.querySelector(".ce-nota-input").addEventListener("input", () => {
+    recomputeClientMedias(ceKey, periodo.id);
   });
 
   return tr;
 }
 
 /**
- * Recalcula la media del periodo en el cliente después de cada cambio de input.
+ * Recalcula las medias en cascada: CE inputs → mediaRa → mediaPeriodo → mediaGlobal.
  * El servidor es la fuente autoritativa; esto es solo retroalimentación visual.
  */
-function recomputeClientMedias(periodoId) {
-  const inputs = document.querySelectorAll(
-    `input.grade-input[data-periodo-id="${periodoId}"]`,
+function recomputeClientMedias(raKey, periodoId) {
+  // 1. mediaRa = media de los CE inputs del RA
+  const raInputs = document.querySelectorAll(
+    `input.grade-input[data-ra-key="${raKey}"]`,
   );
-  const valores = [];
-  inputs.forEach((inp) => {
+  const raValues = [];
+  raInputs.forEach((inp) => {
     const v = parseFloat(inp.value);
-    if (!isNaN(v) && inp.value.trim() !== "") valores.push(v);
+    if (!isNaN(v) && inp.value.trim() !== "") raValues.push(v);
+  });
+  const mediaRa =
+    raValues.length > 0
+      ? raValues.reduce((a, b) => a + b, 0) / raValues.length
+      : null;
+
+  const raMediaEl = document.querySelector(`[data-ra-media="${raKey}"]`);
+  if (raMediaEl)
+    raMediaEl.textContent = mediaRa != null ? formatNota(mediaRa) : "—";
+
+  // 2. mediaPeriodo = media de todos los mediaRa del periodo
+  const allRaMediaEls = document.querySelectorAll(
+    `section[data-periodo-id="${periodoId}"] [data-ra-media]`,
+  );
+  const periodoValues = [];
+  allRaMediaEls.forEach((el) => {
+    const v = parseFloat(el.textContent);
+    if (!isNaN(v)) periodoValues.push(v);
+  });
+  const mediaPeriodo =
+    periodoValues.length > 0
+      ? periodoValues.reduce((a, b) => a + b, 0) / periodoValues.length
+      : null;
+
+  const periodoMediaEl = document.querySelector(
+    `[data-periodo-media="${periodoId}"]`,
+  );
+  if (periodoMediaEl)
+    periodoMediaEl.textContent =
+      mediaPeriodo != null ? formatNota(mediaPeriodo) : "—";
+
+  // 3. mediaGlobal = Σ(mediaPeriodo * peso) / Σ(peso)
+  recomputeGlobalMedia();
+}
+
+function recomputeGlobalMedia() {
+  const periodoSections = document.querySelectorAll("section[data-periodo-id]");
+  let sumaPonderada = 0;
+  let sumaPesos = 0;
+
+  periodoSections.forEach((sec) => {
+    const pid = sec.dataset.periodoId;
+    const peso = parseFloat(sec.dataset.peso) || 1;
+    const mediaEl = sec.querySelector(`[data-periodo-media="${pid}"]`);
+    if (!mediaEl) return;
+    const v = parseFloat(mediaEl.textContent);
+    if (!isNaN(v)) {
+      sumaPonderada += v * peso;
+      sumaPesos += peso;
+    }
   });
 
-  const mediaEl = document.querySelector(`[data-periodo-media="${periodoId}"]`);
-  if (!mediaEl) return;
-
-  if (valores.length === 0) {
-    mediaEl.textContent = "—";
-  } else {
-    const media = valores.reduce((a, b) => a + b, 0) / valores.length;
-    mediaEl.textContent = formatNota(media);
-  }
+  const mediaGlobal = sumaPesos > 0 ? sumaPonderada / sumaPesos : null;
+  updateMediaGlobal(mediaGlobal);
 }
 
 /** Envía las notas al servidor y re-renderiza el modal con la respuesta autoritativa. */
@@ -215,12 +294,12 @@ async function saveGrades() {
   document
     .querySelectorAll("input.grade-input:not([disabled])")
     .forEach((inp) => {
-      const itemId = parseInt(inp.dataset.itemId, 10);
+      const ceId = parseInt(inp.dataset.ceId, 10);
       const valorRaw = inp.value.trim();
       const valor = valorRaw !== "" ? parseFloat(valorRaw) : null;
-      const commentEl = document.getElementById(`comment-${itemId}`);
+      const commentEl = document.getElementById(`comment-ce-${ceId}`);
       const comentario = commentEl ? commentEl.value.trim() || null : null;
-      entries.push({ itemEvaluableId: itemId, valor, comentario });
+      entries.push({ criterioEvaluacionId: ceId, valor, comentario });
     });
 
   const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
@@ -255,7 +334,7 @@ async function saveGrades() {
     }
 
     currentData = await resp.json();
-    renderModal(currentData); // re-render con datos del servidor
+    renderModal(currentData);
   } catch (err) {
     alert(`Error al guardar: ${err.message}`);
   } finally {
@@ -279,6 +358,7 @@ function closeModal() {
 /** Actualiza el display de media global. */
 function updateMediaGlobal(media) {
   const el = document.getElementById("mediaGlobal");
+  if (!el) return;
   el.textContent = media != null ? formatNota(media) : "—";
 }
 
@@ -291,7 +371,6 @@ function trapFocus(modal) {
   lastFocused = document.activeElement;
   const focusable = modal.querySelectorAll(FOCUSABLE);
   if (focusable.length) focusable[0].focus();
-
   modal.addEventListener("keydown", handleFocusTrap);
 }
 

@@ -22,6 +22,7 @@ public class TeacherDashboardService {
   private final MatriculaRepository matriculaRepo;
   private final ItemEvaluableRepository itemEvaluableRepo;
   private final CalificacionRepository calificacionRepo;
+  private final CriterioEvaluacionRepository ceRepo;
   private final TeacherDashboardMapper mapper;
   private final EntityManager entityManager;
 
@@ -30,17 +31,18 @@ public class TeacherDashboardService {
       MatriculaRepository matriculaRepo,
       ItemEvaluableRepository itemEvaluableRepo,
       CalificacionRepository calificacionRepo,
+      CriterioEvaluacionRepository ceRepo,
       TeacherDashboardMapper mapper,
       EntityManager entityManager) {
     this.imparticionRepo = imparticionRepo;
     this.matriculaRepo = matriculaRepo;
     this.itemEvaluableRepo = itemEvaluableRepo;
     this.calificacionRepo = calificacionRepo;
+    this.ceRepo = ceRepo;
     this.mapper = mapper;
     this.entityManager = entityManager;
   }
 
-  /** Devuelve los centros del profesor con el conteo de sus imparticiones activas. */
   public List<TeacherCenterDTO> getCentersForTeacher(Usuario profesor) {
     return profesor.getCentros().stream()
         .map(
@@ -55,7 +57,6 @@ public class TeacherDashboardService {
         .collect(Collectors.toList());
   }
 
-  /** Lista las asignaturas (imparticiones) de un profesor en un centro concreto. */
   public List<TeacherSubjectDTO> getSubjectsForTeacherAndCenter(
       Integer profesorId, Integer centroId) {
     return imparticionRepo.findByProfesorIdAndCentroId(profesorId, centroId).stream()
@@ -70,7 +71,6 @@ public class TeacherDashboardService {
         .collect(Collectors.toList());
   }
 
-  /** Devuelve el listado de alumnos activos de una imparticion. Verifica propiedad. */
   public List<TeacherStudentRowDTO> getRosterForImparticion(
       Integer profesorId, Integer imparticionId) {
     if (!imparticionRepo.existsByIdAndProfesorId(imparticionId, profesorId)) {
@@ -84,44 +84,53 @@ public class TeacherDashboardService {
         .collect(Collectors.toList());
   }
 
-  /** Construye el DTO completo de notas de un alumno agrupadas por periodo. Verifica propiedad. */
   public TeacherStudentGradesDTO getStudentGrades(Integer profesorId, Integer matriculaId) {
     Matricula matricula = loadMatriculaWithOwnershipCheck(profesorId, matriculaId);
     return buildGradesDTO(matricula);
   }
 
-  /**
-   * Upsert de calificaciones. Establece app.current_user para que el trigger de auditoría registre
-   * al profesor responsable.
-   */
   @Transactional
   public TeacherStudentGradesDTO upsertGrades(
       Integer profesorId, String profesorEmail, GradeUpsertRequest req) {
     Matricula matricula = loadMatriculaWithOwnershipCheck(profesorId, req.matriculaId());
 
-    // Inyecta el email del profesor en la sesión de Postgres para el trigger de auditoría.
-    // SET LOCAL no acepta bind params; set_config(name, value, is_local=true) sí los admite.
     entityManager
         .createNativeQuery("SELECT set_config('app.usuario_actual', :u, true)")
         .setParameter("u", profesorEmail)
         .getSingleResult();
 
+    // RA ids válidos para esta impartición
+    List<ItemEvaluable> items =
+        itemEvaluableRepo.findByImparticionIdOrderByPeriodoEvaluacionIdAscFechaAsc(
+            matricula.getImparticion().getId());
+    Set<Integer> validRaIds =
+        items.stream().map(ie -> ie.getResultadoAprendizaje().getId()).collect(Collectors.toSet());
+
+    // Mapa raId → item (para verificar cerrado)
+    Map<Integer, ItemEvaluable> itemByRaId =
+        items.stream()
+            .collect(
+                Collectors.toMap(
+                    ie -> ie.getResultadoAprendizaje().getId(),
+                    ie -> ie,
+                    (a, b) -> a)); // en caso de duplicado (recuperación), usar el primero
+
     for (GradeUpsertRequest.Entry entry : req.entries()) {
-      ItemEvaluable item =
-          itemEvaluableRepo
-              .findById(entry.itemEvaluableId())
+      CriterioEvaluacion ce =
+          ceRepo
+              .findById(entry.criterioEvaluacionId())
               .orElseThrow(
                   () ->
                       new IllegalArgumentException(
-                          "Item evaluable no encontrado: " + entry.itemEvaluableId()));
+                          "Criterio de evaluación no encontrado: " + entry.criterioEvaluacionId()));
 
-      // El item debe pertenecer a la impartición de la matrícula
-      if (!item.getImparticion().getId().equals(matricula.getImparticion().getId())) {
+      Integer raId = ce.getResultadoAprendizaje().getId();
+      if (!validRaIds.contains(raId)) {
         throw new IllegalArgumentException(
-            "El item " + entry.itemEvaluableId() + " no pertenece a esta impartición");
+            "El criterio " + entry.criterioEvaluacionId() + " no pertenece a esta impartición");
       }
 
-      // No se puede modificar un periodo cerrado
+      ItemEvaluable item = itemByRaId.get(raId);
       if (Boolean.TRUE.equals(item.getPeriodoEvaluacion().getCerrado())) {
         throw new IllegalStateException(
             "El periodo '"
@@ -130,7 +139,7 @@ public class TeacherDashboardService {
       }
 
       Optional<Calificacion> existing =
-          calificacionRepo.findByMatriculaIdAndItemEvaluableId(matricula.getId(), item.getId());
+          calificacionRepo.findByMatriculaIdAndCriterioEvaluacionId(matricula.getId(), ce.getId());
 
       if (existing.isPresent()) {
         Calificacion cal = existing.get();
@@ -141,7 +150,7 @@ public class TeacherDashboardService {
         calificacionRepo.save(
             Calificacion.builder()
                 .matricula(matricula)
-                .itemEvaluable(item)
+                .criterioEvaluacion(ce)
                 .valor(entry.valor())
                 .comentario(entry.comentario())
                 .build());
@@ -151,7 +160,6 @@ public class TeacherDashboardService {
     return buildGradesDTO(matricula);
   }
 
-  /** Devuelve el centro_id de una imparticion verificando que pertenece al profesor. */
   public Integer getCentroIdByImparticion(Integer profesorId, Integer imparticionId) {
     return imparticionRepo
         .findById(imparticionId)
@@ -179,7 +187,33 @@ public class TeacherDashboardService {
     List<ItemEvaluable> items =
         itemEvaluableRepo.findByImparticionIdOrderByPeriodoEvaluacionIdAscFechaAsc(imparticionId);
 
-    // Agrupa items por periodo
+    // Recoger todos los RA ids de los items
+    List<Integer> raIds =
+        items.stream()
+            .map(ie -> ie.getResultadoAprendizaje().getId())
+            .distinct()
+            .collect(Collectors.toList());
+
+    // CEs agrupados por RA id
+    List<CriterioEvaluacion> allCes =
+        ceRepo.findByResultadoAprendizajeIdInOrderByResultadoAprendizajeIdAscCodigoAsc(raIds);
+    Map<Integer, List<CriterioEvaluacion>> cesByRaId =
+        allCes.stream()
+            .collect(
+                Collectors.groupingBy(
+                    ce -> ce.getResultadoAprendizaje().getId(),
+                    LinkedHashMap::new,
+                    Collectors.toList()));
+
+    // Calificaciones del alumno para todos los CEs relevantes
+    List<Integer> allCeIds =
+        allCes.stream().map(CriterioEvaluacion::getId).collect(Collectors.toList());
+    List<Calificacion> grades =
+        calificacionRepo.findByMatriculaIdAndCriterioEvaluacionIdIn(matricula.getId(), allCeIds);
+    Map<Integer, Calificacion> gradeByCeId =
+        grades.stream().collect(Collectors.toMap(c -> c.getCriterioEvaluacion().getId(), c -> c));
+
+    // Agrupar items por periodo manteniendo el orden
     Map<PeriodoEvaluacion, List<ItemEvaluable>> byPeriodo = new LinkedHashMap<>();
     for (ItemEvaluable item : items) {
       byPeriodo.computeIfAbsent(item.getPeriodoEvaluacion(), k -> new ArrayList<>()).add(item);
@@ -188,25 +222,41 @@ public class TeacherDashboardService {
     List<TeacherPeriodoGradesDTO> periodos = new ArrayList<>();
     for (Map.Entry<PeriodoEvaluacion, List<ItemEvaluable>> entry : byPeriodo.entrySet()) {
       PeriodoEvaluacion periodo = entry.getKey();
-      List<TeacherGradeItemDTO> gradeItems = new ArrayList<>();
+      List<TeacherGradeItemDTO> itemDtos = new ArrayList<>();
 
       for (ItemEvaluable item : entry.getValue()) {
-        Calificacion existing =
-            calificacionRepo
-                .findByMatriculaIdAndItemEvaluableId(matricula.getId(), item.getId())
-                .orElse(null);
-        gradeItems.add(mapper.toGradeItem(item, existing));
+        ResultadoAprendizaje ra = item.getResultadoAprendizaje();
+        List<CriterioEvaluacion> ces = cesByRaId.getOrDefault(ra.getId(), Collections.emptyList());
+
+        List<TeacherCriterioGradeDTO> criterioDtos =
+            ces.stream()
+                .map(ce -> mapper.toCriterioGrade(ce, gradeByCeId.get(ce.getId())))
+                .collect(Collectors.toList());
+
+        BigDecimal mediaRa = computeCeMedia(criterioDtos);
+
+        itemDtos.add(
+            new TeacherGradeItemDTO(
+                item.getId(),
+                ra.getId(),
+                ra.getCodigo(),
+                ra.getDescripcion(),
+                item.getNombre(),
+                item.getTipo().name(),
+                item.getFecha(),
+                criterioDtos,
+                mediaRa));
       }
 
-      BigDecimal media = computeMedia(gradeItems);
+      BigDecimal mediaPeriodo = computePeriodoMedia(itemDtos);
       periodos.add(
           new TeacherPeriodoGradesDTO(
               periodo.getId(),
               periodo.getNombre(),
               periodo.getPeso(),
               Boolean.TRUE.equals(periodo.getCerrado()),
-              gradeItems,
-              media));
+              itemDtos,
+              mediaPeriodo));
     }
 
     BigDecimal mediaGlobal = computeMediaGlobal(periodos);
@@ -221,11 +271,10 @@ public class TeacherDashboardService {
         matricula.getId(), alumnoNombre, label, periodos, mediaGlobal);
   }
 
-  /** Media aritmética de los valores no nulos de un periodo (2 decimales HALF_UP). */
-  private BigDecimal computeMedia(List<TeacherGradeItemDTO> items) {
+  private BigDecimal computeCeMedia(List<TeacherCriterioGradeDTO> criterios) {
     List<BigDecimal> notas =
-        items.stream()
-            .map(TeacherGradeItemDTO::valor)
+        criterios.stream()
+            .map(TeacherCriterioGradeDTO::valor)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
     if (notas.isEmpty()) return null;
@@ -233,7 +282,17 @@ public class TeacherDashboardService {
     return suma.divide(new BigDecimal(notas.size()), 2, RoundingMode.HALF_UP);
   }
 
-  /** Media global ponderada por el peso de cada periodo (Σ media_i * peso_i / Σ peso_i). */
+  private BigDecimal computePeriodoMedia(List<TeacherGradeItemDTO> items) {
+    List<BigDecimal> medias =
+        items.stream()
+            .map(TeacherGradeItemDTO::mediaRa)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+    if (medias.isEmpty()) return null;
+    BigDecimal suma = medias.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+    return suma.divide(new BigDecimal(medias.size()), 2, RoundingMode.HALF_UP);
+  }
+
   private BigDecimal computeMediaGlobal(List<TeacherPeriodoGradesDTO> periodos) {
     List<TeacherPeriodoGradesDTO> conNota =
         periodos.stream().filter(p -> p.media() != null).collect(Collectors.toList());
@@ -243,7 +302,6 @@ public class TeacherDashboardService {
     BigDecimal sumaPesos = BigDecimal.ZERO;
 
     for (TeacherPeriodoGradesDTO p : conNota) {
-      // Si no tiene peso definido, se trata como 1
       BigDecimal peso = p.peso() != null ? p.peso() : BigDecimal.ONE;
       sumaPonderada = sumaPonderada.add(p.media().multiply(peso));
       sumaPesos = sumaPesos.add(peso);

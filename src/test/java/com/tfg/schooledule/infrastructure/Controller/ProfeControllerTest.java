@@ -55,6 +55,21 @@ class ProfeControllerTest {
         .build();
   }
 
+  private TeacherGradeItemDTO buildItemDto(BigDecimal mediaRa) {
+    return new TeacherGradeItemDTO(
+        1,
+        1,
+        "RA1",
+        "Identifica sistemas ERP",
+        "Examen RA1",
+        "EXAMEN",
+        LocalDate.now(),
+        List.of(
+            new TeacherCriterioGradeDTO(1, "a", "CE-a", mediaRa, null, mediaRa != null ? 1 : null),
+            new TeacherCriterioGradeDTO(2, "b", "CE-b", null, null, null)),
+        mediaRa);
+  }
+
   @Test
   @WithMockUser(username = "juan@tfg.com", roles = "PROFESOR")
   void dashboard_200_yModelContieneCentros() throws Exception {
@@ -102,7 +117,7 @@ class ProfeControllerTest {
 
   @Test
   @WithMockUser(username = "juan@tfg.com", roles = "PROFESOR")
-  void getNotas_devuelveJsonConPeriodos() throws Exception {
+  void getNotas_devuelveJsonConPeriodoItemCriterioHierarchy() throws Exception {
     Usuario profe = buildProfe();
     TeacherStudentGradesDTO dto =
         new TeacherStudentGradesDTO(
@@ -115,15 +130,7 @@ class ProfeControllerTest {
                     "P1",
                     new BigDecimal("100.00"),
                     false,
-                    List.of(
-                        new TeacherGradeItemDTO(
-                            1,
-                            "Examen",
-                            "EXAMEN",
-                            LocalDate.now(),
-                            new BigDecimal("8.50"),
-                            null,
-                            1)),
+                    List.of(buildItemDto(new BigDecimal("8.50"))),
                     new BigDecimal("8.50"))),
             new BigDecimal("8.50"));
 
@@ -134,7 +141,10 @@ class ProfeControllerTest {
         .perform(get("/profe/api/matricula/1/notas"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.periodos[0].media").value(8.50))
-        .andExpect(jsonPath("$.alumnoNombre").value("Ana Lopez"));
+        .andExpect(jsonPath("$.alumnoNombre").value("Ana Lopez"))
+        .andExpect(jsonPath("$.periodos[0].items[0].criterios").isArray())
+        .andExpect(jsonPath("$.periodos[0].items[0].criterios.length()").value(2))
+        .andExpect(jsonPath("$.periodos[0].items[0].mediaRa").value(8.50));
   }
 
   @Test
@@ -143,7 +153,6 @@ class ProfeControllerTest {
     Usuario profe = buildProfe();
     when(usuarioService.buscarPorCorreo("juan@tfg.com")).thenReturn(Optional.of(profe));
 
-    // matriculaId en body = 99 pero path = 1
     GradeUpsertRequest req =
         new GradeUpsertRequest(
             99, List.of(new GradeUpsertRequest.Entry(1, new BigDecimal("7.00"), null)));
@@ -178,15 +187,7 @@ class ProfeControllerTest {
                     "P1",
                     new BigDecimal("100.00"),
                     false,
-                    List.of(
-                        new TeacherGradeItemDTO(
-                            1,
-                            "Examen",
-                            "EXAMEN",
-                            LocalDate.now(),
-                            new BigDecimal("9.00"),
-                            "Perfecto",
-                            1)),
+                    List.of(buildItemDto(new BigDecimal("9.00"))),
                     new BigDecimal("9.00"))),
             new BigDecimal("9.00"));
 
@@ -203,7 +204,8 @@ class ProfeControllerTest {
                         .SecurityMockMvcRequestPostProcessors.csrf()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.mediaGlobal").value(9.00))
-        .andExpect(jsonPath("$.periodos[0].items[0].valor").value(9.00));
+        .andExpect(jsonPath("$.periodos[0].items[0].mediaRa").value(9.00))
+        .andExpect(jsonPath("$.periodos[0].items[0].criterios[0].valor").value(9.00));
   }
 
   @Test
@@ -290,7 +292,7 @@ class ProfeControllerTest {
 
     // valor = 15 → supera @DecimalMax("10.00") → MethodArgumentNotValidException → 400 JSON
     String cuerpoInvalido =
-        "{\"matriculaId\":1,\"entries\":[{\"itemEvaluableId\":1,\"valor\":15.00}]}";
+        "{\"matriculaId\":1,\"entries\":[{\"criterioEvaluacionId\":1,\"valor\":15.00}]}";
 
     mockMvc
         .perform(

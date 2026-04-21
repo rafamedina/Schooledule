@@ -7,7 +7,6 @@ import static org.mockito.Mockito.*;
 import com.tfg.schooledule.domain.dto.AlumnoProfileDTO;
 import com.tfg.schooledule.domain.dto.GradeDashboardDTO;
 import com.tfg.schooledule.domain.entity.*;
-import com.tfg.schooledule.domain.enums.TipoActividad;
 import com.tfg.schooledule.infrastructure.mapper.AlumnoProfileMapper;
 import com.tfg.schooledule.infrastructure.mapper.GradeDashboardMapper;
 import com.tfg.schooledule.infrastructure.repository.CalificacionRepository;
@@ -109,16 +108,12 @@ public class UsuarioServiceTest {
     Modulo modulo = Modulo.builder().nombre("Programacion").build();
     Imparticion imparticion = Imparticion.builder().modulo(modulo).build();
     Matricula matricula = Matricula.builder().imparticion(imparticion).build();
-    ItemEvaluable item =
-        ItemEvaluable.builder()
-            .nombre("Examen 1")
-            .tipo(TipoActividad.EXAMEN)
-            .periodoEvaluacion(periodo)
-            .build();
+    CriterioEvaluacion ce =
+        CriterioEvaluacion.builder().id(1).codigo("a").descripcion("Examen 1").build();
     Calificacion calif =
         Calificacion.builder()
             .matricula(matricula)
-            .itemEvaluable(item)
+            .criterioEvaluacion(ce)
             .valor(new BigDecimal("8.5"))
             .build();
 
@@ -127,6 +122,7 @@ public class UsuarioServiceTest {
 
     when(calificacionRepository.findByAlumnoIdAndPeriodoId(usuarioId, periodoId))
         .thenReturn(List.of(calif));
+    when(periodoRepository.findById(periodoId)).thenReturn(Optional.of(periodo));
     when(gradeDashboardMapper.toDto(any(), eq("1er Trimestre"))).thenReturn(expected);
 
     GradeDashboardDTO dashboard = usuarioService.getStudentGrades(usuarioId, periodoId);

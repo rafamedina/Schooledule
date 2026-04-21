@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.tfg.schooledule.domain.dto.GradeDashboardDTO;
 import com.tfg.schooledule.domain.entity.*;
-import com.tfg.schooledule.domain.enums.TipoActividad;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +19,6 @@ class GradeDashboardMapperTest {
   void setUp() throws Exception {
     GradeMapper gradeMapper = Mappers.getMapper(GradeMapper.class);
     mapper = new GradeDashboardMapperImpl();
-    // gradeMapper es protected en la clase abstracta, accesible desde el mismo paquete
     GradeDashboardMapperImpl impl = (GradeDashboardMapperImpl) mapper;
     impl.gradeMapper = gradeMapper;
   }
@@ -29,7 +27,8 @@ class GradeDashboardMapperTest {
   void toDto_groupsCalificacionesByModulo() {
     Modulo modulo1 = Modulo.builder().nombre("Programacion").build();
     Modulo modulo2 = Modulo.builder().nombre("Bases de Datos").build();
-    ItemEvaluable item = ItemEvaluable.builder().nombre("E1").tipo(TipoActividad.EXAMEN).build();
+    CriterioEvaluacion ce =
+        CriterioEvaluacion.builder().id(1).codigo("a").descripcion("E1").build();
 
     Imparticion imp1 = Imparticion.builder().modulo(modulo1).build();
     Imparticion imp2 = Imparticion.builder().modulo(modulo2).build();
@@ -40,17 +39,17 @@ class GradeDashboardMapperTest {
         List.of(
             Calificacion.builder()
                 .matricula(m1)
-                .itemEvaluable(item)
+                .criterioEvaluacion(ce)
                 .valor(BigDecimal.valueOf(8))
                 .build(),
             Calificacion.builder()
                 .matricula(m1)
-                .itemEvaluable(item)
+                .criterioEvaluacion(ce)
                 .valor(BigDecimal.valueOf(9))
                 .build(),
             Calificacion.builder()
                 .matricula(m2)
-                .itemEvaluable(item)
+                .criterioEvaluacion(ce)
                 .valor(BigDecimal.valueOf(7))
                 .build());
 

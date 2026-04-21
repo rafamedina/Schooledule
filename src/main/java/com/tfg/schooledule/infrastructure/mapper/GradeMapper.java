@@ -9,11 +9,13 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface GradeMapper {
 
-  @Mapping(target = "itemNombre", source = "itemEvaluable.nombre")
-  @Mapping(target = "fecha", source = "itemEvaluable.fecha")
   @Mapping(
-      target = "tipoActividad",
-      expression = "java(calificacion.getItemEvaluable().getTipo().name())")
+      target = "itemNombre",
+      expression =
+          "java(calificacion.getCriterioEvaluacion().getCodigo()"
+              + " + \" – \" + calificacion.getCriterioEvaluacion().getDescripcion())")
+  @Mapping(target = "fecha", ignore = true)
+  @Mapping(target = "tipoActividad", ignore = true)
   GradeDTO toDto(Calificacion calificacion);
 
   List<GradeDTO> toDtoList(List<Calificacion> calificaciones);

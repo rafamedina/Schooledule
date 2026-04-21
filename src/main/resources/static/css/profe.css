@@ -493,12 +493,15 @@ table,
 
 /* ── Modal de notas ───────────────────────────────────────────────────────── */
 dialog#gradesModal {
+  position: fixed;
+  inset: 0;
+  margin: auto;
   border: none;
   border-radius: 8px;
   padding: 0;
   max-width: min(860px, 95vw);
   width: 100%;
-  max-height: 90vh;
+  max-height: min(90vh, 800px);
   overflow: hidden;
   background: var(--paper);
   box-shadow:
@@ -514,7 +517,8 @@ dialog#gradesModal::backdrop {
 .modal-layout {
   display: flex;
   flex-direction: column;
-  max-height: 90vh;
+  min-height: auto;
+  height: 100%;
 }
 
 .modal-header {
@@ -891,4 +895,200 @@ dialog#gradesModal::backdrop {
       transform: translateY(0);
     }
   }
+}
+
+/* ── Jerarquía RA / CE dentro del modal ──────────────────────────────────── */
+
+.periodo-section {
+  margin-bottom: 1.5rem;
+}
+
+.periodo-section--cerrado {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.periodo-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 1rem;
+}
+
+.periodo-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.periodo-media {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.25rem;
+  color: var(--accent);
+  font-feature-settings: "lnum", "tnum";
+  margin-left: auto;
+}
+
+/* RA block */
+.ra-block {
+  border-top: 1px solid var(--rule);
+  padding: 0.75rem 0;
+}
+
+.ra-block + .ra-block {
+  border-top: none;
+}
+
+.ra-block__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  list-style: none;
+  padding: 0.25rem 0;
+  user-select: none;
+}
+
+.ra-block__summary::-webkit-details-marker {
+  display: none;
+}
+
+.ra-block__toggle {
+  font-size: 0.65rem;
+  color: var(--ink-muted);
+  transition: transform 160ms ease;
+  display: inline-block;
+}
+
+details[open] .ra-block__toggle {
+  transform: rotate(90deg);
+}
+
+.ra-block__code {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.ra-block__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ra-block__media {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.125rem;
+  color: var(--hot);
+  font-feature-settings: "lnum", "tnum";
+  white-space: nowrap;
+}
+
+/* CE rows */
+.ce-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.ce-table th {
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.ce-table td {
+  padding: 0.4rem 0.5rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+}
+
+.ce-table tr:last-child td {
+  border-bottom: none;
+}
+
+.ce-table__code {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  width: 2rem;
+}
+
+.ce-table__desc {
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+}
+
+.ce-nota-input {
+  width: 5.5rem;
+  text-align: right;
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: #fff;
+  color: var(--ink);
+  transition: border-color 120ms;
+}
+
+.ce-nota-input:focus {
+  outline: 2px solid var(--hot);
+  outline-offset: 2px;
+  border-color: var(--hot);
+}
+
+.ce-nota-input:disabled {
+  background: transparent;
+  border-color: transparent;
+  color: var(--ink-muted);
+}
+
+.ce-comment-input {
+  width: 100%;
+  min-width: 8rem;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.ce-comment-input:focus {
+  outline: 2px solid var(--hot);
+  outline-offset: 2px;
+  border-color: var(--hot);
+}
+
+.ce-comment-input:disabled {
+  background: transparent;
+  border-color: transparent;
+  color: var(--ink-muted);
 }

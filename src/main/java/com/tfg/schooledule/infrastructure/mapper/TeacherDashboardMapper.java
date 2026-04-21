@@ -31,10 +31,9 @@ public interface TeacherDashboardMapper {
   @Mapping(target = "esRepetidor", source = "m.esRepetidor")
   TeacherStudentRowDTO toStudentRow(Matricula m);
 
-  @Mapping(target = "itemEvaluableId", source = "item.id")
-  @Mapping(target = "itemNombre", source = "item.nombre")
-  @Mapping(target = "tipoActividad", expression = "java(item.getTipo().name())")
-  @Mapping(target = "fecha", source = "item.fecha")
+  @Mapping(target = "criterioEvaluacionId", source = "ce.id")
+  @Mapping(target = "codigo", source = "ce.codigo")
+  @Mapping(target = "descripcion", source = "ce.descripcion")
   @Mapping(target = "valor", expression = "java(existing != null ? existing.getValor() : null)")
   @Mapping(
       target = "comentario",
@@ -42,5 +41,5 @@ public interface TeacherDashboardMapper {
   @Mapping(
       target = "calificacionId",
       expression = "java(existing != null ? existing.getId() : null)")
-  TeacherGradeItemDTO toGradeItem(ItemEvaluable item, Calificacion existing);
+  TeacherCriterioGradeDTO toCriterioGrade(CriterioEvaluacion ce, Calificacion existing);
 }

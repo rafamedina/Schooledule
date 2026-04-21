@@ -23,7 +23,7 @@ repos:
     hooks:
       - id: spotless-apply
         name: ✨ Spotless Apply
-        entry: pwsh -NoProfile -Command "./mvnw spotless:apply"
+        entry: bash -c "./mvnw spotless:apply"
         language: system
         files: "\\.java$"
         pass_filenames: false
@@ -43,7 +43,7 @@ repos:
     hooks:
       - id: maven-check
         name: 🔨 Maven Validate
-        entry: pwsh -NoProfile -Command "./mvnw validate"
+        entry: bash -c "./mvnw validate"
         language: system
         files: pom.xml
         pass_filenames: false
