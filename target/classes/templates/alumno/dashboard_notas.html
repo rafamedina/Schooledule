@@ -1,68 +1,110 @@
 <!doctype html>
-<html
-  lang="es"
-  xmlns:th="http://www.thymeleaf.org"
-  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{alumno/menuAlumno}"
->
-  <head>
-    <title>Calificaciones — Schooledule</title>
-  </head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{alumno/fragments/layout :: head('Mis notas')}"></head>
   <body>
-    <div layout:fragment="content">
+    <div th:replace="~{alumno/fragments/layout :: topnav('notas')}"></div>
 
-      <form class="periodo-selector-form animate-in" method="get" th:action="@{/alumno/notas}">
-        <select name="periodoId" onchange="this.form.submit()">
-          <option
-            th:each="p : ${periodos}"
-            th:value="${p.id}"
-            th:text="${p.nombre}"
-            th:selected="${p.id == selectedPeriodoId}"
+    <main class="page-content notas-layout">
+      <aside class="notas-sidebar" aria-label="Mis clases">
+        <h2 class="notas-sidebar__title">Clases</h2>
+        <ul>
+          <li th:each="m : ${asignaturas}">
+            <a
+              th:href="@{/alumno/notas(imparticionId=${m.imparticion.id})}"
+              th:classappend="${m.imparticion.id == selectedImparticionId} ? 'is-active' : ''"
+              th:text="${m.imparticion.modulo.nombre}"
+            >
+              Módulo
+            </a>
+          </li>
+        </ul>
+      </aside>
+
+      <section class="notas-content">
+        <form
+          class="periodo-selector-form animate-in"
+          method="get"
+          th:action="@{/alumno/notas}"
+        >
+          <input
+            type="hidden"
+            name="imparticionId"
+            th:value="${selectedImparticionId}"
+          />
+          <select name="periodoId" onchange="this.form.submit()">
+            <option
+              th:each="p : ${periodos}"
+              th:value="${p.id}"
+              th:text="${p.nombre}"
+              th:selected="${p.id == selectedPeriodoId}"
+            >
+              Periodo
+            </option>
+          </select>
+        </form>
+
+        <div
+          th:if="${dashboard == null || dashboard.gradesByModulo.isEmpty()}"
+          class="empty-state animate-in"
+        >
+          <h2 class="empty-state__title">No hay notas publicadas.</h2>
+          <p class="empty-state__body">
+            No hay calificaciones en el periodo seleccionado.
+          </p>
+        </div>
+
+        <th:block th:if="${dashboard != null}">
+          <div
+            th:each="entry : ${dashboard.gradesByModulo}"
+            class="modulo-block animate-in"
           >
-            Periodo
-          </option>
-        </select>
-        <p class="masthead__subtitle" style="margin-top: 0.5rem;">Periodo de Evaluación</p>
-      </form>
-
-      <div th:if="${dashboard == null || dashboard.gradesByModulo.isEmpty()}" class="empty-state animate-in">
-        <h2 class="empty-state__title">No hay notas publicadas.</h2>
-        <p class="empty-state__body">No se han encontrado calificaciones para el periodo seleccionado.</p>
-      </div>
-
-      <div th:if="${dashboard != null}" th:each="entry : ${dashboard.gradesByModulo}" class="modulo-block animate-in">
-        <h2 class="modulo-title" th:text="${entry.key}">Nombre del Módulo</h2>
-
-        <table class="ce-table">
-          <thead>
-            <tr>
-              <th>Actividad</th>
-              <th>Tipo</th>
-              <th>Fecha</th>
-              <th style="text-align: right;">Nota</th>
-              <th>Comentario</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="grade : ${entry.value}">
-              <td class="ce-table__desc" th:text="${grade.itemNombre}">Examen Tema 1</td>
-              <td>
-                <span class="chip" th:text="${grade.tipoActividad}">TIPO</span>
-              </td>
-              <td class="ce-table__desc" th:text="${grade.fecha}">2026-02-25</td>
-              <td style="text-align: right;">
-                <span class="nota-badge"
+            <h2 class="modulo-title" th:text="${entry.key}">
+              Nombre del Módulo
+            </h2>
+            <table class="ce-table">
+              <thead>
+                <tr>
+                  <th>Actividad</th>
+                  <th>Tipo</th>
+                  <th>Fecha</th>
+                  <th style="text-align: right">Nota</th>
+                  <th>Comentario</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="grade : ${entry.value}">
+                  <td class="ce-table__desc" th:text="${grade.itemNombre}">
+                    Examen
+                  </td>
+                  <td>
+                    <span class="chip" th:text="${grade.tipoActividad}"
+                      >TIPO</span
+                    >
+                  </td>
+                  <td class="ce-table__desc" th:text="${grade.fecha}">
+                    2026-02-25
+                  </td>
+                  <td style="text-align: right">
+                    <span
+                      class="nota-badge"
                       th:text="${grade.valor}"
-                      th:classappend="${grade.valor != null && grade.valor < 5 ? 'nota-badge--fail' : 'nota-badge--pass'}">
-                  8.50
-                </span>
-              </td>
-              <td class="ce-table__desc" th:text="${grade.comentario}">Buen trabajo</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                      th:classappend="${grade.valor != null && grade.valor < 5 ? 'nota-badge--fail' : 'nota-badge--pass'}"
+                    >
+                      8.50
+                    </span>
+                  </td>
+                  <td class="ce-table__desc" th:text="${grade.comentario}">
+                    —
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </th:block>
+      </section>
+    </main>
 
-    </div>
+    <div th:replace="~{alumno/fragments/layout :: colophon}"></div>
+    <script defer th:src="@{/js/alumno-perfil-menu.js}"></script>
   </body>
 </html>

@@ -17,7 +17,15 @@
         </ul>
         <div class="sidebar-footer">
           <form th:action="@{/logout}" method="post">
-            <button type="submit" class="btn-editorial-ghost" style="width: 100%; color: var(--paper); border-color: rgba(247,242,234,0.3);">
+            <button
+              type="submit"
+              class="btn-editorial-ghost"
+              style="
+                width: 100%;
+                color: var(--paper);
+                border-color: rgba(247, 242, 234, 0.3);
+              "
+            >
               Cerrar Sesión
             </button>
           </form>
@@ -37,7 +45,8 @@
           </div>
           <div class="hero__right">
             <p class="hero__body">
-              Bienvenido al centro de control de Schooledule. Desde aquí podrás gestionar usuarios, centros y la infraestructura global.
+              Bienvenido al centro de control de Schooledule. Desde aquí podrás
+              gestionar usuarios, centros y la infraestructura global.
             </p>
           </div>
         </div>
@@ -57,9 +66,12 @@
           </div>
         </div>
 
-        <div class="empty-state animate-in" style="margin-top: 4rem;">
+        <div class="empty-state animate-in" style="margin-top: 4rem">
           <h2 class="empty-state__title">Modo Infraestructura</h2>
-          <p class="empty-state__body">Las herramientas de gestión granular se habilitarán en la próxima fase del track.</p>
+          <p class="empty-state__body">
+            Las herramientas de gestión granular se habilitarán en la próxima
+            fase del track.
+          </p>
         </div>
       </main>
     </div>

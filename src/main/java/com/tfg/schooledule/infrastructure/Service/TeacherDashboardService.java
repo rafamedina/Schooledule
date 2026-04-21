@@ -182,7 +182,12 @@ public class TeacherDashboardService {
                     "El profesor no tiene acceso a la matrícula " + matriculaId));
   }
 
-  private TeacherStudentGradesDTO buildGradesDTO(Matricula matricula) {
+  /**
+   * Construye el DTO completo de notas para una matrícula (periodos, RAs, CEs, medias). Público
+   * para que servicios con distinto criterio de autorización (profesor vs alumno) puedan reusar la
+   * construcción tras hacer su propia validación de ownership.
+   */
+  public TeacherStudentGradesDTO buildGradesDTO(Matricula matricula) {
     Integer imparticionId = matricula.getImparticion().getId();
     List<ItemEvaluable> items =
         itemEvaluableRepo.findByImparticionIdOrderByPeriodoEvaluacionIdAscFechaAsc(imparticionId);

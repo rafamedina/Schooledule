@@ -13,30 +13,50 @@
 
       <div class="roles-grid">
         <!-- card ADMIN -->
-        <a href="/admin/dashboard" class="role-card animate-in" th:if="${roles.contains('ROLE_ADMIN')}">
+        <a
+          href="/admin/dashboard"
+          class="role-card animate-in"
+          th:if="${roles.contains('ROLE_ADMIN')}"
+        >
           <div class="role-card__icon">✦</div>
           <span class="role-card__name">Administrador</span>
-          <p class="role-card__desc">Gestión de infraestructura, usuarios y centros educativos.</p>
+          <p class="role-card__desc">
+            Gestión de infraestructura, usuarios y centros educativos.
+          </p>
         </a>
 
         <!-- card PROFESOR -->
-        <a href="/profe/dashboard" class="role-card animate-in" th:if="${roles.contains('ROLE_PROFESOR')}">
+        <a
+          href="/profe/dashboard"
+          class="role-card animate-in"
+          th:if="${roles.contains('ROLE_PROFESOR')}"
+        >
           <div class="role-card__icon">✎</div>
           <span class="role-card__name">Profesor</span>
-          <p class="role-card__desc">Gestión de grupos, evaluaciones y seguimiento de alumnos.</p>
+          <p class="role-card__desc">
+            Gestión de grupos, evaluaciones y seguimiento de alumnos.
+          </p>
         </a>
 
         <!-- card ALUMNO -->
-        <a href="/alumno/dashboard" class="role-card animate-in" th:if="${roles.contains('ROLE_ALUMNO')}">
+        <a
+          href="/alumno/dashboard"
+          class="role-card animate-in"
+          th:if="${roles.contains('ROLE_ALUMNO')}"
+        >
           <div class="role-card__icon">⚒</div>
           <span class="role-card__name">Alumno</span>
-          <p class="role-card__desc">Consulta de calificaciones, horarios y expediente académico.</p>
+          <p class="role-card__desc">
+            Consulta de calificaciones, horarios y expediente académico.
+          </p>
         </a>
       </div>
 
       <div class="roles-logout animate-in">
         <form th:action="@{/logout}" method="post">
-          <button type="submit" class="btn-editorial-ghost">Cerrar sesión</button>
+          <button type="submit" class="btn-editorial-ghost">
+            Cerrar sesión
+          </button>
         </form>
       </div>
     </div>

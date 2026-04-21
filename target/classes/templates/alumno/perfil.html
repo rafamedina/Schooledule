@@ -1,50 +1,61 @@
 <!doctype html>
-<html
-  lang="es"
-  xmlns:th="http://www.thymeleaf.org"
-  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{alumno/menuAlumno}"
->
-  <head>
-    <title>Mi Perfil — Schooledule</title>
-  </head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{alumno/fragments/layout :: head('Mi perfil')}"></head>
   <body>
-    <div layout:fragment="content">
-      <div class="profile-block">
-        <div class="profile-field animate-in">
-          <span class="profile-field__label">Nombre Completo</span>
-          <span class="profile-field__value" th:text="${profile.nombre + ' ' + profile.apellidos}">Nombre del Alumno</span>
-        </div>
+    <div th:replace="~{alumno/fragments/layout :: topnav('perfil')}"></div>
 
-        <div class="profile-field animate-in">
-          <span class="profile-field__label">Correo Electrónico</span>
-          <span class="profile-field__value" th:text="${profile.email}">email@ejemplo.com</span>
-        </div>
-
-        <div class="profile-field animate-in">
-          <span class="profile-field__label">Nombre de Usuario</span>
-          <span class="profile-field__value" th:text="${profile.username}">username</span>
-        </div>
-
-        <div class="profile-field animate-in">
-          <span class="profile-field__label">Centro Educativo</span>
-          <span class="profile-field__value" th:text="${profile.centroNombre}">Nombre del Centro</span>
-        </div>
-
-        <div class="profile-field animate-in">
-          <span class="profile-field__label">Grupo de Clase</span>
-          <span class="profile-field__value" th:text="${profile.grupoNombre}">Nombre del Grupo</span>
-        </div>
-
-        <div class="profile-field animate-in">
-          <span class="profile-field__label">Curso Académico</span>
-          <span class="profile-field__value" th:text="${profile.cursoAcademico}">2025/2026</span>
-        </div>
+    <main class="page-content">
+      <div class="hero animate-in">
+        <h1 class="hero__title"><em>Mi</em><br />perfil</h1>
       </div>
 
-      <div class="btn-group animate-in" style="margin-top: 3rem;">
-        <a href="/alumno/dashboard" class="btn-editorial-ghost">Volver al Dashboard</a>
+      <section class="profile-block animate-in">
+        <div class="profile-field">
+          <span class="profile-field__label">Nombre completo</span>
+          <span
+            class="profile-field__value"
+            th:text="${profile.nombre + ' ' + profile.apellidos}"
+            >—</span
+          >
+        </div>
+        <div class="profile-field">
+          <span class="profile-field__label">Correo electrónico</span>
+          <span class="profile-field__value" th:text="${profile.email}">—</span>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field__label">Nombre de usuario</span>
+          <span class="profile-field__value" th:text="${profile.username}"
+            >—</span
+          >
+        </div>
+        <div class="profile-field">
+          <span class="profile-field__label">Centro educativo</span>
+          <span class="profile-field__value" th:text="${profile.centroNombre}"
+            >—</span
+          >
+        </div>
+        <div class="profile-field">
+          <span class="profile-field__label">Grupo de clase</span>
+          <span class="profile-field__value" th:text="${profile.grupoNombre}"
+            >—</span
+          >
+        </div>
+        <div class="profile-field">
+          <span class="profile-field__label">Curso académico</span>
+          <span class="profile-field__value" th:text="${profile.cursoAcademico}"
+            >—</span
+          >
+        </div>
+      </section>
+
+      <div class="btn-group animate-in" style="margin-top: 2rem">
+        <a th:href="@{/alumno/dashboard}" class="btn-editorial-ghost">
+          Volver a mis clases
+        </a>
       </div>
-    </div>
+    </main>
+
+    <div th:replace="~{alumno/fragments/layout :: colophon}"></div>
+    <script defer th:src="@{/js/alumno-perfil-menu.js}"></script>
   </body>
 </html>

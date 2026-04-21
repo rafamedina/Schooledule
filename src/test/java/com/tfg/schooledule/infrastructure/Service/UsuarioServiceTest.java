@@ -219,4 +219,27 @@ public class UsuarioServiceTest {
     assertEquals(1, periods.size());
     assertEquals("P1", periods.get(0).getNombre());
   }
+
+  @Test
+  public void testGetAsignaturasAlumno_devuelveListaDelRepositorio() {
+    Integer usuarioId = 1;
+    List<Matricula> matriculas = List.of(new Matricula(), new Matricula());
+    when(matriculaRepository.findActivasByAlumnoId(usuarioId)).thenReturn(matriculas);
+
+    List<Matricula> result = usuarioService.getAsignaturasAlumno(usuarioId);
+
+    assertEquals(2, result.size());
+    verify(matriculaRepository).findActivasByAlumnoId(usuarioId);
+  }
+
+  @Test
+  public void testGetAsignaturasAlumno_listaVaciaCuandoSinMatriculas() {
+    Integer usuarioId = 1;
+    when(matriculaRepository.findActivasByAlumnoId(usuarioId)).thenReturn(Collections.emptyList());
+
+    List<Matricula> result = usuarioService.getAsignaturasAlumno(usuarioId);
+
+    assertTrue(result.isEmpty());
+    verify(matriculaRepository).findActivasByAlumnoId(usuarioId);
+  }
 }

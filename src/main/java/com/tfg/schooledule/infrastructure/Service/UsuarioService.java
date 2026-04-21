@@ -2,6 +2,7 @@ package com.tfg.schooledule.infrastructure.service;
 
 import com.tfg.schooledule.domain.dto.AlumnoProfileDTO;
 import com.tfg.schooledule.domain.dto.GradeDashboardDTO;
+import com.tfg.schooledule.domain.dto.TeacherStudentGradesDTO;
 import com.tfg.schooledule.domain.entity.*;
 import com.tfg.schooledule.infrastructure.mapper.AlumnoProfileMapper;
 import com.tfg.schooledule.infrastructure.mapper.GradeDashboardMapper;
@@ -11,6 +12,7 @@ import com.tfg.schooledule.infrastructure.repository.PeriodoEvaluacionRepository
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ public class UsuarioService {
   @Autowired private PeriodoEvaluacionRepository periodoRepository;
   @Autowired private AlumnoProfileMapper alumnoProfileMapper;
   @Autowired private GradeDashboardMapper gradeDashboardMapper;
+  @Autowired private TeacherDashboardService teacherDashboardService;
 
   public AlumnoProfileDTO getAlumnoProfile(Integer usuarioId) {
     Usuario usuario =
@@ -37,6 +40,26 @@ public class UsuarioService {
             .orElseThrow(() -> new RuntimeException("Matricula no encontrada"));
 
     return alumnoProfileMapper.toDto(usuario, matricula);
+  }
+
+  public List<Matricula> getAsignaturasAlumno(Integer usuarioId) {
+    return matriculaRepository.findActivasByAlumnoId(usuarioId);
+  }
+
+  /**
+   * Detalle completo de notas (Periodos → RAs → CEs) para una matrícula del propio alumno.
+   * AccessDeniedException si la matrícula no pertenece al alumno.
+   */
+  public TeacherStudentGradesDTO getAlumnoMatriculaGrades(Integer alumnoId, Integer matriculaId) {
+    Matricula matricula =
+        matriculaRepository
+            .findById(matriculaId)
+            .orElseThrow(
+                () -> new AccessDeniedException("Matrícula no encontrada: " + matriculaId));
+    if (!matricula.getAlumno().getId().equals(alumnoId)) {
+      throw new AccessDeniedException("La matrícula no pertenece al alumno");
+    }
+    return teacherDashboardService.buildGradesDTO(matricula);
   }
 
   public GradeDashboardDTO getStudentGrades(Integer usuarioId, Integer periodoId) {
