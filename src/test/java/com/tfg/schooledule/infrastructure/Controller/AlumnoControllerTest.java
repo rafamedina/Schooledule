@@ -13,6 +13,7 @@ import com.tfg.schooledule.domain.entity.Matricula;
 import com.tfg.schooledule.domain.entity.Modulo;
 import com.tfg.schooledule.domain.entity.PeriodoEvaluacion;
 import com.tfg.schooledule.domain.entity.Usuario;
+import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
 import com.tfg.schooledule.infrastructure.service.UsuarioService;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ public class AlumnoControllerTest {
   @Autowired private MockMvc mockMvc;
 
   @MockBean private UsuarioService usuarioService;
+  @MockBean private SecurityAuditLogger securityAuditLogger;
 
   private Usuario buildAlumno() {
     return Usuario.builder()

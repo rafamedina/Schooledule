@@ -43,6 +43,12 @@ public class TeacherDashboardService {
     this.entityManager = entityManager;
   }
 
+  public void validateCentroOwnership(Integer profesorId, Integer centroId) {
+    if (!imparticionRepo.existsByProfesorIdAndCentroId(profesorId, centroId)) {
+      throw new AccessDeniedException("El profesor no tiene acceso al centro " + centroId);
+    }
+  }
+
   public List<TeacherCenterDTO> getCentersForTeacher(Usuario profesor) {
     return profesor.getCentros().stream()
         .map(

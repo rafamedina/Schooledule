@@ -11,4 +11,6 @@ public interface ImparticionRepository extends JpaRepository<Imparticion, Intege
   List<Imparticion> findByProfesorIdAndCentroId(Integer profesorId, Integer centroId);
 
   boolean existsByIdAndProfesorId(Integer id, Integer profesorId);
+
+  boolean existsByProfesorIdAndCentroId(Integer profesorId, Integer centroId);
 }

@@ -449,4 +449,19 @@ class TeacherDashboardServiceTest {
     assertThatThrownBy(() -> service.upsertGrades(2, "juan@tfg.com", req))
         .isInstanceOf(IllegalArgumentException.class);
   }
+
+  @Test
+  void validateCentroOwnership_noLanzaExcepcionCuandoProfesorTieneAcceso() {
+    when(imparticionRepo.existsByProfesorIdAndCentroId(2, 1)).thenReturn(true);
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(
+        () -> service.validateCentroOwnership(2, 1));
+  }
+
+  @Test
+  void validateCentroOwnership_lanzaAccessDeniedCuandoCentroNoPertenecealProfesor() {
+    when(imparticionRepo.existsByProfesorIdAndCentroId(2, 99)).thenReturn(false);
+    assertThatThrownBy(() -> service.validateCentroOwnership(2, 99))
+        .isInstanceOf(AccessDeniedException.class)
+        .hasMessageContaining("99");
+  }
 }

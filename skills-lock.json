@@ -60,6 +60,12 @@
       "source": "davila7/claude-code-templates",
       "sourceType": "github",
       "computedHash": "4fd9576e76e89e17d72891fb63e11741bf34c72390058baeb42812e396698525"
+    },
+    "owasp-security": {
+      "source": "hoodini/ai-agents-skills",
+      "sourceType": "github",
+      "skillPath": "skills/owasp-security/SKILL.md",
+      "computedHash": "880d7aa73b001e7e28b9562639defeff11c073d958fe5a253eeea572539439a2"
     }
   }
 }

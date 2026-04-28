@@ -40,6 +40,7 @@ public class ProfeController {
   @GetMapping("/centro/{centroId}/asignaturas")
   public String asignaturas(@PathVariable Integer centroId, Principal principal, Model model) {
     Usuario profesor = resolveProfesor(principal);
+    teacherService.validateCentroOwnership(profesor.getId(), centroId);
     model.addAttribute(
         "asignaturas", teacherService.getSubjectsForTeacherAndCenter(profesor.getId(), centroId));
     model.addAttribute("centroId", centroId);

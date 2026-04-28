@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tfg.schooledule.domain.dto.*;
 import com.tfg.schooledule.domain.entity.Centro;
 import com.tfg.schooledule.domain.entity.Usuario;
+import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
 import com.tfg.schooledule.infrastructure.service.TeacherDashboardService;
 import com.tfg.schooledule.infrastructure.service.UsuarioService;
 import java.math.BigDecimal;
@@ -32,6 +33,7 @@ class ProfeControllerTest {
 
   @MockBean private UsuarioService usuarioService;
   @MockBean private TeacherDashboardService teacherService;
+  @MockBean private SecurityAuditLogger securityAuditLogger;
 
   private Usuario buildProfe() {
     return Usuario.builder()
