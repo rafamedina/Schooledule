@@ -26,3 +26,15 @@
 ## Testing
 - **Framework:** JUnit 5 + Mockito
 - **Tools:** Spring Security Test support, AssertJ (standard in Spring Boot test starter), H2 Database (for in-memory integration testing)
+
+## Variables de entorno requeridas en producción
+
+| Variable | Descripción | Fallback en local |
+|----------|-------------|-------------------|
+| `DB_USERNAME` | Usuario de PostgreSQL | `postgres` |
+| `DB_PASSWORD` | Contraseña de PostgreSQL | `root123` (solo local) |
+| `SPRING_PROFILES_ACTIVE` | Perfil Spring activo | — (dev si no se especifica) |
+
+> En producción, `DB_PASSWORD` **no tiene fallback seguro** — si no está definida la app arrancará con `root123`. Siempre definir `SPRING_PROFILES_ACTIVE=prod` para activar `application-prod.properties` (cookie segura, sin show-sql, logs WARN).
+
+**Docker Compose** (`infraestructura/docker-compose.yml`): el servicio `app` sobreescribe las credenciales vía variables de entorno Spring (`SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`) que Spring Boot mapea automáticamente — no se usan `DB_USERNAME`/`DB_PASSWORD` en contenedor.
