@@ -18,7 +18,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [ ] **Track: Dashboard Estadísticas — Completar**
 *Link: [./tracks/admin_dashboard_completar_plan.md](./tracks/admin_dashboard_completar_plan.md)*
 
-- [ ] **Track: Auditoría de Notas — Admin**
+- [x] **Track: Auditoría de Notas — Admin** — Completado 2026-05-02
 *Link: [./tracks/admin_auditoria_notas_plan.md](./tracks/admin_auditoria_notas_plan.md)*
 
 
