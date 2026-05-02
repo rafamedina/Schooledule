@@ -57,6 +57,9 @@ public class AdminUsuarioService {
 
   @Transactional
   public void crear(AdminUsuarioFormDTO dto) {
+    if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+      throw new IllegalArgumentException("La contraseña es obligatoria para nuevos usuarios");
+    }
     if (usuarioRepository.existsByUsername(dto.getUsername())) {
       throw new IllegalArgumentException("El username '" + dto.getUsername() + "' ya está en uso");
     }

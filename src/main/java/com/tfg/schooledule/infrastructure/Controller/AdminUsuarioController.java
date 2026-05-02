@@ -5,6 +5,7 @@ import com.tfg.schooledule.infrastructure.repository.CentroRepository;
 import com.tfg.schooledule.infrastructure.repository.RolRepository;
 import com.tfg.schooledule.infrastructure.service.AdminUsuarioService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,12 +58,49 @@ public class AdminUsuarioController {
       model.addAttribute("centros", centroRepository.findAll());
       return "admin/usuarios/formulario";
     }
-    adminUsuarioService.crear(form);
+    try {
+      adminUsuarioService.crear(form);
+    } catch (IllegalArgumentException ex) {
+      model.addAttribute("roles", rolRepository.findAll());
+      model.addAttribute("centros", centroRepository.findAll());
+      model.addAttribute("error", ex.getMessage());
+      return "admin/usuarios/formulario";
+    }
+    return "redirect:/admin/usuarios";
+  }
+
+  @GetMapping("/{id}/editar")
+  public String editar(@PathVariable @Positive Integer id, Model model) {
+    model.addAttribute("form", adminUsuarioService.obtenerParaEditar(id));
+    model.addAttribute("roles", rolRepository.findAll());
+    model.addAttribute("centros", centroRepository.findAll());
+    return "admin/usuarios/formulario";
+  }
+
+  @PostMapping("/{id}/editar")
+  public String actualizar(
+      @PathVariable @Positive Integer id,
+      @Valid @ModelAttribute("form") AdminUsuarioFormDTO form,
+      BindingResult bindingResult,
+      Model model) {
+    if (bindingResult.hasErrors()) {
+      model.addAttribute("roles", rolRepository.findAll());
+      model.addAttribute("centros", centroRepository.findAll());
+      return "admin/usuarios/formulario";
+    }
+    try {
+      adminUsuarioService.actualizar(id, form);
+    } catch (IllegalArgumentException ex) {
+      model.addAttribute("roles", rolRepository.findAll());
+      model.addAttribute("centros", centroRepository.findAll());
+      model.addAttribute("error", ex.getMessage());
+      return "admin/usuarios/formulario";
+    }
     return "redirect:/admin/usuarios";
   }
 
   @PostMapping("/{id}/toggle-activo")
-  public String toggleActivo(@PathVariable Integer id) {
+  public String toggleActivo(@PathVariable @Positive Integer id) {
     adminUsuarioService.toggleActivo(id);
     return "redirect:/admin/usuarios";
   }

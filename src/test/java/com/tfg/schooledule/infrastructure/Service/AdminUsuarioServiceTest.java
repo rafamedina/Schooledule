@@ -69,6 +69,14 @@ class AdminUsuarioServiceTest {
   }
 
   @Test
+  void crear_passwordBlanca_lanzaIllegalArgumentException() {
+    AdminUsuarioFormDTO form = buildForm("newuser", "new@tfg.com", "");
+
+    assertThrows(IllegalArgumentException.class, () -> adminUsuarioService.crear(form));
+    verify(usuarioRepository, never()).save(any());
+  }
+
+  @Test
   void crear_usernameExistente_lanzaIllegalArgumentException() {
     AdminUsuarioFormDTO form = buildForm("existente", "otro@tfg.com", "Password1");
 

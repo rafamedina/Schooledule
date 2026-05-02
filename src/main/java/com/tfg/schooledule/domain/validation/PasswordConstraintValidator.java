@@ -7,8 +7,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
   @Override
   public boolean isValid(String value, ConstraintValidatorContext context) {
-    if (value == null) return true;
-    if (value.isBlank()) return false;
+    if (value == null || value.isBlank()) return true;
     if (value.length() < 8) return false;
     if (!value.matches(".*[A-Z].*")) return false;
     if (!value.matches(".*[a-z].*")) return false;

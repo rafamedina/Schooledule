@@ -5,6 +5,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.tfg.schooledule.domain.dto.AdminUsuarioFormDTO;
 import com.tfg.schooledule.domain.dto.AdminUsuarioListDTO;
 import com.tfg.schooledule.infrastructure.repository.CentroRepository;
 import com.tfg.schooledule.infrastructure.repository.RolRepository;
@@ -159,6 +160,90 @@ class AdminUsuarioControllerTest {
         .andExpect(redirectedUrl("/admin/usuarios"));
 
     verify(adminUsuarioService).toggleActivo(1);
+  }
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void editar_conAdmin_200_retornaFormulario() throws Exception {
+    AdminUsuarioFormDTO dto = new AdminUsuarioFormDTO();
+    dto.setId(1);
+    dto.setUsername("admin");
+    when(adminUsuarioService.obtenerParaEditar(1)).thenReturn(dto);
+    when(rolRepository.findAll()).thenReturn(List.of());
+    when(centroRepository.findAll()).thenReturn(List.of());
+
+    mockMvc
+        .perform(get("/admin/usuarios/1/editar"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("admin/usuarios/formulario"))
+        .andExpect(model().attributeExists("form", "roles", "centros"));
+  }
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void actualizarUsuario_datosValidos_redirigeLista() throws Exception {
+    when(rolRepository.findAll()).thenReturn(List.of());
+    when(centroRepository.findAll()).thenReturn(List.of());
+
+    mockMvc
+        .perform(
+            post("/admin/usuarios/1/editar")
+                .param("username", "testuser")
+                .param("nombre", "Test")
+                .param("apellidos", "User")
+                .param("email", "test@tfg.com")
+                .param("password", "")
+                .with(csrf()))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/admin/usuarios"));
+
+    verify(adminUsuarioService).actualizar(eq(1), any());
+  }
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void actualizarUsuario_usernameDuplicado_muestraError() throws Exception {
+    when(rolRepository.findAll()).thenReturn(List.of());
+    when(centroRepository.findAll()).thenReturn(List.of());
+    doThrow(new IllegalArgumentException("Username ya existe"))
+        .when(adminUsuarioService)
+        .actualizar(eq(1), any());
+
+    mockMvc
+        .perform(
+            post("/admin/usuarios/1/editar")
+                .param("username", "testuser")
+                .param("nombre", "Test")
+                .param("apellidos", "User")
+                .param("email", "test@tfg.com")
+                .param("password", "")
+                .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("admin/usuarios/formulario"))
+        .andExpect(model().attributeExists("error"));
+  }
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void crearUsuario_usernameDuplicado_muestraError() throws Exception {
+    when(rolRepository.findAll()).thenReturn(List.of());
+    when(centroRepository.findAll()).thenReturn(List.of());
+    doThrow(new IllegalArgumentException("Username ya existe"))
+        .when(adminUsuarioService)
+        .crear(any());
+
+    mockMvc
+        .perform(
+            post("/admin/usuarios/nuevo")
+                .param("username", "testuser")
+                .param("nombre", "Test")
+                .param("apellidos", "User")
+                .param("email", "test@tfg.com")
+                .param("password", "Password1")
+                .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("admin/usuarios/formulario"))
+        .andExpect(model().attributeExists("error"));
   }
 
   @Test

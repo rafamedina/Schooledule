@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="~{admin/fragments/layout :: head('Nuevo usuario')}"></head>
+  <head
+    th:replace="~{admin/fragments/layout :: head(${form.id != null} ? 'Editar usuario' : 'Nuevo usuario')}"
+  ></head>
   <body>
     <div class="admin-shell">
       <div th:replace="~{admin/fragments/layout :: sidebar('usuarios')}"></div>
@@ -13,15 +15,28 @@
               <span class="breadcrumb__sep">/</span>
               <a th:href="@{/admin/usuarios}">Usuarios</a>
               <span class="breadcrumb__sep">/</span>
-              <span>Nuevo</span>
+              <span th:text="${form.id != null} ? 'Editar' : 'Nuevo'"
+                >Nuevo</span
+              >
             </nav>
-            <h1 class="hero__title">Nuevo <em>Usuario</em></h1>
+            <h1 class="hero__title">
+              <span th:text="${form.id != null} ? 'Editar' : 'Nuevo'"
+                >Nuevo</span
+              >
+              <em>Usuario</em>
+            </h1>
           </div>
         </div>
 
         <div class="animate-in">
+          <div
+            th:if="${error}"
+            class="alert alert-danger"
+            th:text="${error}"
+          ></div>
+
           <form
-            th:action="@{/admin/usuarios/nuevo}"
+            th:action="${form.id != null} ? @{/admin/usuarios/{id}/editar(id=${form.id})} : @{/admin/usuarios/nuevo}"
             th:object="${form}"
             method="post"
           >
@@ -104,16 +119,20 @@
                 th:if="${#fields.hasErrors('password')}"
                 th:errors="*{password}"
               ></div>
+              <small class="form-text text-muted" th:if="${form.id != null}"
+                >Dejar vacío para mantener la contraseña actual.</small
+              >
             </div>
 
             <div class="form-group">
               <label>Roles</label>
-              <div th:each="rol : ${roles}">
+              <div class="form-check" th:each="rol : ${roles}">
                 <input
                   type="checkbox"
                   th:value="${rol.id}"
                   name="roleIds"
                   th:id="'rol-' + ${rol.id}"
+                  th:checked="${form.roleIds.contains(rol.id)}"
                 />
                 <label
                   th:for="'rol-' + ${rol.id}"
@@ -124,12 +143,13 @@
 
             <div class="form-group">
               <label>Centros</label>
-              <div th:each="centro : ${centros}">
+              <div class="form-check" th:each="centro : ${centros}">
                 <input
                   type="checkbox"
                   th:value="${centro.id}"
                   name="centroIds"
                   th:id="'centro-' + ${centro.id}"
+                  th:checked="${form.centroIds.contains(centro.id)}"
                 />
                 <label
                   th:for="'centro-' + ${centro.id}"

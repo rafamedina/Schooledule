@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="~{admin/fragments/layout :: head('Usuarios')}"></head>
+  <head th:replace="~{admin/fragments/layout :: head('Módulos')}"></head>
   <body>
     <div class="admin-shell">
-      <div th:replace="~{admin/fragments/layout :: sidebar('usuarios')}"></div>
+      <div th:replace="~{admin/fragments/layout :: sidebar('modulos')}"></div>
 
       <main class="admin-content">
         <div class="hero animate-in">
@@ -11,50 +11,57 @@
             <nav class="breadcrumb">
               <a th:href="@{/admin/dashboard}">Administración</a>
               <span class="breadcrumb__sep">/</span>
-              <span>Usuarios</span>
+              <span>Módulos</span>
             </nav>
-            <h1 class="hero__title">Gestión de <em>Usuarios</em></h1>
+            <h1 class="hero__title">Gestión de <em>Módulos</em></h1>
           </div>
           <div class="hero__right">
-            <a th:href="@{/admin/usuarios/nuevo}" class="btn btn-primary"
-              >Nuevo usuario</a
+            <a th:href="@{/admin/modulos/nuevo}" class="btn btn-primary"
+              >Nuevo módulo</a
             >
           </div>
         </div>
 
         <div class="animate-in">
-          <div th:if="${#lists.isEmpty(usuarios)}" class="empty-state">
-            <p>No hay usuarios registrados.</p>
-            <a th:href="@{/admin/usuarios/nuevo}" class="btn btn-primary"
+          <div
+            th:if="${error}"
+            class="alert alert-danger"
+            th:text="${error}"
+          ></div>
+
+          <div th:if="${#lists.isEmpty(modulos)}" class="empty-state">
+            <p>No hay módulos registrados.</p>
+            <a th:href="@{/admin/modulos/nuevo}" class="btn btn-primary"
               >Crear el primero</a
             >
           </div>
-          <table class="table" th:unless="${#lists.isEmpty(usuarios)}">
+
+          <table class="table" th:unless="${#lists.isEmpty(modulos)}">
             <thead>
               <tr>
-                <th>Username</th>
+                <th>Código</th>
                 <th>Nombre</th>
-                <th>Email</th>
+                <th>Imparticiones</th>
+                <th>Resultados Aprendizaje</th>
                 <th>Activo</th>
-                <th>Roles</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              <tr th:each="u : ${usuarios}">
-                <td th:text="${u.username}"></td>
-                <td th:text="${u.nombre + ' ' + u.apellidos}"></td>
-                <td th:text="${u.email}"></td>
-                <td th:text="${u.activo ? 'Sí' : 'No'}"></td>
-                <td th:text="${#strings.listJoin(u.roles, ', ')}"></td>
+              <tr th:each="m : ${modulos}">
+                <td th:text="${m.codigo}"></td>
+                <td th:text="${m.nombre}"></td>
+                <td th:text="${m.numImparticiones}"></td>
+                <td th:text="${m.numResultadosAprendizaje}"></td>
+                <td th:text="${m.activo ? 'Sí' : 'No'}"></td>
                 <td>
                   <a
-                    th:href="@{/admin/usuarios/{id}/editar(id=${u.id})}"
+                    th:href="@{/admin/modulos/{id}/editar(id=${m.id})}"
                     class="btn btn-sm btn-secondary"
                     >Editar</a
                   >
                   <form
-                    th:action="@{/admin/usuarios/{id}/toggle-activo(id=${u.id})}"
+                    th:action="@{/admin/modulos/{id}/toggle-activo(id=${m.id})}"
                     method="post"
                     style="display: inline"
                   >
@@ -66,7 +73,7 @@
                     <button
                       type="submit"
                       class="btn btn-sm"
-                      th:text="${u.activo ? 'Desactivar' : 'Activar'}"
+                      th:text="${m.activo ? 'Desactivar' : 'Activar'}"
                     >
                       Activar
                     </button>

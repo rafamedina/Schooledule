@@ -14,13 +14,13 @@ class PasswordConstraintValidatorTest {
   }
 
   @Test
-  void cadenaVacia_esInvalida() {
-    assertThat(validator.isValid("", null)).isFalse();
+  void cadenaVacia_esValida_paraPermitirEdicionSinCambio() {
+    assertThat(validator.isValid("", null)).isTrue();
   }
 
   @Test
-  void cadenaBlank_esInvalida() {
-    assertThat(validator.isValid("   ", null)).isFalse();
+  void cadenaBlank_esValida_paraPermitirEdicionSinCambio() {
+    assertThat(validator.isValid("   ", null)).isTrue();
   }
 
   @Test
