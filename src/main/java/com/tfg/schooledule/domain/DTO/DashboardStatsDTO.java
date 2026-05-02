@@ -7,4 +7,5 @@ public record DashboardStatsDTO(
     long totalAdmins,
     long totalAlumnos,
     long totalProfesores,
-    long totalCentros) {}
+    long totalCentros,
+    String cursoActivoNombre) {}

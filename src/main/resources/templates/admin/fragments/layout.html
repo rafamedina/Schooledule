@@ -57,6 +57,13 @@
           >Módulos</a
         >
       </li>
+      <li>
+        <a
+          th:href="@{/admin/alumnos}"
+          th:classappend="${active == 'alumnos'} ? 'active' : ''"
+          >Alumnos</a
+        >
+      </li>
     </ul>
     <div class="sidebar-footer">
       <form th:action="@{/logout}" method="post">

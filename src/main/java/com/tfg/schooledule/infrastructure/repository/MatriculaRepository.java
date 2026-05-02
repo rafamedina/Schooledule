@@ -32,4 +32,6 @@ public interface MatriculaRepository extends JpaRepository<Matricula, Integer> {
   List<Matricula> findByImparticionIdAndEstado(Integer imparticionId, EstadoMatricula estado);
 
   Optional<Matricula> findByIdAndImparticionProfesorId(Integer id, Integer profesorId);
+
+  boolean existsByAlumnoIdAndImparticionId(Integer alumnoId, Integer imparticionId);
 }

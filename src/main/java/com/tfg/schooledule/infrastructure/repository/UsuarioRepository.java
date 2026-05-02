@@ -20,6 +20,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
   List<Usuario> findAllByOrderByApellidosAscNombreAsc();
 
+  @org.springframework.data.jpa.repository.Query(
+      "SELECT u FROM Usuario u JOIN u.roles r WHERE r.nombre = 'ALUMNO' ORDER BY u.apellidos ASC, u.nombre ASC")
+  List<Usuario> findAllAlumnosOrdenados();
+
   Usuario findByEmail(String email);
 
   Optional<Usuario> findUsuarioByEmail(String correo);

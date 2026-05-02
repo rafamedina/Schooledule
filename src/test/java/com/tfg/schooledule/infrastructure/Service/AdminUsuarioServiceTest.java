@@ -10,6 +10,7 @@ import com.tfg.schooledule.domain.entity.Rol;
 import com.tfg.schooledule.domain.entity.Usuario;
 import com.tfg.schooledule.infrastructure.mapper.AdminUsuarioMapper;
 import com.tfg.schooledule.infrastructure.repository.CentroRepository;
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.repository.RolRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import java.util.Collections;
@@ -29,6 +30,7 @@ class AdminUsuarioServiceTest {
   @Mock private UsuarioRepository usuarioRepository;
   @Mock private RolRepository rolRepository;
   @Mock private CentroRepository centroRepository;
+  @Mock private CursoAcademicoRepository cursoAcademicoRepository;
   @Mock private AdminUsuarioMapper adminUsuarioMapper;
   @Mock private PasswordEncoder passwordEncoder;
 

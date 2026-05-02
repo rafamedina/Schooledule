@@ -37,4 +37,6 @@ public interface CalificacionRepository extends JpaRepository<Calificacion, Inte
       Integer matriculaId, Collection<Integer> criterioIds);
 
   List<Calificacion> findByMatriculaId(Integer matriculaId);
+
+  boolean existsByMatriculaId(Integer matriculaId);
 }

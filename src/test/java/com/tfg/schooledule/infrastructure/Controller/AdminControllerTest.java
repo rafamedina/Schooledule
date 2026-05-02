@@ -51,7 +51,7 @@ class AdminControllerTest {
   @Test
   @WithMockUser(roles = "ADMIN")
   void dashboard_conAdmin_200_contieneStats() throws Exception {
-    DashboardStatsDTO stats = new DashboardStatsDTO(10, 8, 2, 1, 5, 3, 2);
+    DashboardStatsDTO stats = new DashboardStatsDTO(10, 8, 2, 1, 5, 3, 2, "2024/2025");
     when(adminUsuarioService.getStats()).thenReturn(stats);
 
     mockMvc

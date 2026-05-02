@@ -17,4 +17,10 @@ public interface ImparticionRepository extends JpaRepository<Imparticion, Intege
   boolean existsByModuloId(Integer moduloId);
 
   int countByModuloId(Integer moduloId);
+
+  int countByGrupoId(Integer grupoId);
+
+  boolean existsByGrupoId(Integer grupoId);
+
+  java.util.List<Imparticion> findAllByOrderByGrupoNombreAscModuloNombreAsc();
 }

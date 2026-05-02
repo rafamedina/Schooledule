@@ -8,6 +8,7 @@ import com.tfg.schooledule.domain.entity.Rol;
 import com.tfg.schooledule.domain.entity.Usuario;
 import com.tfg.schooledule.infrastructure.mapper.AdminUsuarioMapper;
 import com.tfg.schooledule.infrastructure.repository.CentroRepository;
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.repository.RolRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,6 +24,7 @@ public class AdminUsuarioService {
   private final UsuarioRepository usuarioRepository;
   private final RolRepository rolRepository;
   private final CentroRepository centroRepository;
+  private final CursoAcademicoRepository cursoAcademicoRepository;
   private final AdminUsuarioMapper adminUsuarioMapper;
   private final PasswordEncoder passwordEncoder;
 
@@ -30,11 +32,13 @@ public class AdminUsuarioService {
       UsuarioRepository usuarioRepository,
       RolRepository rolRepository,
       CentroRepository centroRepository,
+      CursoAcademicoRepository cursoAcademicoRepository,
       AdminUsuarioMapper adminUsuarioMapper,
       PasswordEncoder passwordEncoder) {
     this.usuarioRepository = usuarioRepository;
     this.rolRepository = rolRepository;
     this.centroRepository = centroRepository;
+    this.cursoAcademicoRepository = cursoAcademicoRepository;
     this.adminUsuarioMapper = adminUsuarioMapper;
     this.passwordEncoder = passwordEncoder;
   }
@@ -144,7 +148,9 @@ public class AdminUsuarioService {
             .filter(u -> u.getRoles().stream().anyMatch(r -> r.getNombre().contains("PROFESOR")))
             .count();
     long totalCentros = centroRepository.count();
+    String cursoActivo =
+        cursoAcademicoRepository.findByActivo(true).map(c -> c.getNombre()).orElse(null);
     return new DashboardStatsDTO(
-        todos.size(), activos, inactivos, admins, alumnos, profesores, totalCentros);
+        todos.size(), activos, inactivos, admins, alumnos, profesores, totalCentros, cursoActivo);
   }
 }
