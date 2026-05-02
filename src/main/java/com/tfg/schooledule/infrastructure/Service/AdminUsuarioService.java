@@ -9,6 +9,8 @@ import com.tfg.schooledule.domain.entity.Usuario;
 import com.tfg.schooledule.infrastructure.mapper.AdminUsuarioMapper;
 import com.tfg.schooledule.infrastructure.repository.CentroRepository;
 import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
+import com.tfg.schooledule.infrastructure.repository.ImparticionRepository;
+import com.tfg.schooledule.infrastructure.repository.MatriculaRepository;
 import com.tfg.schooledule.infrastructure.repository.RolRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -27,6 +29,8 @@ public class AdminUsuarioService {
   private final CursoAcademicoRepository cursoAcademicoRepository;
   private final AdminUsuarioMapper adminUsuarioMapper;
   private final PasswordEncoder passwordEncoder;
+  private final MatriculaRepository matriculaRepository;
+  private final ImparticionRepository imparticionRepository;
 
   public AdminUsuarioService(
       UsuarioRepository usuarioRepository,
@@ -34,13 +38,17 @@ public class AdminUsuarioService {
       CentroRepository centroRepository,
       CursoAcademicoRepository cursoAcademicoRepository,
       AdminUsuarioMapper adminUsuarioMapper,
-      PasswordEncoder passwordEncoder) {
+      PasswordEncoder passwordEncoder,
+      MatriculaRepository matriculaRepository,
+      ImparticionRepository imparticionRepository) {
     this.usuarioRepository = usuarioRepository;
     this.rolRepository = rolRepository;
     this.centroRepository = centroRepository;
     this.cursoAcademicoRepository = cursoAcademicoRepository;
     this.adminUsuarioMapper = adminUsuarioMapper;
     this.passwordEncoder = passwordEncoder;
+    this.matriculaRepository = matriculaRepository;
+    this.imparticionRepository = imparticionRepository;
   }
 
   @Transactional(readOnly = true)
@@ -150,7 +158,18 @@ public class AdminUsuarioService {
     long totalCentros = centroRepository.count();
     String cursoActivo =
         cursoAcademicoRepository.findByActivo(true).map(c -> c.getNombre()).orElse(null);
+    long totalMatriculasActivas = matriculaRepository.countMatriculasActivas();
+    long totalImparticiones = imparticionRepository.count();
     return new DashboardStatsDTO(
-        todos.size(), activos, inactivos, admins, alumnos, profesores, totalCentros, cursoActivo);
+        todos.size(),
+        activos,
+        inactivos,
+        admins,
+        alumnos,
+        profesores,
+        totalCentros,
+        cursoActivo,
+        totalMatriculasActivas,
+        totalImparticiones);
   }
 }

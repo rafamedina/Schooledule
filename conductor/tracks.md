@@ -6,25 +6,24 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## En progreso / Pendientes
 
-- [~] **Track: implement_user_view_20260226**
-*Link: [./tracks/implement_user_view_20260226/](./tracks/implement_user_view_20260226/)*
-
-- [~] **Track: granular_grading_per_criterio_20260420**
-*Link: [./tracks/granular_grading_per_criterio_20260420/](./tracks/granular_grading_per_criterio_20260420/)*
-
-- [ ] **Track: Gestión de Imparticiones — Admin**
-*Link: [./tracks/admin_gestion_imparticiones_plan.md](./tracks/admin_gestion_imparticiones_plan.md)*
-
-- [ ] **Track: Dashboard Estadísticas — Completar**
-*Link: [./tracks/admin_dashboard_completar_plan.md](./tracks/admin_dashboard_completar_plan.md)*
-
-- [x] **Track: Auditoría de Notas — Admin** — Completado 2026-05-02
-*Link: [./tracks/admin_auditoria_notas_plan.md](./tracks/admin_auditoria_notas_plan.md)*
-
+- [~] **Track: granular_grading_per_criterio_20260420** — Calificación Granular por CE + Recuperaciones
+*Link: [./tracks/granular_grading_per_criterio_20260420/plan.md](./tracks/granular_grading_per_criterio_20260420/plan.md)*
 
 ---
 
 ## Completados
+
+- [x] **Track: implement_user_view_20260226** — Completado 2026-05-02
+*Link: [./tracks/implement_user_view_20260226/plan.md](./tracks/implement_user_view_20260226/plan.md)*
+
+- [x] **Track: Auditoría de Notas — Admin** — Completado 2026-05-02
+*Link: [./tracks/completados/admin_auditoria_notas_plan.md](./tracks/completados/admin_auditoria_notas_plan.md)*
+
+- [x] **Track: Gestión de Imparticiones — Admin** — Completado 2026-05-02
+*Link: [./tracks/completados/admin_gestion_imparticiones_plan.md](./tracks/completados/admin_gestion_imparticiones_plan.md)*
+
+- [x] **Track: Dashboard Estadísticas — Completar** — Completado 2026-05-02
+*Link: [./tracks/completados/admin_dashboard_completar_plan.md](./tracks/completados/admin_dashboard_completar_plan.md)*
 
 - [x] **Track: Gestión de Cursos Académicos — Admin** — Completado 2026-05-02
 *Link: [./tracks/admin_gestion_cursos_academicos_plan.md](./tracks/admin_gestion_cursos_academicos_plan.md)*

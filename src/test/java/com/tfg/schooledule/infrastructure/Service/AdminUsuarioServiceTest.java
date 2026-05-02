@@ -6,11 +6,14 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.tfg.schooledule.domain.dto.AdminUsuarioFormDTO;
+import com.tfg.schooledule.domain.dto.DashboardStatsDTO;
 import com.tfg.schooledule.domain.entity.Rol;
 import com.tfg.schooledule.domain.entity.Usuario;
 import com.tfg.schooledule.infrastructure.mapper.AdminUsuarioMapper;
 import com.tfg.schooledule.infrastructure.repository.CentroRepository;
 import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
+import com.tfg.schooledule.infrastructure.repository.ImparticionRepository;
+import com.tfg.schooledule.infrastructure.repository.MatriculaRepository;
 import com.tfg.schooledule.infrastructure.repository.RolRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import java.util.Collections;
@@ -33,6 +36,8 @@ class AdminUsuarioServiceTest {
   @Mock private CursoAcademicoRepository cursoAcademicoRepository;
   @Mock private AdminUsuarioMapper adminUsuarioMapper;
   @Mock private PasswordEncoder passwordEncoder;
+  @Mock private MatriculaRepository matriculaRepository;
+  @Mock private ImparticionRepository imparticionRepository;
 
   @InjectMocks private AdminUsuarioService adminUsuarioService;
 
@@ -163,5 +168,26 @@ class AdminUsuarioServiceTest {
     assertThatThrownBy(() -> adminUsuarioService.actualizar(1, form))
         .isInstanceOf(IllegalArgumentException.class);
     verify(usuarioRepository, never()).save(any());
+  }
+
+  @Test
+  void getStats_retornaEstadisticasConNuevosCampos() {
+    Usuario activo = Usuario.builder().activo(true).roles(Set.of()).build();
+    Usuario inactivo = Usuario.builder().activo(false).roles(Set.of()).build();
+
+    when(usuarioRepository.findAll()).thenReturn(List.of(activo, inactivo));
+    when(centroRepository.count()).thenReturn(3L);
+    when(cursoAcademicoRepository.findByActivo(true)).thenReturn(Optional.empty());
+    when(matriculaRepository.countMatriculasActivas()).thenReturn(15L);
+    when(imparticionRepository.count()).thenReturn(4L);
+
+    DashboardStatsDTO stats = adminUsuarioService.getStats();
+
+    assertEquals(2L, stats.totalUsuarios());
+    assertEquals(1L, stats.activos());
+    assertEquals(1L, stats.inactivos());
+    assertEquals(3L, stats.totalCentros());
+    assertEquals(15L, stats.totalMatriculasActivas());
+    assertEquals(4L, stats.totalImparticiones());
   }
 }

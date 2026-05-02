@@ -13,4 +13,6 @@ public interface CentroRepository extends JpaRepository<Centro, Integer> {
   boolean existsByNombre(String nombre);
 
   boolean existsByNombreAndIdNot(String nombre, Integer id);
+
+  List<Centro> findAllByActivoTrueOrderByNombreAsc();
 }

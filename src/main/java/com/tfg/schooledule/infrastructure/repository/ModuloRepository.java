@@ -13,4 +13,6 @@ public interface ModuloRepository extends JpaRepository<Modulo, Integer> {
   boolean existsByCodigo(String codigo);
 
   boolean existsByCodigoAndIdNot(String codigo, Integer id);
+
+  List<Modulo> findByActivoTrueOrderByNombreAsc();
 }

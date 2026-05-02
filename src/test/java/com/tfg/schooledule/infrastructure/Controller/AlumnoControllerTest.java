@@ -148,4 +148,32 @@ public class AlumnoControllerTest {
   public void rolProfesor_accedeDashboardAlumno_retorna403() throws Exception {
     mockMvc.perform(get("/alumno/dashboard")).andExpect(status().isForbidden());
   }
+
+  @Test
+  void dashboard_sinAutenticacion_redirige302() throws Exception {
+    mockMvc
+        .perform(get("/alumno/dashboard").header("Accept", "text/html"))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrlPattern("**/login"));
+  }
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void dashboard_conRolAdmin_retorna403() throws Exception {
+    mockMvc.perform(get("/alumno/dashboard")).andExpect(status().isForbidden());
+  }
+
+  @Test
+  void notas_sinAutenticacion_redirige302() throws Exception {
+    mockMvc
+        .perform(get("/alumno/notas").header("Accept", "text/html"))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrlPattern("**/login"));
+  }
+
+  @Test
+  @WithMockUser(roles = "PROFESOR")
+  void perfil_conRolProfesor_retorna403() throws Exception {
+    mockMvc.perform(get("/alumno/perfil")).andExpect(status().isForbidden());
+  }
 }

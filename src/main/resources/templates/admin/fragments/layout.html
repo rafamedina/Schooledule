@@ -66,6 +66,13 @@
       </li>
       <li>
         <a
+          th:href="@{/admin/imparticiones}"
+          th:classappend="${active == 'imparticiones'} ? 'active' : ''"
+          >Imparticiones</a
+        >
+      </li>
+      <li>
+        <a
           th:href="@{/admin/auditoria}"
           th:classappend="${active == 'auditoria'} ? 'active' : ''"
           >Auditoría</a
