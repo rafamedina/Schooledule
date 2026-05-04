@@ -53,7 +53,7 @@ public class AdminAlumnoService {
   public Usuario obtenerAlumno(Integer alumnoId) {
     return usuarioRepository
         .findById(alumnoId)
-        .filter(u -> u.getRoles().stream().anyMatch(r -> "ALUMNO".equals(r.getNombre())))
+        .filter(u -> u.getRoles().stream().anyMatch(r -> "ROLE_ALUMNO".equals(r.getNombre())))
         .orElseThrow(() -> new EntityNotFoundException("Alumno no encontrado: " + alumnoId));
   }
 

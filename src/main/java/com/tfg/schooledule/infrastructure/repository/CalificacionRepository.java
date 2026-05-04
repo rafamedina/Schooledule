@@ -39,4 +39,7 @@ public interface CalificacionRepository extends JpaRepository<Calificacion, Inte
   List<Calificacion> findByMatriculaId(Integer matriculaId);
 
   boolean existsByMatriculaId(Integer matriculaId);
+
+  @Query("SELECT COUNT(c) FROM Calificacion c WHERE c.matricula.id = :matriculaId AND c.valor < 5")
+  long countCesSuspensasByMatriculaId(@Param("matriculaId") Integer matriculaId);
 }

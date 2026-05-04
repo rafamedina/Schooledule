@@ -22,6 +22,12 @@
           </div>
         </div>
 
+        <div
+          th:if="${error}"
+          class="alert alert--error animate-in"
+          th:text="${error}"
+        ></div>
+
         <div class="animate-in">
           <div th:if="${#lists.isEmpty(usuarios)}" class="empty-state">
             <p>No hay usuarios registrados.</p>

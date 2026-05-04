@@ -44,7 +44,7 @@ class AuditoriaNotaIntegrationTest {
         new GradeUpsertRequest(
             1,
             List.of(
-                new GradeUpsertRequest.Entry(1, new BigDecimal("8.50"), "Actualizado en test")));
+                new GradeUpsertRequest.Entry(1, 1, new BigDecimal("8.50"), "Actualizado en test")));
 
     teacherService.upsertGrades(2, "juan@tfg.com", req);
 

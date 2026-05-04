@@ -21,14 +21,18 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
   List<Usuario> findAllByOrderByApellidosAscNombreAsc();
 
   @org.springframework.data.jpa.repository.Query(
-      "SELECT u FROM Usuario u JOIN u.roles r WHERE r.nombre = 'ALUMNO' ORDER BY u.apellidos ASC, u.nombre ASC")
+      "SELECT u FROM Usuario u JOIN u.roles r WHERE r.nombre = 'ROLE_ALUMNO' ORDER BY u.apellidos ASC, u.nombre ASC")
   List<Usuario> findAllAlumnosOrdenados();
 
   @org.springframework.data.jpa.repository.Query(
-      "SELECT u FROM Usuario u JOIN u.roles r WHERE r.nombre = 'PROFESOR' ORDER BY u.apellidos ASC, u.nombre ASC")
+      "SELECT u FROM Usuario u JOIN u.roles r WHERE r.nombre = 'ROLE_PROFESOR' ORDER BY u.apellidos ASC, u.nombre ASC")
   List<Usuario> findAllProfesoresOrdenados();
 
   Usuario findByEmail(String email);
 
   Optional<Usuario> findUsuarioByEmail(String correo);
+
+  @org.springframework.data.jpa.repository.Query(
+      "SELECT COUNT(u) FROM Usuario u JOIN u.roles r WHERE r.nombre = 'ROLE_ADMIN' AND u.activo = true")
+  long countAdminsActivos();
 }

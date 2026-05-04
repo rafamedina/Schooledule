@@ -283,4 +283,63 @@ public class UsuarioServiceTest {
     assertTrue(result.isEmpty());
     verify(matriculaRepository).findActivasByAlumnoId(usuarioId);
   }
+
+  @Test
+  public void testGetStudentGrades_delegaEnGradeDashboardMapper() {
+    Integer usuarioId = 1;
+    Integer periodoId = 1;
+    Integer imparticionId = 10;
+
+    PeriodoEvaluacion periodo =
+        PeriodoEvaluacion.builder().id(periodoId).nombre("1er Trimestre").build();
+    Modulo modulo = Modulo.builder().nombre("Programacion").build();
+    Imparticion imparticion = Imparticion.builder().id(imparticionId).modulo(modulo).build();
+    Matricula matricula = Matricula.builder().imparticion(imparticion).build();
+
+    GradeDashboardDTO expected = new GradeDashboardDTO("1er Trimestre", Map.of());
+
+    when(matriculaRepository.findByAlumnoId(usuarioId)).thenReturn(List.of(matricula));
+    when(periodoRepository.findByImparticionId(imparticionId)).thenReturn(List.of(periodo));
+    when(calificacionRepository.findByAlumnoIdAndPeriodoId(usuarioId, periodoId))
+        .thenReturn(Collections.emptyList());
+    when(periodoRepository.findById(periodoId)).thenReturn(Optional.of(periodo));
+    when(gradeDashboardMapper.toDto(any(), eq("1er Trimestre"))).thenReturn(expected);
+
+    GradeDashboardDTO result = usuarioService.getStudentGrades(usuarioId, periodoId);
+
+    assertNotNull(result);
+    verify(gradeDashboardMapper).toDto(any(), eq("1er Trimestre"));
+  }
+
+  @Test
+  public void testGetStudentGrades_retornaDTOConFueModificadaPropagada() {
+    // GradeDashboardMapper.toDto() is responsible for setting fueModificada.
+    // This test verifies that UsuarioService correctly propagates the DTO returned by the mapper,
+    // including any fueModificada=true values.
+    Integer usuarioId = 1;
+    Integer periodoId = 1;
+    Integer imparticionId = 10;
+
+    PeriodoEvaluacion periodo = PeriodoEvaluacion.builder().id(periodoId).nombre("P1").build();
+    Imparticion imparticion = Imparticion.builder().id(imparticionId).build();
+    Matricula matricula = Matricula.builder().imparticion(imparticion).build();
+
+    com.tfg.schooledule.domain.dto.GradeDTO gradeConRecuperacion =
+        new com.tfg.schooledule.domain.dto.GradeDTO(
+            "a – CE1", new BigDecimal("8.00"), null, null, "EXAMEN", true);
+    GradeDashboardDTO expected =
+        new GradeDashboardDTO("P1", Map.of("Programacion", List.of(gradeConRecuperacion)));
+
+    when(matriculaRepository.findByAlumnoId(usuarioId)).thenReturn(List.of(matricula));
+    when(periodoRepository.findByImparticionId(imparticionId)).thenReturn(List.of(periodo));
+    when(calificacionRepository.findByAlumnoIdAndPeriodoId(usuarioId, periodoId))
+        .thenReturn(Collections.emptyList());
+    when(periodoRepository.findById(periodoId)).thenReturn(Optional.of(periodo));
+    when(gradeDashboardMapper.toDto(any(), eq("P1"))).thenReturn(expected);
+
+    GradeDashboardDTO result = usuarioService.getStudentGrades(usuarioId, periodoId);
+
+    assertNotNull(result);
+    assertTrue(result.gradesByModulo().get("Programacion").get(0).fueModificada());
+  }
 }

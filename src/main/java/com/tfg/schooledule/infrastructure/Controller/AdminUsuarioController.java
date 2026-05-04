@@ -100,8 +100,14 @@ public class AdminUsuarioController {
   }
 
   @PostMapping("/{id}/toggle-activo")
-  public String toggleActivo(@PathVariable @Positive Integer id) {
-    adminUsuarioService.toggleActivo(id);
+  public String toggleActivo(
+      @PathVariable @Positive Integer id,
+      org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+    try {
+      adminUsuarioService.toggleActivo(id);
+    } catch (IllegalStateException ex) {
+      redirectAttributes.addFlashAttribute("error", ex.getMessage());
+    }
     return "redirect:/admin/usuarios";
   }
 }

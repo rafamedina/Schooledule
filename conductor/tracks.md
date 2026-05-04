@@ -6,12 +6,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## En progreso / Pendientes
 
-- [~] **Track: granular_grading_per_criterio_20260420** — Calificación Granular por CE + Recuperaciones
-*Link: [./tracks/granular_grading_per_criterio_20260420/plan.md](./tracks/granular_grading_per_criterio_20260420/plan.md)*
-
 ---
 
 ## Completados
+
+- [x] **Track: granular_grading_per_criterio_20260420** — Calificación Granular por CE + Recuperaciones — Completado 2026-05-03
+*Link: [./tracks/granular_grading_per_criterio_20260420/plan.md](./tracks/granular_grading_per_criterio_20260420/plan.md)*
 
 - [x] **Track: implement_user_view_20260226** — Completado 2026-05-02
 *Link: [./tracks/implement_user_view_20260226/plan.md](./tracks/implement_user_view_20260226/plan.md)*

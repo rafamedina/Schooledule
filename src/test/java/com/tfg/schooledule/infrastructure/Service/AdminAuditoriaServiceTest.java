@@ -1,7 +1,6 @@
 package com.tfg.schooledule.infrastructure.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.tfg.schooledule.domain.dto.AdminAuditoriaListDTO;
@@ -13,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -59,39 +57,59 @@ class AdminAuditoriaServiceTest {
   }
 
   @Test
-  void buscar_sinFiltros_llamaRepositorioConNulos() {
-    when(auditoriaNotaRepository.findWithFilters(null, null, null, null)).thenReturn(List.of());
+  void buscar_sinFiltros_llamaFindAllWithDetails() {
+    when(auditoriaNotaRepository.findAllWithDetails()).thenReturn(List.of());
 
     adminAuditoriaService.buscar(null, null, null, null);
 
-    verify(auditoriaNotaRepository).findWithFilters(null, null, null, null);
+    verify(auditoriaNotaRepository).findAllWithDetails();
   }
 
   @Test
-  void buscar_conFechas_convierteALocalDateTime() {
-    LocalDate desde = LocalDate.of(2025, 1, 1);
-    LocalDate hasta = LocalDate.of(2025, 12, 31);
+  void buscar_conFiltroEmail_filtraEnJava() {
+    AuditoriaNota entidad = buildAuditoriaNota();
+    when(auditoriaNotaRepository.findAllWithDetails()).thenReturn(List.of(entidad));
 
-    ArgumentCaptor<LocalDateTime> desdeCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
-    ArgumentCaptor<LocalDateTime> hastaCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+    assertThat(adminAuditoriaService.buscar("juan", null, null, null)).hasSize(1);
+    assertThat(adminAuditoriaService.buscar("JUAN", null, null, null)).hasSize(1);
+    assertThat(adminAuditoriaService.buscar("otro@test.com", null, null, null)).isEmpty();
+  }
 
-    when(auditoriaNotaRepository.findWithFilters(isNull(), isNull(), any(), any()))
-        .thenReturn(List.of());
+  @Test
+  void buscar_conFiltroModulo_filtraEnJava() {
+    AuditoriaNota entidad = buildAuditoriaNota();
+    when(auditoriaNotaRepository.findAllWithDetails()).thenReturn(List.of(entidad));
 
-    adminAuditoriaService.buscar(null, null, desde, hasta);
+    assertThat(adminAuditoriaService.buscar(null, "Programación", null, null)).hasSize(1);
+    assertThat(adminAuditoriaService.buscar(null, "prog", null, null)).hasSize(1);
+    assertThat(adminAuditoriaService.buscar(null, "Matemáticas", null, null)).isEmpty();
+  }
 
-    verify(auditoriaNotaRepository)
-        .findWithFilters(isNull(), isNull(), desdeCaptor.capture(), hastaCaptor.capture());
+  @Test
+  void buscar_conFechas_filtraEnJava() {
+    AuditoriaNota entidad = buildAuditoriaNota(); // fechaCambio = 2025-03-15 10:30
+    when(auditoriaNotaRepository.findAllWithDetails()).thenReturn(List.of(entidad));
 
-    assertThat(desdeCaptor.getValue()).isEqualTo(desde.atStartOfDay());
-    assertThat(hastaCaptor.getValue()).isEqualTo(hasta.atTime(23, 59, 59));
+    List<AdminAuditoriaListDTO> dentro =
+        adminAuditoriaService.buscar(
+            null, null, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 12, 31));
+    assertThat(dentro).hasSize(1);
+
+    List<AdminAuditoriaListDTO> fueraAntes =
+        adminAuditoriaService.buscar(
+            null, null, LocalDate.of(2025, 4, 1), LocalDate.of(2025, 12, 31));
+    assertThat(fueraAntes).isEmpty();
+
+    List<AdminAuditoriaListDTO> fueraDespues =
+        adminAuditoriaService.buscar(
+            null, null, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 2, 28));
+    assertThat(fueraDespues).isEmpty();
   }
 
   @Test
   void buscar_repositorioRetornaEntidad_mapeaCorrectamente() {
     AuditoriaNota entidad = buildAuditoriaNota();
-    when(auditoriaNotaRepository.findWithFilters(any(), any(), any(), any()))
-        .thenReturn(List.of(entidad));
+    when(auditoriaNotaRepository.findAllWithDetails()).thenReturn(List.of(entidad));
 
     List<AdminAuditoriaListDTO> resultado = adminAuditoriaService.buscar(null, null, null, null);
 

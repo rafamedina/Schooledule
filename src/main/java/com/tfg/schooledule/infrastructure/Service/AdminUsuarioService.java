@@ -134,6 +134,14 @@ public class AdminUsuarioService {
         usuarioRepository
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado: " + id));
+    boolean esAdmin = usuario.getRoles().stream().anyMatch(r -> r.getNombre().contains("ADMIN"));
+    if (Boolean.TRUE.equals(usuario.getActivo()) && esAdmin) {
+      long adminsActivos = usuarioRepository.countAdminsActivos();
+      if (adminsActivos <= 1) {
+        throw new IllegalStateException(
+            "No se puede desactivar el único administrador activo del sistema");
+      }
+    }
     usuario.setActivo(!usuario.getActivo());
     usuarioRepository.save(usuario);
   }
