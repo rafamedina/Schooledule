@@ -5,6 +5,7 @@ import com.tfg.schooledule.infrastructure.security.LoginRateLimitFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -32,6 +33,28 @@ public class SecurityConfig {
       CustomUserDetailsService userDetailsService, LoginRateLimitFilter loginRateLimitFilter) {
     this.userDetailsService = userDetailsService;
     this.loginRateLimitFilter = loginRateLimitFilter;
+  }
+
+  @Bean
+  @Order(1)
+  public SecurityFilterChain swaggerFilterChain(HttpSecurity http) throws Exception {
+    http.securityMatcher("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
+        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+        .csrf(csrf -> csrf.disable())
+        .headers(
+            headers ->
+                headers
+                    .frameOptions(frame -> frame.sameOrigin())
+                    .contentSecurityPolicy(
+                        csp ->
+                            csp.policyDirectives(
+                                "default-src 'self'; "
+                                    + "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+                                    + "style-src 'self' 'unsafe-inline'; "
+                                    + "img-src 'self' data: blob:; "
+                                    + "font-src 'self' data:; "
+                                    + "connect-src 'self';")));
+    return http.build();
   }
 
   @Bean

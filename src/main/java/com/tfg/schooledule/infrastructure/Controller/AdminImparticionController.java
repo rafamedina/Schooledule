@@ -6,6 +6,10 @@ import com.tfg.schooledule.infrastructure.repository.GrupoRepository;
 import com.tfg.schooledule.infrastructure.repository.ModuloRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import com.tfg.schooledule.infrastructure.service.AdminImparticionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+@Tag(name = "Admin - Imparticiones")
 @Controller
 @RequestMapping("/admin/imparticiones")
 @PreAuthorize("hasRole('ADMIN')")
@@ -43,12 +48,34 @@ public class AdminImparticionController {
     this.centroRepository = centroRepository;
   }
 
+  @Operation(
+      summary = "Listado de imparticiones",
+      description =
+          "Renderiza la tabla con todas las imparticiones del sistema. "
+              + "Una impartición relaciona un módulo formativo, un grupo de alumnos, "
+              + "un profesor y un centro educativo.")
+  @ApiResponse(
+      responseCode = "200",
+      description =
+          "Vista HTML: admin/imparticiones/lista. Modelo: imparticiones (List<AdminImparticionListDTO>)")
+  @ApiResponse(responseCode = "403", description = "Acceso denegado — requiere ROLE_ADMIN")
   @GetMapping
   public String lista(Model model) {
     model.addAttribute("imparticiones", adminImparticionService.listarTodas());
     return "admin/imparticiones/lista";
   }
 
+  @Operation(
+      summary = "Formulario: nueva impartición",
+      description =
+          "Muestra el formulario de creación. "
+              + "Carga los selectores de módulos activos, grupos, profesores y centros activos.")
+  @ApiResponse(
+      responseCode = "200",
+      description =
+          "Vista HTML: admin/imparticiones/formulario. "
+              + "Modelo: form (AdminImparticionFormDTO vacío), modulos, grupos, profesores, centros")
+  @ApiResponse(responseCode = "403", description = "Acceso denegado — requiere ROLE_ADMIN")
   @GetMapping("/nuevo")
   public String nuevo(Model model) {
     model.addAttribute("form", new AdminImparticionFormDTO());
@@ -56,6 +83,18 @@ public class AdminImparticionController {
     return "admin/imparticiones/formulario";
   }
 
+  @Operation(
+      summary = "Acción: crear impartición",
+      description =
+          "Procesa el formulario AdminImparticionFormDTO. "
+              + "Campos: moduloId, grupoId, profesorId, centroId (todos FKs obligatorios). "
+              + "El grupo debe pertenecer al centro indicado. "
+              + "Con éxito: redirect a /admin/imparticiones.")
+  @ApiResponse(
+      responseCode = "302",
+      description = "Creación exitosa → redirect a /admin/imparticiones")
+  @ApiResponse(responseCode = "200", description = "Formulario con errores de validación")
+  @ApiResponse(responseCode = "403", description = "Acceso denegado — requiere ROLE_ADMIN")
   @PostMapping("/nuevo")
   public String crear(
       @Valid @ModelAttribute("form") AdminImparticionFormDTO form,
@@ -75,16 +114,44 @@ public class AdminImparticionController {
     return "redirect:/admin/imparticiones";
   }
 
+  @Operation(
+      summary = "Formulario: editar impartición",
+      description = "Carga el formulario pre-relleno con los datos de la impartición.")
+  @ApiResponse(
+      responseCode = "200",
+      description =
+          "Vista HTML: admin/imparticiones/formulario. "
+              + "Modelo: form (AdminImparticionFormDTO con datos actuales), modulos, grupos, profesores, centros")
+  @ApiResponse(responseCode = "404", description = "Impartición no encontrada")
+  @ApiResponse(responseCode = "403", description = "Acceso denegado — requiere ROLE_ADMIN")
   @GetMapping("/{id}/editar")
-  public String editar(@PathVariable @Positive Integer id, Model model) {
+  public String editar(
+      @Parameter(description = "ID de la impartición", required = true, example = "7")
+          @PathVariable
+          @Positive
+          Integer id,
+      Model model) {
     model.addAttribute("form", adminImparticionService.obtenerParaEditar(id));
     cargarListas(model);
     return "admin/imparticiones/formulario";
   }
 
+  @Operation(
+      summary = "Acción: actualizar impartición",
+      description =
+          "Persiste los cambios de la impartición. "
+              + "Con éxito: redirect a /admin/imparticiones.")
+  @ApiResponse(
+      responseCode = "302",
+      description = "Actualización exitosa → redirect a /admin/imparticiones")
+  @ApiResponse(responseCode = "200", description = "Formulario con errores de validación")
+  @ApiResponse(responseCode = "403", description = "Acceso denegado — requiere ROLE_ADMIN")
   @PostMapping("/{id}/editar")
   public String actualizar(
-      @PathVariable @Positive Integer id,
+      @Parameter(description = "ID de la impartición", required = true, example = "7")
+          @PathVariable
+          @Positive
+          Integer id,
       @Valid @ModelAttribute("form") AdminImparticionFormDTO form,
       BindingResult bindingResult,
       Model model) {
@@ -102,9 +169,25 @@ public class AdminImparticionController {
     return "redirect:/admin/imparticiones";
   }
 
+  @Operation(
+      summary = "Acción: eliminar impartición",
+      description =
+          "Elimina la impartición si no tiene matrículas ni ítems evaluables asociados. "
+              + "Si hay dependencias, redirige con mensaje de error flash.")
+  @ApiResponse(
+      responseCode = "302",
+      description = "Eliminación exitosa → redirect a /admin/imparticiones")
+  @ApiResponse(
+      responseCode = "302",
+      description = "Error de integridad → redirect con flash 'error'")
+  @ApiResponse(responseCode = "403", description = "Acceso denegado — requiere ROLE_ADMIN")
   @PostMapping("/{id}/eliminar")
   public String eliminar(
-      @PathVariable @Positive Integer id, RedirectAttributes redirectAttributes) {
+      @Parameter(description = "ID de la impartición", required = true, example = "7")
+          @PathVariable
+          @Positive
+          Integer id,
+      RedirectAttributes redirectAttributes) {
     try {
       adminImparticionService.eliminar(id);
     } catch (IllegalStateException ex) {
