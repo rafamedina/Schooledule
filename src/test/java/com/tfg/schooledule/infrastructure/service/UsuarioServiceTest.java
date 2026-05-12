@@ -83,7 +83,7 @@ public class UsuarioServiceTest {
     Exception exception =
         assertThrows(RuntimeException.class, () -> usuarioService.getAlumnoProfile(usuarioId));
 
-    assertEquals("Usuario no encontrado", exception.getMessage());
+    assertEquals("Usuario no encontrado: " + usuarioId, exception.getMessage());
   }
 
   @Test
@@ -98,7 +98,7 @@ public class UsuarioServiceTest {
     Exception exception =
         assertThrows(RuntimeException.class, () -> usuarioService.getAlumnoProfile(usuarioId));
 
-    assertEquals("Matricula no encontrada", exception.getMessage());
+    assertEquals("Matrícula no encontrada para alumno: " + usuarioId, exception.getMessage());
   }
 
   @Test
