@@ -20,7 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * Requiere Postgres real — no puede ejecutarse en H2.
  */
 @SpringBootTest
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @TestPropertySource(
     properties = {
       "spring.flyway.enabled=true",
