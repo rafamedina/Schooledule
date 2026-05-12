@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{profe/fragments/layout :: head('Alumnos')}"></head>
+  <body>
+    <div th:replace="~{profe/fragments/layout :: topnav('alumnos')}"></div>
+
+    <main class="page-content">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb animate-in" aria-label="Ruta de navegación">
+        <a th:href="@{/profe/dashboard}">Centros</a>
+        <span class="breadcrumb__sep">·</span>
+        <a
+          th:href="@{/profe/centro/{id}/asignaturas(id=${centroId != null ? centroId : 0})}"
+          >Asignaturas</a
+        >
+        <span class="breadcrumb__sep">·</span>
+        <span>Alumnos</span>
+      </nav>
+
+      <!-- Hero con label de impartición dividido -->
+      <div class="hero animate-in">
+        <div>
+          <h1
+            class="hero__title"
+            th:if="${imparticionLabel != null and #strings.contains(imparticionLabel,'·')}"
+          >
+            <span
+              th:text="${#strings.substringBefore(imparticionLabel, '·').trim()}"
+              >DAW1-A</span
+            >
+            <br />
+            <em
+              th:text="${#strings.substringAfter(imparticionLabel, '·').trim()}"
+              >Módulo</em
+            >
+          </h1>
+          <h1
+            class="hero__title"
+            th:unless="${imparticionLabel != null and #strings.contains(imparticionLabel,'·')}"
+            th:text="${imparticionLabel}"
+          >
+            Impartición
+          </h1>
+        </div>
+        <p class="hero__body" th:if="${!alumnos.isEmpty()}">
+          <span th:text="${alumnos.size()}">0</span> alumno(s) activo(s). Haz
+          clic en un alumno para gestionar sus calificaciones.
+        </p>
+      </div>
+
+      <!-- Gestión de ítems evaluables -->
+      <section class="items-panel animate-in">
+        <h2 class="section-title">Ítems evaluables</h2>
+
+        <p class="msg msg--ok" th:if="${okItem}" th:text="${okItem}"></p>
+        <p
+          class="msg msg--error"
+          th:if="${errorItem}"
+          th:text="${errorItem}"
+        ></p>
+
+        <!-- Formulario crear ítem -->
+        <form
+          th:action="@{/profe/imparticion/{id}/items(id=${imparticionId})}"
+          method="post"
+          th:object="${itemForm}"
+          class="item-form"
+        >
+          <select th:field="*{periodoEvaluacionId}" required>
+            <option value="" disabled selected>— Periodo —</option>
+            <option
+              th:each="p : ${periodos}"
+              th:value="${p.id}"
+              th:text="${p.nombre}"
+            ></option>
+          </select>
+          <select th:field="*{resultadoAprendizajeId}" required>
+            <option value="" disabled selected>
+              — Resultado de Aprendizaje —
+            </option>
+            <option
+              th:each="ra : ${ras}"
+              th:value="${ra.id}"
+              th:text="${ra.codigo + ' — ' + ra.descripcion}"
+            ></option>
+          </select>
+          <select th:field="*{tipo}" required>
+            <option value="EXAMEN">Examen</option>
+            <option value="PRACTICA">Práctica</option>
+            <option value="RECUPERACION">Recuperación</option>
+            <option value="ACTITUD">Actitud</option>
+          </select>
+          <input
+            th:field="*{nombre}"
+            type="text"
+            placeholder="Nombre del ítem"
+            required
+          />
+          <input th:field="*{fecha}" type="date" required />
+          <button type="submit" class="btn-editorial-primary">
+            Añadir ítem
+          </button>
+        </form>
+
+        <!-- Lista de ítems existentes -->
+        <ul class="item-list" th:if="${items != null and !items.isEmpty()}">
+          <li th:each="item : ${items}" class="item-list__row">
+            <span class="chip chip--tipo" th:text="${item.tipo}"></span>
+            <span th:text="${item.periodoEvaluacion.nombre}"></span>
+            <span th:text="${item.resultadoAprendizaje.codigo}"></span>
+            <span th:text="${item.nombre}"></span>
+            <span
+              class="item-list__fecha"
+              th:if="${item.fecha != null}"
+              th:text="${#temporals.format(item.fecha, 'dd/MM/yyyy')}"
+            ></span>
+            <form
+              th:action="@{/profe/items/{id}/eliminar(id=${item.id})}"
+              method="post"
+            >
+              <button
+                type="submit"
+                class="btn-icon btn-icon--danger"
+                aria-label="Eliminar ítem"
+                onclick="return confirm('¿Eliminar este ítem?')"
+              >
+                ✕
+              </button>
+            </form>
+          </li>
+        </ul>
+
+        <p
+          th:if="${items == null or items.isEmpty()}"
+          class="empty-state__body"
+        >
+          No hay ítems evaluables. Crea el primero.
+        </p>
+      </section>
+
+      <!-- Listado de alumnos -->
+      <ul
+        th:if="${!alumnos.isEmpty()}"
+        class="roster"
+        id="rosterList"
+        aria-label="Listado de alumnos"
+      >
+        <li
+          th:each="alumno, iter : ${alumnos}"
+          class="roster__item animate-in"
+          role="button"
+          tabindex="0"
+          th:data-matricula-id="${alumno.matriculaId}"
+          th:aria-label="'Abrir calificaciones de ' + ${alumno.nombreCompleto}"
+        >
+          <span
+            class="roster__serial"
+            th:text="${iter.count < 10 ? '0' + iter.count : iter.count}"
+            >01</span
+          >
+
+          <div>
+            <span class="roster__name" th:text="${alumno.nombreCompleto}"
+              >Ana López</span
+            >
+            <span class="roster__email" th:text="${alumno.email}"
+              >ana@t.com</span
+            >
+          </div>
+
+          <span class="chip chip--hot" th:if="${alumno.esRepetidor}"
+            >Repetidor</span
+          >
+          <span
+            class="chip chip--danger"
+            th:if="${alumno.cesSuspensas > 0}"
+            th:text="${alumno.cesSuspensas + ' CE(s) suspensa(s)'}"
+          ></span>
+        </li>
+      </ul>
+
+      <!-- Estado vacío -->
+      <div th:if="${alumnos.isEmpty()}" class="empty-state animate-in">
+        <p class="empty-state__title">Sin alumnos activos.</p>
+        <p class="empty-state__body">
+          No hay matrículas activas para esta asignatura.
+        </p>
+      </div>
+    </main>
+
+    <div th:replace="~{profe/fragments/layout :: colophon}"></div>
+
+    <!-- ── Modal de calificaciones ──────────────────────────────────────────────── -->
+    <dialog
+      id="gradesModal"
+      aria-labelledby="gradesModalTitle"
+      aria-modal="true"
+    >
+      <div class="modal-layout">
+        <header class="modal-header">
+          <h2 id="gradesModalTitle" class="modal-header__name">—</h2>
+          <span id="gradesModalLabel" class="modal-header__label"></span>
+          <button
+            class="modal-close"
+            id="closeGradesTop"
+            aria-label="Cerrar modal"
+          >
+            ✕
+          </button>
+        </header>
+
+        <div class="modal-body" id="gradesBody">
+          <!-- Relleno por JS -->
+        </div>
+
+        <footer class="modal-footer">
+          <div class="media-global-display">
+            Media global <strong id="mediaGlobal">—</strong>
+          </div>
+          <div class="btn-group">
+            <button id="saveGrades" class="btn-editorial-primary">
+              Guardar
+            </button>
+            <button id="closeGrades" class="btn-editorial-ghost">Cerrar</button>
+          </div>
+        </footer>
+      </div>
+    </dialog>
+
+    <script type="module" th:src="@{/js/profe-grades.js}"></script>
+  </body>
+</html>

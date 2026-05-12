@@ -1,11 +1,72 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Document</title>
-  </head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{admin/fragments/layout :: head('Dashboard')}"></head>
   <body>
-    Hola admin
+    <div class="admin-shell">
+      <div th:replace="~{admin/fragments/layout :: sidebar('dashboard')}"></div>
+
+      <main class="admin-content">
+        <div class="hero animate-in">
+          <div class="hero__left">
+            <nav class="breadcrumb">
+              <a th:href="@{/admin/dashboard}">Administración</a>
+              <span class="breadcrumb__sep">/</span>
+              <span>Dashboard</span>
+            </nav>
+            <h1 class="hero__title">Panel de <em>Gestión</em></h1>
+          </div>
+          <div class="hero__right">
+            <p class="hero__body">
+              Bienvenido al centro de control de Schooledule. Desde aquí podrás
+              gestionar usuarios, centros y la infraestructura global.
+            </p>
+          </div>
+        </div>
+
+        <div class="stat-grid animate-in">
+          <div class="stat-card">
+            <span
+              class="stat-card__num"
+              th:text="${stats != null} ? ${stats.totalCentros} : 0"
+              >0</span
+            >
+            <span class="stat-card__label">Centros Activos</span>
+          </div>
+          <div class="stat-card">
+            <span
+              class="stat-card__num"
+              th:text="${stats != null} ? ${stats.totalUsuarios} : 0"
+              >0</span
+            >
+            <span class="stat-card__label">Usuarios Totales</span>
+          </div>
+          <div class="stat-card">
+            <span
+              class="stat-card__num"
+              th:text="${stats != null} ? ${stats.activos} : 0"
+              >0</span
+            >
+            <span class="stat-card__label">Usuarios Activos</span>
+          </div>
+          <div class="stat-card">
+            <span
+              class="stat-card__num"
+              th:text="${stats != null} ? ${stats.totalMatriculasActivas} : 0"
+              >0</span
+            >
+            <span class="stat-card__label">Matrículas Activas</span>
+          </div>
+          <div class="stat-card">
+            <span
+              class="stat-card__num"
+              th:text="${stats != null} ? ${stats.totalImparticiones} : 0"
+              >0</span
+            >
+            <span class="stat-card__label">Imparticiones</span>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div th:replace="~{admin/fragments/layout :: colophon}"></div>
   </body>
 </html>
