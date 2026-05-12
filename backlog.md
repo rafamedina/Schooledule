@@ -1,6 +1,15 @@
--[] Documentar APi points
+-[x] Documentar APi points
+
 -[] Cambiar css y hacerlo responsive
 -[] hacer examen sonarqube y arreglar errores
+-[] añadir filtros en admin panel
+-[] Solo aparezca los datos del curso activo
+-[] Añadir el poder crear modulos con importar csv, json o xml
 
 
--[] al crear una matricula que se pueda filtrar por centro
+
+
+
+enseñar profesor
+enseñar admin
+owasp top 10
