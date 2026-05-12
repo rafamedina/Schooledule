@@ -25,4 +25,9 @@ public interface GrupoRepository extends JpaRepository<Grupo, Integer> {
   List<Grupo> findByTutorId(Integer tutorId);
 
   boolean existsByIdAndTutorId(Integer grupoId, Integer tutorId);
+
+  List<Grupo> findByCentroIdInOrderByCentroNombreAscNombreAsc(
+      java.util.Collection<Integer> centroIds);
+
+  boolean existsByIdAndCentroIdIn(Integer grupoId, java.util.Collection<Integer> centroIds);
 }
