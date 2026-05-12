@@ -1,5 +1,6 @@
 package com.tfg.schooledule.infrastructure.config;
 
+import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,10 +12,28 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
+  private final UsuarioRepository usuarioRepository;
+
+  public CustomLoginSuccessHandler(UsuarioRepository usuarioRepository) {
+    this.usuarioRepository = usuarioRepository;
+  }
+
   @Override
   public void onAuthenticationSuccess(
       HttpServletRequest request, HttpServletResponse response, Authentication authentication)
       throws IOException, ServletException {
+
+    String email = authentication.getName();
+    boolean mustChange =
+        usuarioRepository
+            .findUsuarioByEmail(email)
+            .map(u -> Boolean.TRUE.equals(u.getMustChangePassword()))
+            .orElse(false);
+
+    if (mustChange) {
+      response.sendRedirect("/change-password");
+      return;
+    }
 
     java.util.Set<String> roles =
         org.springframework.security.core.authority.AuthorityUtils.authorityListToSet(

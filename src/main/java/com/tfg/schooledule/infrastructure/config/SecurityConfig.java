@@ -71,7 +71,14 @@ public class SecurityConfig {
                     .requestMatchers("/alumno/**")
                     .hasRole("ALUMNO")
                     .requestMatchers(
-                        "/", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error")
+                        "/",
+                        "/login",
+                        "/register",
+                        "/change-password",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/error")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
