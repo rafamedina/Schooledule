@@ -10,6 +10,7 @@ import com.tfg.schooledule.infrastructure.repository.CalificacionRepository;
 import com.tfg.schooledule.infrastructure.repository.MatriculaRepository;
 import com.tfg.schooledule.infrastructure.repository.PeriodoEvaluacionRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -32,12 +33,15 @@ public class UsuarioService {
     Usuario usuario =
         usuarioRepository
             .findById(usuarioId)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado: " + usuarioId));
 
     Matricula matricula =
         matriculaRepository
             .findFirstByAlumnoIdOrderByImparticionGrupoCursoAcademicoIdDesc(usuarioId)
-            .orElseThrow(() -> new RuntimeException("Matricula no encontrada"));
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException(
+                        "Matrícula no encontrada para alumno: " + usuarioId));
 
     return alumnoProfileMapper.toDto(usuario, matricula);
   }

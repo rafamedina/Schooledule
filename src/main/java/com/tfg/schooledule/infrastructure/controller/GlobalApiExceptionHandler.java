@@ -1,6 +1,7 @@
 package com.tfg.schooledule.infrastructure.controller;
 
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,13 @@ public class GlobalApiExceptionHandler {
 
   public GlobalApiExceptionHandler(SecurityAuditLogger securityAuditLogger) {
     this.securityAuditLogger = securityAuditLogger;
+  }
+
+  @ExceptionHandler(EntityNotFoundException.class)
+  public ResponseEntity<Map<String, String>> handleEntityNotFound(EntityNotFoundException ex) {
+    log.debug("[APP] not_found message={}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(Map.of("error", "not_found", "message", ex.getMessage()));
   }
 
   @ExceptionHandler(AccessDeniedException.class)
