@@ -90,6 +90,10 @@ public class TeacherDashboardService {
       throw new AccessDeniedException(
           "El profesor no tiene acceso a la impartición " + imparticionId);
     }
+    return buildRoster(imparticionId);
+  }
+
+  public List<TeacherStudentRowDTO> buildRoster(Integer imparticionId) {
     return matriculaRepo
         .findByImparticionIdAndEstado(imparticionId, EstadoMatricula.ACTIVA)
         .stream()

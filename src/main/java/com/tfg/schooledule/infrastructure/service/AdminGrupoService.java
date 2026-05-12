@@ -5,11 +5,13 @@ import com.tfg.schooledule.domain.dto.AdminGrupoListDTO;
 import com.tfg.schooledule.domain.entity.Centro;
 import com.tfg.schooledule.domain.entity.CursoAcademico;
 import com.tfg.schooledule.domain.entity.Grupo;
+import com.tfg.schooledule.domain.entity.Usuario;
 import com.tfg.schooledule.infrastructure.mapper.AdminGrupoMapper;
 import com.tfg.schooledule.infrastructure.repository.CentroRepository;
 import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.repository.GrupoRepository;
 import com.tfg.schooledule.infrastructure.repository.ImparticionRepository;
+import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class AdminGrupoService {
   private final ImparticionRepository imparticionRepository;
   private final CentroRepository centroRepository;
   private final CursoAcademicoRepository cursoAcademicoRepository;
+  private final UsuarioRepository usuarioRepository;
   private final AdminGrupoMapper adminGrupoMapper;
 
   public AdminGrupoService(
@@ -29,11 +32,13 @@ public class AdminGrupoService {
       ImparticionRepository imparticionRepository,
       CentroRepository centroRepository,
       CursoAcademicoRepository cursoAcademicoRepository,
+      UsuarioRepository usuarioRepository,
       AdminGrupoMapper adminGrupoMapper) {
     this.grupoRepository = grupoRepository;
     this.imparticionRepository = imparticionRepository;
     this.centroRepository = centroRepository;
     this.cursoAcademicoRepository = cursoAcademicoRepository;
+    this.usuarioRepository = usuarioRepository;
     this.adminGrupoMapper = adminGrupoMapper;
   }
 
@@ -41,13 +46,19 @@ public class AdminGrupoService {
   public List<AdminGrupoListDTO> listarTodos() {
     return grupoRepository.findAllByOrderByCentroNombreAscNombreAsc().stream()
         .map(
-            g ->
-                new AdminGrupoListDTO(
-                    g.getId(),
-                    g.getNombre(),
-                    g.getCentro().getNombre(),
-                    g.getCursoAcademico().getNombre(),
-                    imparticionRepository.countByGrupoId(g.getId())))
+            g -> {
+              String tutorNombre =
+                  g.getTutor() != null
+                      ? g.getTutor().getNombre() + " " + g.getTutor().getApellidos()
+                      : null;
+              return new AdminGrupoListDTO(
+                  g.getId(),
+                  g.getNombre(),
+                  g.getCentro().getNombre(),
+                  g.getCursoAcademico().getNombre(),
+                  imparticionRepository.countByGrupoId(g.getId()),
+                  tutorNombre);
+            })
         .toList();
   }
 
@@ -79,8 +90,14 @@ public class AdminGrupoService {
       throw new IllegalArgumentException(
           "Ya existe un grupo con ese nombre en este centro y curso académico");
     }
+    Usuario tutor = resolveTutor(dto.getTutorId());
     grupoRepository.save(
-        Grupo.builder().nombre(dto.getNombre()).centro(centro).cursoAcademico(curso).build());
+        Grupo.builder()
+            .nombre(dto.getNombre())
+            .centro(centro)
+            .cursoAcademico(curso)
+            .tutor(tutor)
+            .build());
   }
 
   @Transactional
@@ -109,7 +126,15 @@ public class AdminGrupoService {
     grupo.setNombre(dto.getNombre());
     grupo.setCentro(centro);
     grupo.setCursoAcademico(curso);
+    grupo.setTutor(resolveTutor(dto.getTutorId()));
     grupoRepository.save(grupo);
+  }
+
+  private Usuario resolveTutor(Integer tutorId) {
+    if (tutorId == null) return null;
+    return usuarioRepository
+        .findById(tutorId)
+        .orElseThrow(() -> new EntityNotFoundException("Tutor no encontrado: " + tutorId));
   }
 
   @Transactional

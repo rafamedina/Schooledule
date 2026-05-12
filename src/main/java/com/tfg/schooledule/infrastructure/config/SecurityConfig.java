@@ -66,7 +66,7 @@ public class SecurityConfig {
                     .denyAll()
                     .requestMatchers("/admin/**")
                     .hasRole("ADMIN")
-                    .requestMatchers("/profe/**")
+                    .requestMatchers("/profe/**", "/tutor/**")
                     .hasRole("PROFESOR")
                     .requestMatchers("/alumno/**")
                     .hasRole("ALUMNO")

@@ -42,6 +42,7 @@
                 <th>Nombre</th>
                 <th>Centro</th>
                 <th>Curso Académico</th>
+                <th>Tutor</th>
                 <th>Imparticiones</th>
                 <th>Acciones</th>
               </tr>
@@ -51,6 +52,9 @@
                 <td th:text="${g.nombre}"></td>
                 <td th:text="${g.centroNombre}"></td>
                 <td th:text="${g.cursoAcademicoNombre}"></td>
+                <td
+                  th:text="${g.tutorNombre != null ? g.tutorNombre : '—'}"
+                ></td>
                 <td th:text="${g.numImparticiones}"></td>
                 <td>
                   <a

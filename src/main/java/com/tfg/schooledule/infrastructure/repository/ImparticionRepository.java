@@ -27,4 +27,6 @@ public interface ImparticionRepository extends JpaRepository<Imparticion, Intege
   boolean existsByModuloIdAndGrupoId(Integer moduloId, Integer grupoId);
 
   boolean existsByModuloIdAndGrupoIdAndIdNot(Integer moduloId, Integer grupoId, Integer id);
+
+  List<Imparticion> findByGrupoId(Integer grupoId);
 }

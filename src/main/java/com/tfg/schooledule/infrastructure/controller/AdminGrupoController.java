@@ -3,6 +3,7 @@ package com.tfg.schooledule.infrastructure.controller;
 import com.tfg.schooledule.domain.dto.AdminGrupoFormDTO;
 import com.tfg.schooledule.infrastructure.repository.CentroRepository;
 import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
+import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import com.tfg.schooledule.infrastructure.service.AdminGrupoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,14 +31,17 @@ public class AdminGrupoController {
   private final AdminGrupoService adminGrupoService;
   private final CentroRepository centroRepository;
   private final CursoAcademicoRepository cursoAcademicoRepository;
+  private final UsuarioRepository usuarioRepository;
 
   public AdminGrupoController(
       AdminGrupoService adminGrupoService,
       CentroRepository centroRepository,
-      CursoAcademicoRepository cursoAcademicoRepository) {
+      CursoAcademicoRepository cursoAcademicoRepository,
+      UsuarioRepository usuarioRepository) {
     this.adminGrupoService = adminGrupoService;
     this.centroRepository = centroRepository;
     this.cursoAcademicoRepository = cursoAcademicoRepository;
+    this.usuarioRepository = usuarioRepository;
   }
 
   @Operation(
@@ -183,5 +187,6 @@ public class AdminGrupoController {
   private void cargarListas(Model model) {
     model.addAttribute("centros", centroRepository.findAllByOrderByNombreAsc());
     model.addAttribute("cursos", cursoAcademicoRepository.findAllByOrderByNombreAsc());
+    model.addAttribute("profesores", usuarioRepository.findAllProfesoresOrdenados());
   }
 }

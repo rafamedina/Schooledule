@@ -6,6 +6,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## En progreso / Pendientes
 
+- [ ] **Track: tutor_grupo_20260512** — Tutor de Grupo: vista de grupos, alumnos y notas (RO); edición solo si también es profesor.
+*Link: [./tracks/tutor_grupo_20260512/plan.md](./tracks/tutor_grupo_20260512/plan.md)*
+
 ---
 
 ## Completados
