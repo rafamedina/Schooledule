@@ -5,6 +5,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.tfg.schooledule.domain.dto.AdminCursoFormDTO;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
 import com.tfg.schooledule.infrastructure.service.AdminCursoService;
 import java.util.Collections;
@@ -127,5 +128,43 @@ class AdminCursoControllerTest {
         .andExpect(redirectedUrl("/admin/cursos"));
 
     verify(adminCursoService).cerrar(1);
+  }
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void nuevo_conAdmin_200_retornaFormulario() throws Exception {
+    mockMvc
+        .perform(get("/admin/cursos/nuevo"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("admin/cursos/formulario"))
+        .andExpect(model().attributeExists("form"));
+  }
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void editar_conAdmin_200_retornaFormularioPreRellenado() throws Exception {
+    when(adminCursoService.obtenerParaEditar(1)).thenReturn(new AdminCursoFormDTO());
+
+    mockMvc
+        .perform(get("/admin/cursos/1/editar"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("admin/cursos/formulario"))
+        .andExpect(model().attributeExists("form"));
+  }
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void actualizar_datosValidos_redirigeLista() throws Exception {
+    mockMvc
+        .perform(
+            post("/admin/cursos/1/editar")
+                .param("nombre", "2025/2026")
+                .param("fechaInicio", "2025-09-01")
+                .param("fechaFin", "2026-06-30")
+                .with(csrf()))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/admin/cursos"));
+
+    verify(adminCursoService).actualizar(eq(1), any());
   }
 }

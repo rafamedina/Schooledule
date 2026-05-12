@@ -5,6 +5,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.tfg.schooledule.domain.dto.AdminModuloFormDTO;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
 import com.tfg.schooledule.infrastructure.service.AdminModuloService;
 import java.util.Collections;
@@ -131,5 +132,56 @@ class AdminModuloControllerTest {
         .perform(post("/admin/modulos/1/toggle-activo").with(csrf()))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/admin/modulos"));
+  }
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void nuevo_conAdmin_200_retornaFormulario() throws Exception {
+    mockMvc
+        .perform(get("/admin/modulos/nuevo"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("admin/modulos/formulario"))
+        .andExpect(model().attributeExists("form"));
+  }
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void editar_conAdmin_200_retornaFormularioPreRellenado() throws Exception {
+    when(adminModuloService.obtenerParaEditar(1)).thenReturn(new AdminModuloFormDTO());
+
+    mockMvc
+        .perform(get("/admin/modulos/1/editar"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("admin/modulos/formulario"))
+        .andExpect(model().attributeExists("form"));
+  }
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void actualizar_datosValidos_redirigeLista() throws Exception {
+    mockMvc
+        .perform(
+            post("/admin/modulos/1/editar")
+                .param("codigo", "DAW02")
+                .param("nombre", "Bases de Datos")
+                .with(csrf()))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/admin/modulos"));
+
+    verify(adminModuloService).actualizar(eq(1), any());
+  }
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void actualizar_codigoBlanco_reRenderizaFormulario() throws Exception {
+    mockMvc
+        .perform(
+            post("/admin/modulos/1/editar")
+                .param("codigo", "")
+                .param("nombre", "Bases de Datos")
+                .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("admin/modulos/formulario"))
+        .andExpect(model().attributeHasFieldErrors("form", "codigo"));
   }
 }
