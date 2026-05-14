@@ -6,7 +6,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.tfg.schooledule.domain.dto.AdminModuloFormDTO;
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
+import com.tfg.schooledule.infrastructure.service.AdminCursoActivoService;
 import com.tfg.schooledule.infrastructure.service.AdminModuloService;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,8 @@ class AdminModuloControllerTest {
   @Autowired private MockMvc mockMvc;
 
   @MockBean private AdminModuloService adminModuloService;
+  @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
+  @MockBean private AdminCursoActivoService adminCursoActivoService;
   @MockBean private SecurityAuditLogger securityAuditLogger;
 
   @Test
@@ -53,7 +57,7 @@ class AdminModuloControllerTest {
   @Test
   @WithMockUser(roles = "ADMIN")
   void lista_conAdmin_200_retornaVista() throws Exception {
-    when(adminModuloService.listarTodos()).thenReturn(Collections.emptyList());
+    when(adminModuloService.listarFiltrado(any())).thenReturn(Collections.emptyList());
 
     mockMvc
         .perform(get("/admin/modulos"))

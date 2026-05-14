@@ -6,6 +6,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## En progreso / Pendientes
 
+- [ ] **Track: admin_filtros_cursoactivo_20260514** — Filtros en todas las pestañas admin (centro, grupo, módulo, año, profesor) + mostrar solo datos del año lectivo activo por defecto.
+*Link: [./tracks/admin_filtros_cursoactivo_20260514/plan.md](./tracks/admin_filtros_cursoactivo_20260514/plan.md)*
+
+- [ ] **Track: centro_admin_20260512** — Admin de Centro (Tier-2): CRUD completo de grupos/imparticiones/alumnos/usuarios, restringido a los centros asignados. *(Fase 8 pendiente: gestión de ADMIN_CENTRO desde panel global)*
+*Link: [./tracks/centro_admin_20260512/plan.md](./tracks/centro_admin_20260512/plan.md)*
+
 - [ ] **Track: tutor_grupo_20260512** — Tutor de Grupo: vista de grupos, alumnos y notas (RO); edición solo si también es profesor.
 *Link: [./tracks/tutor_grupo_20260512/plan.md](./tracks/tutor_grupo_20260512/plan.md)*
 

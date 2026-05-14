@@ -27,19 +27,25 @@ public class AdminCentroService {
     this.adminCentroMapper = adminCentroMapper;
   }
 
+  private AdminCentroListDTO toListDTO(Centro c) {
+    return new AdminCentroListDTO(
+        c.getId(),
+        c.getNombre(),
+        c.getUbicacion(),
+        c.getActivo(),
+        c.getProfesores().size(),
+        (int) grupoRepository.countByCentroId(c.getId()));
+  }
+
   @Transactional(readOnly = true)
   public List<AdminCentroListDTO> listarTodos() {
-    return centroRepository.findAllByOrderByNombreAsc().stream()
-        .map(
-            c ->
-                new AdminCentroListDTO(
-                    c.getId(),
-                    c.getNombre(),
-                    c.getUbicacion(),
-                    c.getActivo(),
-                    c.getProfesores().size(),
-                    (int) grupoRepository.countByCentroId(c.getId())))
-        .toList();
+    return centroRepository.findAllByOrderByNombreAsc().stream().map(this::toListDTO).toList();
+  }
+
+  @Transactional(readOnly = true)
+  public List<AdminCentroListDTO> listarFiltrado(String nombre) {
+    String n = (nombre != null && nombre.isBlank()) ? null : nombre;
+    return centroRepository.findByNombreContaining(n).stream().map(this::toListDTO).toList();
   }
 
   @Transactional(readOnly = true)

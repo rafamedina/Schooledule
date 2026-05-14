@@ -7,10 +7,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.tfg.schooledule.domain.dto.AdminImparticionFormDTO;
 import com.tfg.schooledule.infrastructure.repository.CentroRepository;
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.repository.GrupoRepository;
 import com.tfg.schooledule.infrastructure.repository.ModuloRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
+import com.tfg.schooledule.infrastructure.service.AdminCursoActivoService;
 import com.tfg.schooledule.infrastructure.service.AdminImparticionService;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,8 @@ class AdminImparticionControllerTest {
   @MockBean private GrupoRepository grupoRepository;
   @MockBean private UsuarioRepository usuarioRepository;
   @MockBean private CentroRepository centroRepository;
+  @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
+  @MockBean private AdminCursoActivoService adminCursoActivoService;
   @MockBean private SecurityAuditLogger securityAuditLogger;
 
   @Test
@@ -61,7 +65,7 @@ class AdminImparticionControllerTest {
   @Test
   @WithMockUser(roles = "ADMIN")
   void lista_conAdmin_200_retornaVista() throws Exception {
-    when(adminImparticionService.listarTodas()).thenReturn(Collections.emptyList());
+    when(adminImparticionService.listarFiltrado(any())).thenReturn(Collections.emptyList());
 
     mockMvc
         .perform(get("/admin/imparticiones"))

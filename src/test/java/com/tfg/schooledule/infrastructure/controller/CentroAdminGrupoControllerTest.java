@@ -11,6 +11,7 @@ import com.tfg.schooledule.domain.entity.*;
 import com.tfg.schooledule.infrastructure.repository.*;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
 import com.tfg.schooledule.infrastructure.service.*;
+import com.tfg.schooledule.infrastructure.service.AdminCursoActivoService;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,7 @@ class CentroAdminGrupoControllerTest {
   @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
   @MockBean private UsuarioService usuarioService;
   @MockBean private SecurityAuditLogger securityAuditLogger;
+  @MockBean private AdminCursoActivoService adminCursoActivoService;
 
   private static final String USER = "admin@getafe.es";
   private static final int ADMIN_ID = 10;

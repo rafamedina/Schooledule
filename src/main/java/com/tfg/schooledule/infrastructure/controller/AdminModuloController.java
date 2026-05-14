@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Tag(name = "Admin - Módulos")
@@ -41,8 +42,9 @@ public class AdminModuloController {
       description = "Vista HTML: admin/modulos/lista. Modelo: modulos (List<AdminModuloListDTO>)")
   @ApiResponse(responseCode = "403", description = "Acceso denegado — requiere ROLE_ADMIN")
   @GetMapping
-  public String lista(Model model) {
-    model.addAttribute("modulos", adminModuloService.listarTodos());
+  public String lista(@RequestParam(required = false) String nombre, Model model) {
+    model.addAttribute("modulos", adminModuloService.listarFiltrado(nombre));
+    model.addAttribute("nombre", nombre);
     return "admin/modulos/lista";
   }
 

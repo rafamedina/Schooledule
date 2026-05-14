@@ -29,6 +29,22 @@
         ></div>
 
         <div class="animate-in">
+          <form method="get" action="/admin/usuarios" class="filter-bar">
+            <select name="rolNombre">
+              <option value="">Todos los roles</option>
+              <option
+                th:each="r : ${roles}"
+                th:value="${r}"
+                th:text="${r}"
+                th:selected="${rolNombre != null and rolNombre == r}"
+              ></option>
+            </select>
+            <button type="submit" class="btn btn-secondary btn-sm">
+              Filtrar
+            </button>
+            <a th:href="@{/admin/usuarios}" class="btn btn-sm">Limpiar</a>
+          </form>
+
           <div th:if="${#lists.isEmpty(usuarios)}" class="empty-state">
             <p>No hay usuarios registrados.</p>
             <a th:href="@{/admin/usuarios/nuevo}" class="btn btn-primary"

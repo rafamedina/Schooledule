@@ -4,8 +4,10 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
 import com.tfg.schooledule.infrastructure.service.AdminAuditoriaService;
+import com.tfg.schooledule.infrastructure.service.AdminCursoActivoService;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ class AdminAuditoriaControllerTest {
   @Autowired private MockMvc mockMvc;
 
   @MockBean private AdminAuditoriaService adminAuditoriaService;
+  @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
+  @MockBean private AdminCursoActivoService adminCursoActivoService;
   @MockBean private SecurityAuditLogger securityAuditLogger;
 
   @Test

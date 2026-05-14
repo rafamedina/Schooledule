@@ -2,6 +2,7 @@ package com.tfg.schooledule.infrastructure.service;
 
 import com.tfg.schooledule.domain.dto.AdminImparticionFormDTO;
 import com.tfg.schooledule.domain.dto.AdminImparticionListDTO;
+import com.tfg.schooledule.domain.dto.ImparticionFiltroDTO;
 import com.tfg.schooledule.domain.entity.Imparticion;
 import com.tfg.schooledule.infrastructure.mapper.AdminImparticionMapper;
 import com.tfg.schooledule.infrastructure.repository.*;
@@ -21,6 +22,7 @@ public class AdminImparticionService {
   private final MatriculaRepository matriculaRepository;
   private final PeriodoEvaluacionRepository periodoEvaluacionRepository;
   private final AdminImparticionMapper adminImparticionMapper;
+  private final AdminCursoActivoService cursoActivoService;
 
   public AdminImparticionService(
       ImparticionRepository imparticionRepository,
@@ -30,7 +32,8 @@ public class AdminImparticionService {
       CentroRepository centroRepository,
       MatriculaRepository matriculaRepository,
       PeriodoEvaluacionRepository periodoEvaluacionRepository,
-      AdminImparticionMapper adminImparticionMapper) {
+      AdminImparticionMapper adminImparticionMapper,
+      AdminCursoActivoService cursoActivoService) {
     this.imparticionRepository = imparticionRepository;
     this.moduloRepository = moduloRepository;
     this.grupoRepository = grupoRepository;
@@ -39,6 +42,31 @@ public class AdminImparticionService {
     this.matriculaRepository = matriculaRepository;
     this.periodoEvaluacionRepository = periodoEvaluacionRepository;
     this.adminImparticionMapper = adminImparticionMapper;
+    this.cursoActivoService = cursoActivoService;
+  }
+
+  private AdminImparticionListDTO toListDTO(Imparticion i) {
+    return new AdminImparticionListDTO(
+        i.getId(),
+        i.getModulo().getCodigo(),
+        i.getModulo().getNombre(),
+        i.getGrupo().getNombre(),
+        i.getCentro().getNombre(),
+        i.getProfesor().getApellidos() + ", " + i.getProfesor().getNombre());
+  }
+
+  @Transactional(readOnly = true)
+  public List<AdminImparticionListDTO> listarFiltrado(ImparticionFiltroDTO filtro) {
+    Integer cursoId =
+        filtro.cursoAcademicoId() != null
+            ? filtro.cursoAcademicoId()
+            : cursoActivoService.getCursoActivoId();
+    return imparticionRepository
+        .findByFiltro(
+            filtro.centroId(), filtro.grupoId(), filtro.moduloId(), filtro.profesorId(), cursoId)
+        .stream()
+        .map(this::toListDTO)
+        .toList();
   }
 
   @Transactional(readOnly = true)

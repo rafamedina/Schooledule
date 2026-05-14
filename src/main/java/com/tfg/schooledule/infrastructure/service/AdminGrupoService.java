@@ -2,6 +2,7 @@ package com.tfg.schooledule.infrastructure.service;
 
 import com.tfg.schooledule.domain.dto.AdminGrupoFormDTO;
 import com.tfg.schooledule.domain.dto.AdminGrupoListDTO;
+import com.tfg.schooledule.domain.dto.GrupoFiltroDTO;
 import com.tfg.schooledule.domain.entity.Centro;
 import com.tfg.schooledule.domain.entity.CursoAcademico;
 import com.tfg.schooledule.domain.entity.Grupo;
@@ -26,6 +27,7 @@ public class AdminGrupoService {
   private final CursoAcademicoRepository cursoAcademicoRepository;
   private final UsuarioRepository usuarioRepository;
   private final AdminGrupoMapper adminGrupoMapper;
+  private final AdminCursoActivoService cursoActivoService;
 
   public AdminGrupoService(
       GrupoRepository grupoRepository,
@@ -33,13 +35,38 @@ public class AdminGrupoService {
       CentroRepository centroRepository,
       CursoAcademicoRepository cursoAcademicoRepository,
       UsuarioRepository usuarioRepository,
-      AdminGrupoMapper adminGrupoMapper) {
+      AdminGrupoMapper adminGrupoMapper,
+      AdminCursoActivoService cursoActivoService) {
     this.grupoRepository = grupoRepository;
     this.imparticionRepository = imparticionRepository;
     this.centroRepository = centroRepository;
     this.cursoAcademicoRepository = cursoAcademicoRepository;
     this.usuarioRepository = usuarioRepository;
     this.adminGrupoMapper = adminGrupoMapper;
+    this.cursoActivoService = cursoActivoService;
+  }
+
+  @Transactional(readOnly = true)
+  public List<AdminGrupoListDTO> listarFiltrado(GrupoFiltroDTO filtro) {
+    Integer cursoId =
+        filtro.cursoAcademicoId() != null
+            ? filtro.cursoAcademicoId()
+            : cursoActivoService.getCursoActivoId();
+    return grupoRepository.findByFiltro(filtro.centroId(), cursoId).stream()
+        .map(this::toListDTO)
+        .toList();
+  }
+
+  private AdminGrupoListDTO toListDTO(Grupo g) {
+    String tutorNombre =
+        g.getTutor() != null ? g.getTutor().getNombre() + " " + g.getTutor().getApellidos() : null;
+    return new AdminGrupoListDTO(
+        g.getId(),
+        g.getNombre(),
+        g.getCentro().getNombre(),
+        g.getCursoAcademico().getNombre(),
+        imparticionRepository.countByGrupoId(g.getId()),
+        tutorNombre);
   }
 
   @Transactional(readOnly = true)

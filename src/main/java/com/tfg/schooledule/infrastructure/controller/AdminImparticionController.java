@@ -1,7 +1,9 @@
 package com.tfg.schooledule.infrastructure.controller;
 
 import com.tfg.schooledule.domain.dto.AdminImparticionFormDTO;
+import com.tfg.schooledule.domain.dto.ImparticionFiltroDTO;
 import com.tfg.schooledule.infrastructure.repository.CentroRepository;
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.repository.GrupoRepository;
 import com.tfg.schooledule.infrastructure.repository.ModuloRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Tag(name = "Admin - Imparticiones")
@@ -34,18 +37,21 @@ public class AdminImparticionController {
   private final GrupoRepository grupoRepository;
   private final UsuarioRepository usuarioRepository;
   private final CentroRepository centroRepository;
+  private final CursoAcademicoRepository cursoAcademicoRepository;
 
   public AdminImparticionController(
       AdminImparticionService adminImparticionService,
       ModuloRepository moduloRepository,
       GrupoRepository grupoRepository,
       UsuarioRepository usuarioRepository,
-      CentroRepository centroRepository) {
+      CentroRepository centroRepository,
+      CursoAcademicoRepository cursoAcademicoRepository) {
     this.adminImparticionService = adminImparticionService;
     this.moduloRepository = moduloRepository;
     this.grupoRepository = grupoRepository;
     this.usuarioRepository = usuarioRepository;
     this.centroRepository = centroRepository;
+    this.cursoAcademicoRepository = cursoAcademicoRepository;
   }
 
   @Operation(
@@ -60,8 +66,22 @@ public class AdminImparticionController {
           "Vista HTML: admin/imparticiones/lista. Modelo: imparticiones (List<AdminImparticionListDTO>)")
   @ApiResponse(responseCode = "403", description = "Acceso denegado — requiere ROLE_ADMIN")
   @GetMapping
-  public String lista(Model model) {
-    model.addAttribute("imparticiones", adminImparticionService.listarTodas());
+  public String lista(
+      @RequestParam(required = false) Integer centroId,
+      @RequestParam(required = false) Integer grupoId,
+      @RequestParam(required = false) Integer moduloId,
+      @RequestParam(required = false) Integer profesorId,
+      @RequestParam(required = false) Integer cursoAcademicoId,
+      Model model) {
+    ImparticionFiltroDTO filtro =
+        new ImparticionFiltroDTO(centroId, grupoId, moduloId, profesorId, cursoAcademicoId);
+    model.addAttribute("imparticiones", adminImparticionService.listarFiltrado(filtro));
+    model.addAttribute("centros", centroRepository.findAllByOrderByNombreAsc());
+    model.addAttribute("grupos", grupoRepository.findAllByOrderByCentroNombreAscNombreAsc());
+    model.addAttribute("modulos", moduloRepository.findByActivoTrueOrderByNombreAsc());
+    model.addAttribute("profesores", usuarioRepository.findAllProfesoresOrdenados());
+    model.addAttribute("cursos", cursoAcademicoRepository.findAllByOrderByNombreAsc());
+    model.addAttribute("filtro", filtro);
     return "admin/imparticiones/lista";
   }
 

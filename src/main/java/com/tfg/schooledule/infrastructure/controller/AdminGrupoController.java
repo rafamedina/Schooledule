@@ -1,6 +1,7 @@
 package com.tfg.schooledule.infrastructure.controller;
 
 import com.tfg.schooledule.domain.dto.AdminGrupoFormDTO;
+import com.tfg.schooledule.domain.dto.GrupoFiltroDTO;
 import com.tfg.schooledule.infrastructure.repository.CentroRepository;
 import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Tag(name = "Admin - Grupos")
@@ -54,8 +56,15 @@ public class AdminGrupoController {
       description = "Vista HTML: admin/grupos/lista. Modelo: grupos (List<AdminGrupoListDTO>)")
   @ApiResponse(responseCode = "403", description = "Acceso denegado — requiere ROLE_ADMIN")
   @GetMapping
-  public String lista(Model model) {
-    model.addAttribute("grupos", adminGrupoService.listarTodos());
+  public String lista(
+      @RequestParam(required = false) Integer centroId,
+      @RequestParam(required = false) Integer cursoAcademicoId,
+      Model model) {
+    GrupoFiltroDTO filtro = new GrupoFiltroDTO(centroId, cursoAcademicoId);
+    model.addAttribute("grupos", adminGrupoService.listarFiltrado(filtro));
+    model.addAttribute("centros", centroRepository.findAllByOrderByNombreAsc());
+    model.addAttribute("cursos", cursoAcademicoRepository.findAllByOrderByNombreAsc());
+    model.addAttribute("filtro", filtro);
     return "admin/grupos/lista";
   }
 

@@ -59,6 +59,12 @@ public class AdminUsuarioService {
   }
 
   @Transactional(readOnly = true)
+  public List<AdminUsuarioListDTO> listarFiltrado(String rolNombre) {
+    String rol = (rolNombre != null && rolNombre.isBlank()) ? null : rolNombre;
+    return usuarioRepository.findByRol(rol).stream().map(adminUsuarioMapper::toListDTO).toList();
+  }
+
+  @Transactional(readOnly = true)
   public AdminUsuarioFormDTO obtenerParaEditar(Integer id) {
     Usuario usuario =
         usuarioRepository

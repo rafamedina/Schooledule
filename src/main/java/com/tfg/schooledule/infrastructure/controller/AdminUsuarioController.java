@@ -50,8 +50,14 @@ public class AdminUsuarioController {
           "Vista HTML: admin/usuarios/lista. Modelo: usuarios (List<AdminUsuarioListDTO>)")
   @ApiResponse(responseCode = "403", description = "Acceso denegado — requiere ROLE_ADMIN")
   @GetMapping
-  public String lista(Model model) {
-    model.addAttribute("usuarios", adminUsuarioService.listarTodos());
+  public String lista(
+      @org.springframework.web.bind.annotation.RequestParam(required = false) String rolNombre,
+      Model model) {
+    model.addAttribute("usuarios", adminUsuarioService.listarFiltrado(rolNombre));
+    model.addAttribute(
+        "roles",
+        java.util.List.of("ROLE_ADMIN", "ROLE_PROFESOR", "ROLE_ALUMNO", "ROLE_ADMIN_CENTRO"));
+    model.addAttribute("rolNombre", rolNombre);
     return "admin/usuarios/lista";
   }
 

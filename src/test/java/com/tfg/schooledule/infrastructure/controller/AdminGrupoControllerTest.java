@@ -10,6 +10,7 @@ import com.tfg.schooledule.infrastructure.repository.CentroRepository;
 import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
+import com.tfg.schooledule.infrastructure.service.AdminCursoActivoService;
 import com.tfg.schooledule.infrastructure.service.AdminGrupoService;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,7 @@ class AdminGrupoControllerTest {
   @MockBean private CentroRepository centroRepository;
   @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
   @MockBean private UsuarioRepository usuarioRepository;
+  @MockBean private AdminCursoActivoService adminCursoActivoService;
   @MockBean private SecurityAuditLogger securityAuditLogger;
 
   @Test
@@ -53,7 +55,7 @@ class AdminGrupoControllerTest {
   @Test
   @WithMockUser(roles = "ADMIN")
   void lista_conAdmin_200_retornaVista() throws Exception {
-    when(adminGrupoService.listarTodos()).thenReturn(Collections.emptyList());
+    when(adminGrupoService.listarFiltrado(any())).thenReturn(Collections.emptyList());
 
     mockMvc
         .perform(get("/admin/grupos"))

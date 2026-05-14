@@ -10,10 +10,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tfg.schooledule.domain.dto.*;
 import com.tfg.schooledule.domain.entity.Centro;
 import com.tfg.schooledule.domain.entity.Usuario;
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.repository.ItemEvaluableRepository;
 import com.tfg.schooledule.infrastructure.repository.PeriodoEvaluacionRepository;
 import com.tfg.schooledule.infrastructure.repository.ResultadoAprendizajeRepository;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
+import com.tfg.schooledule.infrastructure.service.AdminCursoActivoService;
 import com.tfg.schooledule.infrastructure.service.TeacherDashboardService;
 import com.tfg.schooledule.infrastructure.service.UsuarioService;
 import java.math.BigDecimal;
@@ -42,6 +44,8 @@ class ProfeControllerTest {
   @MockBean private ItemEvaluableRepository itemEvaluableRepository;
   @MockBean private PeriodoEvaluacionRepository periodoRepository;
   @MockBean private ResultadoAprendizajeRepository raRepository;
+  @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
+  @MockBean private AdminCursoActivoService adminCursoActivoService;
 
   private Usuario buildProfe() {
     return Usuario.builder()

@@ -7,7 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.tfg.schooledule.domain.dto.*;
 import com.tfg.schooledule.domain.entity.*;
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
+import com.tfg.schooledule.infrastructure.service.AdminCursoActivoService;
 import com.tfg.schooledule.infrastructure.service.TutorService;
 import com.tfg.schooledule.infrastructure.service.UsuarioService;
 import java.math.BigDecimal;
@@ -36,6 +38,8 @@ class TutorControllerTest {
   @MockBean private TutorService tutorService;
   @MockBean private UsuarioService usuarioService;
   @MockBean private SecurityAuditLogger securityAuditLogger;
+  @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
+  @MockBean private AdminCursoActivoService adminCursoActivoService;
 
   private Usuario buildTutor() {
     return Usuario.builder()

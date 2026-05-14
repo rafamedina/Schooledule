@@ -1,7 +1,11 @@
 package com.tfg.schooledule.infrastructure.controller;
 
 import com.tfg.schooledule.domain.dto.AdminMatriculaFormDTO;
+import com.tfg.schooledule.domain.dto.AlumnoFiltroDTO;
 import com.tfg.schooledule.domain.enums.EstadoMatricula;
+import com.tfg.schooledule.infrastructure.repository.CentroRepository;
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
+import com.tfg.schooledule.infrastructure.repository.GrupoRepository;
 import com.tfg.schooledule.infrastructure.repository.ImparticionRepository;
 import com.tfg.schooledule.infrastructure.service.AdminAlumnoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Tag(name = "Admin - Alumnos")
@@ -29,11 +34,21 @@ public class AdminAlumnoController {
 
   private final AdminAlumnoService adminAlumnoService;
   private final ImparticionRepository imparticionRepository;
+  private final CentroRepository centroRepository;
+  private final GrupoRepository grupoRepository;
+  private final CursoAcademicoRepository cursoAcademicoRepository;
 
   public AdminAlumnoController(
-      AdminAlumnoService adminAlumnoService, ImparticionRepository imparticionRepository) {
+      AdminAlumnoService adminAlumnoService,
+      ImparticionRepository imparticionRepository,
+      CentroRepository centroRepository,
+      GrupoRepository grupoRepository,
+      CursoAcademicoRepository cursoAcademicoRepository) {
     this.adminAlumnoService = adminAlumnoService;
     this.imparticionRepository = imparticionRepository;
+    this.centroRepository = centroRepository;
+    this.grupoRepository = grupoRepository;
+    this.cursoAcademicoRepository = cursoAcademicoRepository;
   }
 
   @Operation(
@@ -46,8 +61,17 @@ public class AdminAlumnoController {
       description = "Vista HTML: admin/alumnos/lista. Modelo: alumnos (List<AdminAlumnoListDTO>)")
   @ApiResponse(responseCode = "403", description = "Acceso denegado — requiere ROLE_ADMIN")
   @GetMapping
-  public String lista(Model model) {
-    model.addAttribute("alumnos", adminAlumnoService.listarAlumnos());
+  public String lista(
+      @RequestParam(required = false) Integer centroId,
+      @RequestParam(required = false) Integer grupoId,
+      @RequestParam(required = false) Integer cursoAcademicoId,
+      Model model) {
+    AlumnoFiltroDTO filtro = new AlumnoFiltroDTO(centroId, grupoId, cursoAcademicoId);
+    model.addAttribute("alumnos", adminAlumnoService.listarFiltrado(filtro));
+    model.addAttribute("centros", centroRepository.findAllByOrderByNombreAsc());
+    model.addAttribute("grupos", grupoRepository.findAllByOrderByCentroNombreAscNombreAsc());
+    model.addAttribute("cursos", cursoAcademicoRepository.findAllByOrderByNombreAsc());
+    model.addAttribute("filtro", filtro);
     return "admin/alumnos/lista";
   }
 

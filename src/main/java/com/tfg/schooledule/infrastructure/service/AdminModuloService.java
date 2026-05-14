@@ -31,19 +31,25 @@ public class AdminModuloService {
     this.adminModuloMapper = adminModuloMapper;
   }
 
+  private AdminModuloListDTO toListDTO(Modulo m) {
+    return new AdminModuloListDTO(
+        m.getId(),
+        m.getCodigo(),
+        m.getNombre(),
+        m.getActivo(),
+        imparticionRepository.countByModuloId(m.getId()),
+        raRepository.countByModuloId(m.getId()));
+  }
+
   @Transactional(readOnly = true)
   public List<AdminModuloListDTO> listarTodos() {
-    return moduloRepository.findAllByOrderByNombreAsc().stream()
-        .map(
-            m ->
-                new AdminModuloListDTO(
-                    m.getId(),
-                    m.getCodigo(),
-                    m.getNombre(),
-                    m.getActivo(),
-                    imparticionRepository.countByModuloId(m.getId()),
-                    raRepository.countByModuloId(m.getId())))
-        .toList();
+    return moduloRepository.findAllByOrderByNombreAsc().stream().map(this::toListDTO).toList();
+  }
+
+  @Transactional(readOnly = true)
+  public List<AdminModuloListDTO> listarFiltrado(String nombre) {
+    String n = (nombre != null && nombre.isBlank()) ? null : nombre;
+    return moduloRepository.findByNombreContaining(n).stream().map(this::toListDTO).toList();
   }
 
   @Transactional(readOnly = true)
