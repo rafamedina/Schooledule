@@ -50,6 +50,13 @@
           >Usuarios</a
         >
       </li>
+      <li>
+        <a
+          th:href="@{/centro-admin/auditoria}"
+          th:classappend="${active == 'auditoria'} ? 'active' : ''"
+          >Auditoría</a
+        >
+      </li>
     </ul>
     <div class="sidebar-footer">
       <form th:action="@{/logout}" method="post">

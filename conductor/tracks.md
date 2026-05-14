@@ -6,6 +6,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## En progreso / Pendientes
 
+- [x] **Track: export_auditoria_excel_20260514** — Exportar logs de auditoría a Excel: ADMIN global (todos los registros) y ADMIN_CENTRO (solo sus centros asignados). Completado 2026-05-14
+*Link: [./tracks/export_auditoria_excel_20260514/plan.md](./tracks/export_auditoria_excel_20260514/plan.md)*
+
 - [ ] **Track: admin_filtros_cursoactivo_20260514** — Filtros en todas las pestañas admin (centro, grupo, módulo, año, profesor) + mostrar solo datos del año lectivo activo por defecto.
 *Link: [./tracks/admin_filtros_cursoactivo_20260514/plan.md](./tracks/admin_filtros_cursoactivo_20260514/plan.md)*
 
