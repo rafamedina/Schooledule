@@ -16,6 +16,12 @@
             <h1 class="hero__title">Gestión de <em>Módulos</em></h1>
           </div>
           <div class="hero__right">
+            <a
+              th:href="@{/admin/modulos/plantilla-excel}"
+              class="btn btn-secondary btn-sm"
+              style="margin-right: 0.5rem"
+              >Plantilla Excel</a
+            >
             <a th:href="@{/admin/modulos/nuevo}" class="btn btn-primary"
               >Nuevo módulo</a
             >
@@ -40,6 +46,11 @@
             th:if="${error}"
             class="alert alert-danger"
             th:text="${error}"
+          ></div>
+          <div
+            th:if="${exito}"
+            class="alert alert-success"
+            th:text="${exito}"
           ></div>
 
           <div th:if="${#lists.isEmpty(modulos)}" class="empty-state">
@@ -68,6 +79,11 @@
                 <td th:text="${m.numResultadosAprendizaje}"></td>
                 <td th:text="${m.activo ? 'Sí' : 'No'}"></td>
                 <td>
+                  <a
+                    th:href="@{/admin/modulos/{id}/importar-ras(id=${m.id})}"
+                    class="btn btn-sm btn-secondary"
+                    >Importar RAs</a
+                  >
                   <a
                     th:href="@{/admin/modulos/{id}/editar(id=${m.id})}"
                     class="btn btn-sm btn-secondary"

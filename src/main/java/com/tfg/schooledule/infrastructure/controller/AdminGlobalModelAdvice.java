@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
       AdminCentroController.class,
       AdminCursoController.class,
       AdminAuditoriaController.class,
-      AdminController.class
+      AdminController.class,
+      AdminModuloImportController.class
     })
 public class AdminGlobalModelAdvice {
 

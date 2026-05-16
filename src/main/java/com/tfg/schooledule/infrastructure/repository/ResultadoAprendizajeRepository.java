@@ -13,5 +13,7 @@ public interface ResultadoAprendizajeRepository
 
   boolean existsByModuloId(Integer moduloId);
 
+  boolean existsByModuloIdAndCursoAcademicoId(Integer moduloId, Integer cursoAcademicoId);
+
   int countByModuloId(Integer moduloId);
 }

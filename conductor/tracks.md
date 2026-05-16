@@ -6,6 +6,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## En progreso / Pendientes
 
+- [x] **Track: import_modulos_excel_20260516** — Importación de RAs y CEs desde plantilla Excel (.xlsx): parser, validator, servicio de importación, plantilla descargable, TDD completo, OWASP A01/A03/A04/A05. Completado 2026-05-16.
+*Link: [./tracks/import_modulos_excel_20260516/plan.md](./tracks/import_modulos_excel_20260516/plan.md)*
+
 - [x] **Track: export_auditoria_excel_20260514** — Exportar logs de auditoría a Excel: ADMIN global (todos los registros) y ADMIN_CENTRO (solo sus centros asignados). Completado 2026-05-14
 *Link: [./tracks/export_auditoria_excel_20260514/plan.md](./tracks/export_auditoria_excel_20260514/plan.md)*
 
