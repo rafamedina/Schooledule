@@ -341,7 +341,8 @@ public class TeacherDashboardService {
                 item.getTipo().name(),
                 item.getFecha(),
                 criterioDtos,
-                mediaRa));
+                mediaRa,
+                ra.getPesoSugerido()));
       }
 
       BigDecimal mediaPeriodo = computePeriodoMedia(itemDtos);
@@ -368,25 +369,53 @@ public class TeacherDashboardService {
   }
 
   private BigDecimal computeCeMedia(List<TeacherCriterioGradeDTO> criterios) {
-    List<BigDecimal> notas =
-        criterios.stream()
-            .map(TeacherCriterioGradeDTO::valor)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    if (notas.isEmpty()) return null;
-    BigDecimal suma = notas.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-    return suma.divide(new BigDecimal(notas.size()), 2, RoundingMode.HALF_UP);
+    List<TeacherCriterioGradeDTO> conNota =
+        criterios.stream().filter(c -> c.valor() != null).collect(Collectors.toList());
+    if (conNota.isEmpty()) return null;
+
+    BigDecimal sumaPesos =
+        conNota.stream()
+            .map(c -> c.peso() != null ? c.peso() : BigDecimal.ZERO)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    if (sumaPesos.compareTo(BigDecimal.ZERO) == 0) {
+      BigDecimal suma =
+          conNota.stream()
+              .map(TeacherCriterioGradeDTO::valor)
+              .reduce(BigDecimal.ZERO, BigDecimal::add);
+      return suma.divide(new BigDecimal(conNota.size()), 2, RoundingMode.HALF_UP);
+    }
+
+    BigDecimal sumaPonderada =
+        conNota.stream()
+            .map(c -> c.valor().multiply(c.peso() != null ? c.peso() : BigDecimal.ZERO))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    return sumaPonderada.divide(sumaPesos, 2, RoundingMode.HALF_UP);
   }
 
   private BigDecimal computePeriodoMedia(List<TeacherGradeItemDTO> items) {
-    List<BigDecimal> medias =
-        items.stream()
-            .map(TeacherGradeItemDTO::mediaRa)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    if (medias.isEmpty()) return null;
-    BigDecimal suma = medias.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-    return suma.divide(new BigDecimal(medias.size()), 2, RoundingMode.HALF_UP);
+    List<TeacherGradeItemDTO> conNota =
+        items.stream().filter(i -> i.mediaRa() != null).collect(Collectors.toList());
+    if (conNota.isEmpty()) return null;
+
+    BigDecimal sumaPesos =
+        conNota.stream()
+            .map(i -> i.raPeso() != null ? i.raPeso() : BigDecimal.ZERO)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    if (sumaPesos.compareTo(BigDecimal.ZERO) == 0) {
+      BigDecimal suma =
+          conNota.stream()
+              .map(TeacherGradeItemDTO::mediaRa)
+              .reduce(BigDecimal.ZERO, BigDecimal::add);
+      return suma.divide(new BigDecimal(conNota.size()), 2, RoundingMode.HALF_UP);
+    }
+
+    BigDecimal sumaPonderada =
+        conNota.stream()
+            .map(i -> i.mediaRa().multiply(i.raPeso() != null ? i.raPeso() : BigDecimal.ZERO))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    return sumaPonderada.divide(sumaPesos, 2, RoundingMode.HALF_UP);
   }
 
   private BigDecimal computeMediaGlobal(List<TeacherPeriodoGradesDTO> periodos) {

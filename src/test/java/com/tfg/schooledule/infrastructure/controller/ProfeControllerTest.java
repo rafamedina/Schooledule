@@ -79,9 +79,11 @@ class ProfeControllerTest {
         "EXAMEN",
         LocalDate.now(),
         List.of(
-            new TeacherCriterioGradeDTO(1, "a", "CE-a", mediaRa, null, mediaRa != null ? 1 : null),
-            new TeacherCriterioGradeDTO(2, "b", "CE-b", null, null, null)),
-        mediaRa);
+            new TeacherCriterioGradeDTO(
+                1, "a", "CE-a", mediaRa, null, mediaRa != null ? 1 : null, BigDecimal.ZERO),
+            new TeacherCriterioGradeDTO(2, "b", "CE-b", null, null, null, BigDecimal.ZERO)),
+        mediaRa,
+        null);
   }
 
   @Test
