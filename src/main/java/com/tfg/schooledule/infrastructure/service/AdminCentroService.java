@@ -44,8 +44,10 @@ public class AdminCentroService {
 
   @Transactional(readOnly = true)
   public List<AdminCentroListDTO> listarFiltrado(String nombre) {
-    String n = (nombre != null && nombre.isBlank()) ? null : nombre;
-    return centroRepository.findByNombreContaining(n).stream().map(this::toListDTO).toList();
+    if (nombre == null || nombre.isBlank()) {
+      return centroRepository.findAllByOrderByNombreAsc().stream().map(this::toListDTO).toList();
+    }
+    return centroRepository.findByNombreContaining(nombre).stream().map(this::toListDTO).toList();
   }
 
   @Transactional(readOnly = true)

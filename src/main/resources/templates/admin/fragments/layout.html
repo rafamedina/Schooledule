@@ -79,26 +79,6 @@
         >
       </li>
     </ul>
-    <div
-      class="sidebar-year"
-      th:if="${cursosDisponibles != null and not #lists.isEmpty(cursosDisponibles)}"
-    >
-      <span class="sidebar-year__label">Año lectivo</span>
-      <form method="get" action="/admin/grupos" class="sidebar-year__form">
-        <select
-          name="cursoAcademicoId"
-          onchange="this.form.submit()"
-          class="sidebar-year__select"
-        >
-          <option
-            th:each="cu : ${cursosDisponibles}"
-            th:value="${cu.id}"
-            th:text="${cu.nombre}"
-            th:selected="${cursoActivoId != null and cursoActivoId == cu.id}"
-          ></option>
-        </select>
-      </form>
-    </div>
     <div class="sidebar-footer">
       <form th:action="@{/logout}" method="post">
         <input

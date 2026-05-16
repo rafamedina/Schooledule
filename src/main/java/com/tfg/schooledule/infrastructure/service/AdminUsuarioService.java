@@ -60,8 +60,14 @@ public class AdminUsuarioService {
 
   @Transactional(readOnly = true)
   public List<AdminUsuarioListDTO> listarFiltrado(String rolNombre) {
-    String rol = (rolNombre != null && rolNombre.isBlank()) ? null : rolNombre;
-    return usuarioRepository.findByRol(rol).stream().map(adminUsuarioMapper::toListDTO).toList();
+    if (rolNombre == null || rolNombre.isBlank()) {
+      return usuarioRepository.findAllByOrderByApellidosAscNombreAsc().stream()
+          .map(adminUsuarioMapper::toListDTO)
+          .toList();
+    }
+    return usuarioRepository.findByRol(rolNombre).stream()
+        .map(adminUsuarioMapper::toListDTO)
+        .toList();
   }
 
   @Transactional(readOnly = true)

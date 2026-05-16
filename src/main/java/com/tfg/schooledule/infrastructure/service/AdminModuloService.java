@@ -48,8 +48,10 @@ public class AdminModuloService {
 
   @Transactional(readOnly = true)
   public List<AdminModuloListDTO> listarFiltrado(String nombre) {
-    String n = (nombre != null && nombre.isBlank()) ? null : nombre;
-    return moduloRepository.findByNombreContaining(n).stream().map(this::toListDTO).toList();
+    if (nombre == null || nombre.isBlank()) {
+      return moduloRepository.findAllByOrderByNombreAsc().stream().map(this::toListDTO).toList();
+    }
+    return moduloRepository.findByNombreContaining(nombre).stream().map(this::toListDTO).toList();
   }
 
   @Transactional(readOnly = true)
