@@ -18,7 +18,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [x] **Track: export_auditoria_excel_20260514** — Exportar logs de auditoría a Excel: ADMIN global (todos los registros) y ADMIN_CENTRO (solo sus centros asignados). Completado 2026-05-14
 *Link: [./tracks/export_auditoria_excel_20260514/plan.md](./tracks/export_auditoria_excel_20260514/plan.md)*
 
-- [ ] **Track: import_usuarios_masivo_20260517** — Importación masiva de alumnos desde Excel: parser→validator→import service, auto-matrícula en imparticiones del grupo, plantilla descargable, TDD completo, OWASP.
+- [x] **Track: import_usuarios_masivo_20260517** — Importación masiva de alumnos desde Excel: parser→validator→import service, auto-matrícula en imparticiones del grupo, plantilla descargable, TDD completo, OWASP. Completado 2026-05-17.
 *Link: [./tracks/import_usuarios_masivo_20260517/plan.md](./tracks/import_usuarios_masivo_20260517/plan.md)*
 
 - [ ] **Track: admin_filtros_cursoactivo_20260514** — Filtros en todas las pestañas admin (centro, grupo, módulo, año, profesor) + mostrar solo datos del año lectivo activo por defecto.
