@@ -6,6 +6,13 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## En progreso / Pendientes
 
+- [ ] **Track: onboarding_tour_20260517** — Tour guiado con Driver.js para ADMIN y PROFESOR. Auto-trigger en primer acceso (localStorage), botón "Repetir tour" en sidebar. Librería servida localmente (CSP compliant).
+*Link: [./tracks/onboarding_tour_20260517/plan.md](./tracks/onboarding_tour_20260517/plan.md)*
+
+---
+
+## Completados (tracks activos, verificados)
+
 - [x] **Track: admin_modulos_refactor_20260517** — Refactor pestaña admin/modulos: unificar flujo via Excel (botón "Importar módulo"), arreglar "Ver resumen", cambiar "Editar" a edición de pesos RA/CE, añadir columna "Cursos con RAs", eliminar botón "Importar RAs" por fila.
 *Link: [./tracks/admin_modulos_refactor_20260517/plan.md](./tracks/admin_modulos_refactor_20260517/plan.md)*
 
@@ -21,18 +28,18 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [x] **Track: import_usuarios_masivo_20260517** — Importación masiva de alumnos desde Excel: parser→validator→import service, auto-matrícula en imparticiones del grupo, plantilla descargable, TDD completo, OWASP. Completado 2026-05-17.
 *Link: [./tracks/import_usuarios_masivo_20260517/plan.md](./tracks/import_usuarios_masivo_20260517/plan.md)*
 
-- [ ] **Track: admin_filtros_cursoactivo_20260514** — Filtros en todas las pestañas admin (centro, grupo, módulo, año, profesor) + mostrar solo datos del año lectivo activo por defecto.
-*Link: [./tracks/admin_filtros_cursoactivo_20260514/plan.md](./tracks/admin_filtros_cursoactivo_20260514/plan.md)*
-
-- [ ] **Track: centro_admin_20260512** — Admin de Centro (Tier-2): CRUD completo de grupos/imparticiones/alumnos/usuarios, restringido a los centros asignados. *(Fase 8 pendiente: gestión de ADMIN_CENTRO desde panel global)*
-*Link: [./tracks/centro_admin_20260512/plan.md](./tracks/centro_admin_20260512/plan.md)*
-
-- [ ] **Track: tutor_grupo_20260512** — Tutor de Grupo: vista de grupos, alumnos y notas (RO); edición solo si también es profesor.
-*Link: [./tracks/tutor_grupo_20260512/plan.md](./tracks/tutor_grupo_20260512/plan.md)*
+- [x] **Track: flyway_consolidacion_v1_definitivo_20260517** — Consolidar V1–V9 en V1 DDL puro + V2 seeds. Eliminar parches, ALTER MID-FLIGHT y datos semilla con esquema antiguo. Instalación limpia en <5 s. Completado 2026-05-17.
+*Link: [./tracks/flyway_consolidacion_v1_definitivo_20260517/plan.md](./tracks/flyway_consolidacion_v1_definitivo_20260517/plan.md)*
 
 ---
 
 ## Completados
+
+- [x] **Track: admin_filtros_cursoactivo_20260514** — Filtros en todas las pestañas admin (centro, grupo, módulo, año, profesor) + mostrar solo datos del año lectivo activo por defecto. Completado (verificado 2026-05-17).
+
+- [x] **Track: centro_admin_20260512** — Admin de Centro (Tier-2): CRUD completo de grupos/imparticiones/alumnos/usuarios, restringido a los centros asignados. Completado (verificado 2026-05-17).
+
+- [x] **Track: tutor_grupo_20260512** — Tutor de Grupo: vista de grupos, alumnos y notas (RO); edición solo si también es profesor. Completado (verificado 2026-05-17).
 
 - [x] **Track: granular_grading_per_criterio_20260420** — Calificación Granular por CE + Recuperaciones — Completado 2026-05-03
 *Link: [./tracks/granular_grading_per_criterio_20260420/plan.md](./tracks/granular_grading_per_criterio_20260420/plan.md)*
