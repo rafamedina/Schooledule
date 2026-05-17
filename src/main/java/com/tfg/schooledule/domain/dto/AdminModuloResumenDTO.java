@@ -2,11 +2,13 @@ package com.tfg.schooledule.domain.dto;
 
 import java.util.List;
 
-public record AdminModuloListDTO(
+public record AdminModuloResumenDTO(
     Integer id,
     String codigo,
     String nombre,
     Boolean activo,
     int numImparticiones,
-    int numResultadosAprendizaje,
-    List<String> cursosConRas) {}
+    int numCursosConRas,
+    int numRasTotal,
+    int numCesTotal,
+    List<AdminModuloCursoResumenDTO> cursos) {}

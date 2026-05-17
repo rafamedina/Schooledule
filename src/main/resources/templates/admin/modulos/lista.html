@@ -22,8 +22,8 @@
               style="margin-right: 0.5rem"
               >Plantilla Excel</a
             >
-            <a th:href="@{/admin/modulos/nuevo}" class="btn btn-primary"
-              >Nuevo módulo</a
+            <a th:href="@{/admin/modulos/importar}" class="btn btn-primary"
+              >Importar módulo</a
             >
           </div>
         </div>
@@ -55,8 +55,8 @@
 
           <div th:if="${#lists.isEmpty(modulos)}" class="empty-state">
             <p>No hay módulos registrados.</p>
-            <a th:href="@{/admin/modulos/nuevo}" class="btn btn-primary"
-              >Crear el primero</a
+            <a th:href="@{/admin/modulos/importar}" class="btn btn-primary"
+              >Importar el primero</a
             >
           </div>
 
@@ -65,8 +65,9 @@
               <tr>
                 <th>Código</th>
                 <th>Nombre</th>
+                <th>Cursos con RAs</th>
                 <th>Imparticiones</th>
-                <th>Resultados Aprendizaje</th>
+                <th>RAs</th>
                 <th>Activo</th>
                 <th>Acciones</th>
               </tr>
@@ -75,15 +76,30 @@
               <tr th:each="m : ${modulos}">
                 <td th:text="${m.codigo}"></td>
                 <td th:text="${m.nombre}"></td>
+                <td>
+                  <span
+                    th:if="${#lists.isEmpty(m.cursosConRas)}"
+                    style="color: var(--ink-soft)"
+                    >—</span
+                  >
+                  <span
+                    th:each="c, i : ${m.cursosConRas}"
+                    th:text="${c + (i.last ? '' : ', ')}"
+                    style="font-size: 0.85rem"
+                  ></span>
+                </td>
                 <td th:text="${m.numImparticiones}"></td>
                 <td th:text="${m.numResultadosAprendizaje}"></td>
                 <td th:text="${m.activo ? 'Sí' : 'No'}"></td>
                 <td>
-                  <a
-                    th:href="@{/admin/modulos/{id}/importar-ras(id=${m.id})}"
+                  <button
+                    type="button"
                     class="btn btn-sm btn-secondary"
-                    >Importar RAs</a
+                    data-modulo-id="[[${m.id}]]"
+                    onclick="abrirResumenModulo(this.dataset.moduloId)"
                   >
+                    Ver resumen
+                  </button>
                   <a
                     th:href="@{/admin/modulos/{id}/editar(id=${m.id})}"
                     class="btn btn-sm btn-secondary"
@@ -114,5 +130,153 @@
         </div>
       </main>
     </div>
+    <dialog
+      id="moduloResumenModal"
+      aria-labelledby="resumenModalTitle"
+      aria-modal="true"
+    >
+      <div class="resumen-modal-header">
+        <div>
+          <h2 class="resumen-modal-title" id="resumenModalTitle">Resumen</h2>
+          <p class="resumen-modal-meta" id="resumenModalMeta"></p>
+        </div>
+        <button
+          type="button"
+          class="resumen-modal-close"
+          aria-label="Cerrar"
+          id="resumenModalClose"
+        >
+          &times;
+        </button>
+      </div>
+      <div class="resumen-modal-body" id="resumenModalBody">
+        <p>Cargando…</p>
+      </div>
+    </dialog>
+
+    <script type="module">
+      const modal = document.getElementById("moduloResumenModal");
+      const titleEl = document.getElementById("resumenModalTitle");
+      const metaEl = document.getElementById("resumenModalMeta");
+      const bodyEl = document.getElementById("resumenModalBody");
+      const closeBtn = document.getElementById("resumenModalClose");
+
+      closeBtn.addEventListener("click", () => modal.close());
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.close();
+      });
+
+      window.abrirResumenModulo = async function (id) {
+        titleEl.textContent = "Cargando…";
+        metaEl.textContent = "";
+        bodyEl.textContent = "";
+        modal.showModal();
+        try {
+          const resp = await fetch(`/admin/modulos/${id}/resumen`, {
+            headers: { Accept: "application/json" },
+          });
+          if (!resp.ok) throw new Error(`Error ${resp.status}`);
+          const data = await resp.json();
+          renderResumen(data);
+        } catch (err) {
+          const msg = document.createElement("p");
+          msg.textContent = "No se pudo cargar el resumen: " + err.message;
+          bodyEl.textContent = "";
+          bodyEl.appendChild(msg);
+        }
+      };
+
+      function renderResumen(d) {
+        titleEl.textContent = d.nombre;
+
+        const plural = (n, s) => `${n} ${s}${n !== 1 ? "s" : ""}`;
+        metaEl.textContent =
+          `${d.codigo} · ${d.activo ? "Activo" : "Inactivo"} · ` +
+          `${plural(d.numImparticiones, "impartición")} · ` +
+          `${plural(d.numCursosConRas, "curso")} con RAs · ` +
+          `${plural(d.numRasTotal, "RA")} · ` +
+          `${plural(d.numCesTotal, "CE")}`;
+
+        bodyEl.textContent = "";
+
+        if (d.cursos.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "resumen-empty";
+          empty.textContent =
+            "Este módulo no tiene resultados de aprendizaje definidos.";
+          bodyEl.appendChild(empty);
+          return;
+        }
+
+        d.cursos.forEach((curso) => {
+          const sec = document.createElement("section");
+          sec.className = "resumen-curso";
+
+          const h3 = document.createElement("h3");
+          h3.className = "resumen-curso__title";
+          h3.textContent =
+            `${curso.cursoNombre} — ` +
+            `${plural(curso.numRas, "RA")}, ${plural(curso.numCes, "CE")}`;
+          sec.appendChild(h3);
+
+          curso.ras.forEach((ra) => {
+            const raDiv = document.createElement("div");
+            raDiv.className = "resumen-ra";
+
+            const header = document.createElement("div");
+            header.className = "resumen-ra__header";
+
+            const code = document.createElement("span");
+            code.className = "resumen-ra__code";
+            code.textContent = ra.codigo;
+
+            const desc = document.createElement("span");
+            desc.className = "resumen-ra__desc";
+            desc.textContent = ra.descripcion;
+
+            const peso = document.createElement("span");
+            peso.className = "resumen-ra__peso";
+            peso.textContent =
+              ra.pesoSugerido != null ? `${ra.pesoSugerido}%` : "";
+
+            header.appendChild(code);
+            header.appendChild(desc);
+            header.appendChild(peso);
+            raDiv.appendChild(header);
+
+            if (ra.ces && ra.ces.length > 0) {
+              const cesDiv = document.createElement("div");
+              cesDiv.className = "resumen-ces";
+
+              ra.ces.forEach((ce) => {
+                const chip = document.createElement("span");
+                chip.className = "resumen-ce-chip";
+                chip.title =
+                  ce.descripcion +
+                  (ce.peso != null ? ` · ${ce.peso}%` : "") +
+                  (ce.instrumento ? ` · ${ce.instrumento}` : "");
+
+                const ceCode = document.createElement("span");
+                ceCode.className = "resumen-ce-chip__code";
+                ceCode.textContent = ce.codigo;
+                chip.appendChild(ceCode);
+
+                if (ce.peso != null) {
+                  chip.appendChild(document.createTextNode(` ${ce.peso}%`));
+                }
+
+                cesDiv.appendChild(chip);
+              });
+
+              raDiv.appendChild(cesDiv);
+            }
+
+            sec.appendChild(raDiv);
+          });
+
+          bodyEl.appendChild(sec);
+        });
+      }
+    </script>
   </body>
 </html>

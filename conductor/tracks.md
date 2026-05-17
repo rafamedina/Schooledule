@@ -6,11 +6,20 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## En progreso / Pendientes
 
+- [x] **Track: admin_modulos_refactor_20260517** — Refactor pestaña admin/modulos: unificar flujo via Excel (botón "Importar módulo"), arreglar "Ver resumen", cambiar "Editar" a edición de pesos RA/CE, añadir columna "Cursos con RAs", eliminar botón "Importar RAs" por fila.
+*Link: [./tracks/admin_modulos_refactor_20260517/plan.md](./tracks/admin_modulos_refactor_20260517/plan.md)*
+
+- [x] **Track: admin_modulo_resumen_20260516** — Modal de resumen por módulo en la pestaña admin: info básica, conteos y RAs+CEs agrupados por curso académico. Endpoint JSON + JS inline.
+*Link: [./tracks/admin_modulo_resumen_20260516/plan.md](./tracks/admin_modulo_resumen_20260516/plan.md)*
+
 - [x] **Track: import_modulos_excel_20260516** — Importación de RAs y CEs desde plantilla Excel (.xlsx): parser, validator, servicio de importación, plantilla descargable, TDD completo, OWASP A01/A03/A04/A05. Completado 2026-05-16.
 *Link: [./tracks/import_modulos_excel_20260516/plan.md](./tracks/import_modulos_excel_20260516/plan.md)*
 
 - [x] **Track: export_auditoria_excel_20260514** — Exportar logs de auditoría a Excel: ADMIN global (todos los registros) y ADMIN_CENTRO (solo sus centros asignados). Completado 2026-05-14
 *Link: [./tracks/export_auditoria_excel_20260514/plan.md](./tracks/export_auditoria_excel_20260514/plan.md)*
+
+- [ ] **Track: import_usuarios_masivo_20260517** — Importación masiva de alumnos desde Excel: parser→validator→import service, auto-matrícula en imparticiones del grupo, plantilla descargable, TDD completo, OWASP.
+*Link: [./tracks/import_usuarios_masivo_20260517/plan.md](./tracks/import_usuarios_masivo_20260517/plan.md)*
 
 - [ ] **Track: admin_filtros_cursoactivo_20260514** — Filtros en todas las pestañas admin (centro, grupo, módulo, año, profesor) + mostrar solo datos del año lectivo activo por defecto.
 *Link: [./tracks/admin_filtros_cursoactivo_20260514/plan.md](./tracks/admin_filtros_cursoactivo_20260514/plan.md)*
