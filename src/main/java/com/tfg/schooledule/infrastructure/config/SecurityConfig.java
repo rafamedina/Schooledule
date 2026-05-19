@@ -110,8 +110,8 @@ public class SecurityConfig {
                         csp ->
                             csp.policyDirectives(
                                 "default-src 'self'; "
-                                    + "script-src 'self'; "
-                                    + "style-src 'self' 'unsafe-inline'; "
+                                    + "script-src 'self' https://cdn.jsdelivr.net; "
+                                    + "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
                                     + "img-src 'self' data:; "
                                     + "font-src 'self'; "
                                     + "frame-ancestors 'none'; "
