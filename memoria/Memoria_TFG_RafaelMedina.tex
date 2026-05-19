@@ -1099,16 +1099,16 @@ Desarrollar en \texttt{TutorController} el método que recupera mediante \texttt
 
 \subsection{R17F02 -- El tutor debe poder consultar las notas de los alumnos de su grupo}
 
-\subsubsection{R17F02T01 -- Implementar \texttt{GET /tutor/grupo/\{grupoId\}/alumnos}}
-Mostrar el listado de alumnos del grupo con sus notas resumidas por impartición. La vista es de solo lectura: no expone formularios de edición de calificaciones.
+\subsubsection{R17F02T01 -- Implementar \texttt{GET /tutor/grupo/\{grupoId\}/imparticiones} y \texttt{GET /tutor/grupo/\{grupoId\}/alumnos/\{imparticionId\}}}
+El portal del tutor sigue dos pasos: primero se listan las imparticiones del grupo (\texttt{/imparticiones}); desde cada impartición se accede al listado de alumnos con sus notas (\texttt{/alumnos/\{imparticionId\}}). Ambas vistas son de solo lectura y no exponen formularios de edición de calificaciones.
 \begin{itemize}
-  \item \textbf{R17F02T01P01 --} Acceder al listado de alumnos de un grupo como tutor y verificar que no aparece ningún botón ni enlace de edición de calificaciones en la vista.
+  \item \textbf{R17F02T01P01 --} Acceder al listado de alumnos de una impartición como tutor y verificar que no aparece ningún botón ni enlace de edición de calificaciones en la vista.
 \end{itemize}
 
 \subsection{R17F03 -- Si el tutor también es profesor de la impartición, debe poder acceder a la edición de notas}
 
 \subsubsection{R17F03T01 -- Detectar la doble condición tutor-profesor y redirigir al cuaderno de notas}
-En \texttt{TutorService.esProfesorDeLaImparticion}, verificar si el usuario autenticado tiene una impartición activa en el grupo que está consultando. Si es así, el enlace a esa impartición redirige al cuaderno del profesor en \texttt{/profe/imparticion/\{id\}/alumnos}.
+En \texttt{TutorService.getImparticionesByGrupo}, para cada impartición del grupo se comprueba si el profesor asignado coincide con el tutor autenticado. El resultado se expone como el campo \texttt{puedeEditar} del DTO. Si \texttt{puedeEditar} es \texttt{true}, el enlace de esa impartición redirige al cuaderno del profesor en \texttt{/profe/imparticion/\{id\}/alumnos}; en caso contrario, muestra la vista de solo lectura.
 \begin{itemize}
   \item \textbf{R17F03T01P01 --} Acceder al portal tutor con un usuario que es tutor del grupo y además profesor de una de sus imparticiones. Verificar que el enlace de esa impartición redirige al cuaderno del profesor, mientras que las imparticiones en las que no es profesor muestran la vista de solo lectura.
 \end{itemize}
@@ -1120,27 +1120,20 @@ La alta manual de alumnos uno a uno no es viable al inicio de un curso académic
 
 \subsection{R18F01 -- El sistema debe proporcionar una plantilla Excel descargable con el formato requerido}
 
-\subsubsection{R18F01T01 -- Implementar \texttt{GET /admin/alumnos/plantilla}}
+\subsubsection{R18F01T01 -- Implementar \texttt{GET /admin/usuarios/plantilla-excel}}
 Generar con Apache POI un fichero \texttt{.xlsx} con las columnas: \texttt{username}, \texttt{nombre}, \texttt{apellidos}, \texttt{email}, \texttt{password}, \texttt{centro\_nombre}, \texttt{curso\_academico\_nombre}, \texttt{grupo\_nombre}. Devolver el fichero con \texttt{Content-Disposition: attachment}.
 \begin{itemize}
   \item \textbf{R18F01T01P01 --} Descargar la plantilla y verificar que el fichero \texttt{.xlsx} contiene exactamente las ocho columnas requeridas en la primera fila y que el resto del fichero está vacío.
 \end{itemize}
 
-\subsection{R18F02 -- El sistema debe validar el contenido del fichero antes de persistir ningún dato}
+\subsection{R18F02 -- El sistema debe validar el contenido del fichero y crear los usuarios en una sola operación}
 
-\subsubsection{R18F02T01 -- Implementar la vista previa con \texttt{POST /admin/alumnos/importar/preview}}
-Parsear el fichero con \texttt{UsuarioExcelParserService} y ejecutar las validaciones de \texttt{UsuarioImportValidatorService} sin persistir ningún registro. Devolver la lista de errores por fila al administrador. El límite máximo de filas es 200.
+\subsubsection{R18F02T01 -- Implementar \texttt{POST /admin/usuarios/importar} con validación y persistencia en un único paso}
+El endpoint recibe el fichero \texttt{.xlsx}, lo parsea con \texttt{UsuarioExcelParserService} y ejecuta las validaciones de \texttt{UsuarioImportValidatorService}. El límite máximo es 200 filas. Si se detecta cualquier error, se lanza \texttt{UsuarioImportException} con la lista de errores por fila y no se persiste ningún registro. Si todas las filas son válidas, para cada fila: (1) se crea el usuario con rol \texttt{ROLE\_ALUMNO} y contraseña cifrada con BCrypt; (2) se localiza el grupo por \texttt{centro\_nombre} + \texttt{curso\_academico\_nombre} + \texttt{grupo\_nombre}; (3) se crea una \texttt{Matricula} en estado \texttt{ACTIVA} para cada impartición activa del grupo.
 \begin{itemize}
-  \item \textbf{R18F02T01P01 --} Subir un fichero con una fila que contiene un email con formato inválido y otra con una contraseña que no cumple la política, y verificar que la vista previa muestra exactamente dos errores con el número de fila y el campo afectado.
+  \item \textbf{R18F02T01P01 --} Subir un fichero con una fila que contiene un email con formato inválido y otra con una contraseña que no cumple la política, y verificar que la respuesta muestra exactamente dos errores con el número de fila y el campo afectado sin persistir ningún registro.
   \item \textbf{R18F02T01P02 --} Subir un fichero con 201 filas y verificar que el sistema rechaza la importación con un mensaje que indica que se ha superado el límite de 200 alumnos.
-\end{itemize}
-
-\subsection{R18F03 -- El sistema debe crear los usuarios y matricularlos automáticamente al confirmar la importación}
-
-\subsubsection{R18F03T01 -- Implementar la confirmación con \texttt{POST /admin/alumnos/importar/confirmar}}
-Para cada fila válida: (1) crear el usuario con rol \texttt{ROLE\_ALUMNO} y contraseña cifrada con BCrypt; (2) localizar el grupo por \texttt{centro\_nombre} + \texttt{curso\_academico\_nombre} + \texttt{grupo\_nombre}; (3) crear una \texttt{Matricula} en estado \texttt{ACTIVA} para cada impartición activa del grupo.
-\begin{itemize}
-  \item \textbf{R18F03T01P01 --} Confirmar la importación de un fichero con tres alumnos válidos y verificar que se han creado tres usuarios en la tabla \texttt{usuarios} y que cada uno tiene matrículas en todas las imparticiones del grupo especificado.
+  \item \textbf{R18F02T01P03 --} Importar un fichero con tres alumnos válidos y verificar que se han creado tres usuarios en la tabla \texttt{usuarios} y que cada uno tiene matrículas en todas las imparticiones del grupo especificado.
 \end{itemize}
 
 %-------------------------------------------------------------
@@ -1150,16 +1143,16 @@ La configuración curricular de un módulo (RAs y CEs) puede ser extensa. El sis
 
 \subsection{R19F01 -- El sistema debe proporcionar una plantilla Excel para RAs y CEs}
 
-\subsubsection{R19F01T01 -- Implementar \texttt{GET /admin/modulos/plantilla}}
-Generar con Apache POI un fichero \texttt{.xlsx} con las columnas: \texttt{codigo\_ra}, \texttt{descripcion\_ra}, \texttt{peso\_ra}, \texttt{codigo\_ce}, \texttt{descripcion\_ce}, \texttt{peso\_ce}. Cada fila representa un criterio de evaluación asociado a un resultado de aprendizaje.
+\subsubsection{R19F01T01 -- Implementar \texttt{GET /admin/modulos/plantilla-excel}}
+Generar con Apache POI un fichero \texttt{.xlsx} con las columnas: \texttt{ra\_codigo}, \texttt{ra\_descripcion}, \texttt{ra\_peso}, \texttt{ce\_codigo}, \texttt{ce\_descripcion}, \texttt{ce\_peso}. Cada fila representa un criterio de evaluación asociado a un resultado de aprendizaje.
 \begin{itemize}
   \item \textbf{R19F01T01P01 --} Descargar la plantilla y verificar que el \texttt{.xlsx} contiene exactamente las seis columnas requeridas en la primera fila.
 \end{itemize}
 
 \subsection{R19F02 -- El sistema debe validar y persistir los RAs y CEs del fichero}
 
-\subsubsection{R19F02T01 -- Implementar \texttt{POST /admin/modulos/\{id\}/importar} con validación de MIME type y estructura}
-Rechazar el fichero si el MIME type no es \texttt{application/vnd.openxmlformats-officedocument.spreadsheetml.sheet} o si la cabecera no coincide exactamente con la plantilla. Si la validación pasa, persistir los \texttt{ResultadoAprendizaje} y \texttt{CriterioEvaluacion} asociados al módulo.
+\subsubsection{R19F02T01 -- Implementar \texttt{POST /admin/modulos/importar} con validación de MIME type y estructura}
+El formulario de importación recibe el código, nombre y curso académico del nuevo módulo, junto con el fichero \texttt{.xlsx}. Se rechaza el fichero si su MIME type no es \texttt{application/vnd.openxmlformats-officedocument.spreadsheetml.sheet} o si la cabecera no coincide exactamente con la plantilla. Si la validación pasa, se crea el \texttt{Modulo} y se persisten sus \texttt{ResultadoAprendizaje} y \texttt{CriterioEvaluacion}.
 \begin{itemize}
   \item \textbf{R19F02T01P01 --} Subir un fichero con una columna de cabecera incorrecta y verificar que el sistema devuelve un error descriptivo sin persistir ningún registro.
   \item \textbf{R19F02T01P02 --} Subir un fichero válido con tres RAs y sus CEs correspondientes y verificar que se han creado los registros en las tablas \texttt{resultados\_aprendizaje} y \texttt{criterios\_evaluacion} con los datos del fichero.
@@ -1172,7 +1165,7 @@ La ponderación de cada resultado de aprendizaje y criterio de evaluación varí
 
 \subsection{R20F01 -- El administrador debe poder editar los pesos de RAs y CEs de un módulo}
 
-\subsubsection{R20F01T01 -- Implementar \texttt{GET} y \texttt{POST /admin/modulos/\{id\}/pesos}}
+\subsubsection{R20F01T01 -- Implementar \texttt{GET} y \texttt{POST /admin/modulos/\{id\}/editar}}
 Desarrollar en \texttt{AdminModuloController} el formulario que carga los \texttt{ResultadoAprendizaje} y \texttt{CriterioEvaluacion} del módulo con sus pesos actuales y permite editarlos.
 \begin{itemize}
   \item \textbf{R20F01T01P01 --} Modificar el peso de un RA y confirmar que el valor actualizado persiste en la columna \texttt{peso} de la tabla \texttt{resultados\_aprendizaje}.
@@ -1219,7 +1212,7 @@ Modificar \texttt{SecurityConfig} para incluir \texttt{https://cdn.jsdelivr.net}
 %=============================================================
 \chapter{Seguridad}
 
-La seguridad de la plataforma ha sido tratada como un requisito transversal de primer orden, no como un añadido posterior. Se realizó un análisis sistemático de vulnerabilidades siguiendo el estándar OWASP Top 10 y se aplicaron contramedidas específicas en cada capa de la arquitectura. El resultado es una batería de dieciocho pruebas de seguridad automatizadas integradas en el pipeline de CI/CD que validan las medidas implementadas en cada build.
+La seguridad de la plataforma ha sido tratada como un requisito transversal de primer orden, no como un añadido posterior. Se realizó un análisis sistemático de vulnerabilidades siguiendo el estándar OWASP Top 10 y se aplicaron contramedidas específicas en cada capa de la arquitectura. El resultado es una batería de veinticinco pruebas de seguridad automatizadas integradas en el pipeline de CI/CD que validan las medidas implementadas en cada build.
 
 \section{Análisis de Vulnerabilidades Identificadas}
 
