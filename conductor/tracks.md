@@ -6,7 +6,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## En progreso / Pendientes
 
-- [ ] **Track: sonarqube_cleanup_20260519** — Eliminar 158 issues SonarQube (67 CRITICAL, 40 MAJOR, 26 MINOR, 25 INFO). Deuda: ~17h. 25 fases granulares por regla y archivo.
+- [x] **Track: sonarqube_cleanup_20260519** — Eliminar 158 issues SonarQube (67 CRITICAL, 40 MAJOR, 26 MINOR, 25 INFO). Completado 2026-05-19. 158 → 0 issues, deuda 1042 min → 0 min.
 *Link: [./tracks/sonarqube_cleanup_20260519/plan.md](./tracks/sonarqube_cleanup_20260519/plan.md)*
 
 - [ ] **Track: onboarding_tour_20260517** — Tour guiado con Driver.js para ADMIN y PROFESOR. Auto-trigger en primer acceso (localStorage), botón "Repetir tour" en sidebar. Librería servida localmente (CSP compliant).
