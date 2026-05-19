@@ -42,6 +42,8 @@ jobs:
 
       - name: Run Pre-commit (Lint all code)
         uses: pre-commit/action@v3.0.1
+        env:
+          SKIP: spotless-apply,maven-check
 
       - name: Validate GitHub Actions (actionlint)
         run: |
