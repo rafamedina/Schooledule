@@ -6,6 +6,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## En progreso / Pendientes
 
+- [ ] **Track: memoria_actualizacion_20260519** — Añadir R14–R21 a la memoria TFG: ADMIN_CENTRO, tutor, filtros, exportar Excel, importar alumnos, importar RAs/CEs, pesos configurables, tour guiado. + Ampliación capítulo Seguridad.
+*Link: [./tracks/memoria_actualizacion_20260519/plan.md](./tracks/memoria_actualizacion_20260519/plan.md)*
+
 - [ ] **Track: onboarding_tour_20260517** — Tour guiado con Driver.js para ADMIN y PROFESOR. Auto-trigger en primer acceso (localStorage), botón "Repetir tour" en sidebar. Librería servida localmente (CSP compliant).
 *Link: [./tracks/onboarding_tour_20260517/plan.md](./tracks/onboarding_tour_20260517/plan.md)*
 
