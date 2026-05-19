@@ -15,6 +15,7 @@
 \usepackage[spanish]{babel}
 \usepackage{geometry}
 \usepackage{graphicx}
+\usepackage[hyphens]{url}
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{booktabs}
@@ -97,6 +98,11 @@
 \titlespacing*{\section}{0pt}{14pt}{6pt}
 \titlespacing*{\subsection}{0pt}{10pt}{4pt}
 \titlespacing*{\subsubsection}{0pt}{8pt}{3pt}
+
+% Evitar desbordamiento de lineas con nombres largos y rutas
+\setlength{\emergencystretch}{3em}
+\hyphenpenalty=500
+\tolerance=1500
 
 %-------------------------------------------------------------
 % CODIGO FUENTE
