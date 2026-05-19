@@ -1225,7 +1225,8 @@ La seguridad de la plataforma ha sido tratada como un requisito transversal de p
 
 La siguiente tabla recoge las vulnerabilidades detectadas durante la revisión de seguridad del proyecto, clasificadas por categoría OWASP, severidad y componente afectado.
 
-\begin{longtable}{>{\bfseries}p{1.4cm} p{1.6cm} p{3.2cm} p{5.8cm}}
+{\small
+\begin{longtable}{>{\bfseries}p{1.4cm} p{1.6cm} p{4.0cm} p{5.0cm}}
   \toprule
   \textbf{OWASP} & \textbf{Severidad} & \textbf{Componente} & \textbf{Descripción} \\
   \midrule
@@ -1246,6 +1247,7 @@ La siguiente tabla recoge las vulnerabilidades detectadas durante la revisión d
   A09 & Media & Toda la aplicación & Sin registro de eventos de seguridad (\textit{login fallido}, \textit{acceso denegado}) \\[4pt]
   A03 & Baja & Templates Thymeleaf & Auditoría de \texttt{th:utext}: potencial XSS con datos de usuario o BD \\
 \end{longtable}
+}
 
 \section{A06 -- Eliminación de Componentes Vulnerables (\texttt{snap-admin})}
 
