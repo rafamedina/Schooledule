@@ -44,6 +44,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
             .filter(
                 role ->
                     role.equals("ROLE_ADMIN")
+                        || role.equals("ROLE_ADMIN_CENTRO")
                         || role.equals("ROLE_PROFESOR")
                         || role.equals("ROLE_ALUMNO"))
             .collect(java.util.stream.Collectors.toSet());
@@ -55,6 +56,8 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     if (roles.contains("ROLE_ADMIN")) {
       response.sendRedirect("/admin/dashboard");
+    } else if (roles.contains("ROLE_ADMIN_CENTRO")) {
+      response.sendRedirect("/centro-admin/dashboard");
     } else if (roles.contains("ROLE_PROFESOR")) {
       response.sendRedirect("/profe/dashboard");
     } else if (roles.contains("ROLE_ALUMNO")) {

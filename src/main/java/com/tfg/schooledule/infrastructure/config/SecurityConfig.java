@@ -64,9 +64,11 @@ public class SecurityConfig {
             auth ->
                 auth.requestMatchers("/snap-admin/**")
                     .denyAll()
+                    .requestMatchers("/centro-admin/**")
+                    .hasRole("ADMIN_CENTRO")
                     .requestMatchers("/admin/**")
                     .hasRole("ADMIN")
-                    .requestMatchers("/profe/**")
+                    .requestMatchers("/profe/**", "/tutor/**")
                     .hasRole("PROFESOR")
                     .requestMatchers("/alumno/**")
                     .hasRole("ALUMNO")

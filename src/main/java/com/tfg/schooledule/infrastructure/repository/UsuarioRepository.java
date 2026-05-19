@@ -35,4 +35,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
   @org.springframework.data.jpa.repository.Query(
       "SELECT COUNT(u) FROM Usuario u JOIN u.roles r WHERE r.nombre = 'ROLE_ADMIN' AND u.activo = true")
   long countAdminsActivos();
+
+  @org.springframework.data.jpa.repository.Query(
+      "SELECT u FROM Usuario u JOIN u.roles r WHERE r.nombre = 'ROLE_ADMIN_CENTRO' ORDER BY u.apellidos ASC, u.nombre ASC")
+  List<Usuario> findAllAdminCentroOrdenados();
 }

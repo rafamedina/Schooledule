@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.tfg.schooledule.domain.dto.AdminGrupoFormDTO;
 import com.tfg.schooledule.infrastructure.repository.CentroRepository;
 import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
+import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
 import com.tfg.schooledule.infrastructure.service.AdminGrupoService;
 import java.util.Collections;
@@ -32,6 +33,7 @@ class AdminGrupoControllerTest {
   @MockBean private AdminGrupoService adminGrupoService;
   @MockBean private CentroRepository centroRepository;
   @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
+  @MockBean private UsuarioRepository usuarioRepository;
   @MockBean private SecurityAuditLogger securityAuditLogger;
 
   @Test

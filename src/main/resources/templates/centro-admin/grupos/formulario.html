@@ -1,19 +1,21 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
   <head
-    th:replace="~{admin/fragments/layout :: head(${form.id != null} ? 'Editar grupo' : 'Nuevo grupo')}"
+    th:replace="~{centro-admin/fragments/layout :: head(${form.id != null} ? 'Editar grupo' : 'Nuevo grupo')}"
   ></head>
   <body>
     <div class="admin-shell">
-      <div th:replace="~{admin/fragments/layout :: sidebar('grupos')}"></div>
+      <div
+        th:replace="~{centro-admin/fragments/layout :: sidebar('grupos')}"
+      ></div>
 
       <main class="admin-content">
         <div class="hero animate-in">
           <div class="hero__left">
             <nav class="breadcrumb">
-              <a th:href="@{/admin/dashboard}">Administración</a>
+              <a th:href="@{/centro-admin/dashboard}">Centro Admin</a>
               <span class="breadcrumb__sep">/</span>
-              <a th:href="@{/admin/grupos}">Grupos</a>
+              <a th:href="@{/centro-admin/grupos}">Grupos</a>
               <span class="breadcrumb__sep">/</span>
               <span th:text="${form.id != null} ? 'Editar' : 'Nuevo'"
                 >Nuevo</span
@@ -36,7 +38,7 @@
           ></div>
 
           <form
-            th:action="${form.id != null} ? @{/admin/grupos/{id}/editar(id=${form.id})} : @{/admin/grupos/nuevo}"
+            th:action="${form.id != null} ? @{/centro-admin/grupos/{id}/editar(id=${form.id})} : @{/centro-admin/grupos/nuevo}"
             th:object="${form}"
             method="post"
           >
@@ -116,7 +118,9 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Guardar</button>
-            <a th:href="@{/admin/grupos}" class="btn btn-secondary">Cancelar</a>
+            <a th:href="@{/centro-admin/grupos}" class="btn btn-secondary"
+              >Cancelar</a
+            >
           </form>
         </div>
       </main>

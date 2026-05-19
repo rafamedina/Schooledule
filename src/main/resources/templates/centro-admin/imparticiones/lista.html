@@ -1,23 +1,29 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="~{admin/fragments/layout :: head('Grupos')}"></head>
+  <head
+    th:replace="~{centro-admin/fragments/layout :: head('Imparticiones')}"
+  ></head>
   <body>
     <div class="admin-shell">
-      <div th:replace="~{admin/fragments/layout :: sidebar('grupos')}"></div>
+      <div
+        th:replace="~{centro-admin/fragments/layout :: sidebar('imparticiones')}"
+      ></div>
 
       <main class="admin-content">
         <div class="hero animate-in">
           <div class="hero__left">
             <nav class="breadcrumb">
-              <a th:href="@{/admin/dashboard}">Administración</a>
+              <a th:href="@{/centro-admin/dashboard}">Centro Admin</a>
               <span class="breadcrumb__sep">/</span>
-              <span>Grupos</span>
+              <span>Imparticiones</span>
             </nav>
-            <h1 class="hero__title">Gestión de <em>Grupos</em></h1>
+            <h1 class="hero__title">Gestión de <em>Imparticiones</em></h1>
           </div>
           <div class="hero__right">
-            <a th:href="@{/admin/grupos/nuevo}" class="btn btn-primary"
-              >Nuevo grupo</a
+            <a
+              th:href="@{/centro-admin/imparticiones/nueva}"
+              class="btn btn-primary"
+              >Nueva impartición</a
             >
           </div>
         </div>
@@ -29,41 +35,34 @@
             th:text="${error}"
           ></div>
 
-          <div th:if="${#lists.isEmpty(grupos)}" class="empty-state">
-            <p>No hay grupos registrados.</p>
-            <a th:href="@{/admin/grupos/nuevo}" class="btn btn-primary"
-              >Crear el primero</a
-            >
+          <div th:if="${#lists.isEmpty(imparticiones)}" class="empty-state">
+            <p>No hay imparticiones en tus centros.</p>
           </div>
 
-          <table class="table" th:unless="${#lists.isEmpty(grupos)}">
+          <table class="table" th:unless="${#lists.isEmpty(imparticiones)}">
             <thead>
               <tr>
-                <th>Nombre</th>
+                <th>Módulo</th>
+                <th>Grupo</th>
                 <th>Centro</th>
-                <th>Curso Académico</th>
-                <th>Tutor</th>
-                <th>Imparticiones</th>
+                <th>Profesor</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              <tr th:each="g : ${grupos}">
-                <td th:text="${g.nombre}"></td>
-                <td th:text="${g.centroNombre}"></td>
-                <td th:text="${g.cursoAcademicoNombre}"></td>
-                <td
-                  th:text="${g.tutorNombre != null ? g.tutorNombre : '—'}"
-                ></td>
-                <td th:text="${g.numImparticiones}"></td>
+              <tr th:each="i : ${imparticiones}">
+                <td th:text="${i.moduloNombre}"></td>
+                <td th:text="${i.grupoNombre}"></td>
+                <td th:text="${i.centroNombre}"></td>
+                <td th:text="${i.profesorNombreCompleto}"></td>
                 <td>
                   <a
-                    th:href="@{/admin/grupos/{id}/editar(id=${g.id})}"
+                    th:href="@{/centro-admin/imparticiones/{id}/editar(id=${i.id})}"
                     class="btn btn-sm btn-secondary"
                     >Editar</a
                   >
                   <form
-                    th:action="@{/admin/grupos/{id}/eliminar(id=${g.id})}"
+                    th:action="@{/centro-admin/imparticiones/{id}/eliminar(id=${i.id})}"
                     method="post"
                     style="display: inline"
                   >
@@ -75,7 +74,7 @@
                     <button
                       type="submit"
                       class="btn btn-sm btn-danger"
-                      onclick="return confirm('¿Eliminar este grupo?')"
+                      onclick="return confirm('¿Eliminar esta impartición?')"
                     >
                       Eliminar
                     </button>

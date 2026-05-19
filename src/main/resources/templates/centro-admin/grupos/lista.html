@@ -1,22 +1,24 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="~{admin/fragments/layout :: head('Grupos')}"></head>
+  <head th:replace="~{centro-admin/fragments/layout :: head('Grupos')}"></head>
   <body>
     <div class="admin-shell">
-      <div th:replace="~{admin/fragments/layout :: sidebar('grupos')}"></div>
+      <div
+        th:replace="~{centro-admin/fragments/layout :: sidebar('grupos')}"
+      ></div>
 
       <main class="admin-content">
         <div class="hero animate-in">
           <div class="hero__left">
             <nav class="breadcrumb">
-              <a th:href="@{/admin/dashboard}">Administración</a>
+              <a th:href="@{/centro-admin/dashboard}">Centro Admin</a>
               <span class="breadcrumb__sep">/</span>
               <span>Grupos</span>
             </nav>
             <h1 class="hero__title">Gestión de <em>Grupos</em></h1>
           </div>
           <div class="hero__right">
-            <a th:href="@{/admin/grupos/nuevo}" class="btn btn-primary"
+            <a th:href="@{/centro-admin/grupos/nuevo}" class="btn btn-primary"
               >Nuevo grupo</a
             >
           </div>
@@ -30,8 +32,8 @@
           ></div>
 
           <div th:if="${#lists.isEmpty(grupos)}" class="empty-state">
-            <p>No hay grupos registrados.</p>
-            <a th:href="@{/admin/grupos/nuevo}" class="btn btn-primary"
+            <p>No hay grupos en tus centros.</p>
+            <a th:href="@{/centro-admin/grupos/nuevo}" class="btn btn-primary"
               >Crear el primero</a
             >
           </div>
@@ -58,12 +60,12 @@
                 <td th:text="${g.numImparticiones}"></td>
                 <td>
                   <a
-                    th:href="@{/admin/grupos/{id}/editar(id=${g.id})}"
+                    th:href="@{/centro-admin/grupos/{id}/editar(id=${g.id})}"
                     class="btn btn-sm btn-secondary"
                     >Editar</a
                   >
                   <form
-                    th:action="@{/admin/grupos/{id}/eliminar(id=${g.id})}"
+                    th:action="@{/centro-admin/grupos/{id}/eliminar(id=${g.id})}"
                     method="post"
                     style="display: inline"
                   >
