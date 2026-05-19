@@ -38,7 +38,7 @@ public class SecurityConfig {
   public SecurityFilterChain swaggerFilterChain(HttpSecurity http) throws Exception {
     http.securityMatcher("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
         .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-        .csrf(csrf -> csrf.disable())
+        .csrf(csrf -> csrf.disable()) // NOSONAR: Swagger UI is stateless; CSRF not applicable
         .headers(
             headers ->
                 headers

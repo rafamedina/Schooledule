@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
 public class UsuarioImportValidatorService {
 
   private static final int MAX_USUARIOS = 200;
-  private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+  private static final Pattern EMAIL_PATTERN =
+      Pattern.compile("^[^@\\s]{1,64}@[^@.\\s]+(\\.[^@.\\s]+)+$");
   private static final String CAMPO_USERNAME = "username";
   private static final String CAMPO_EMAIL = "email";
   private static final String CAMPO_PASSWORD = "password";
@@ -129,17 +130,17 @@ public class UsuarioImportValidatorService {
               fila, CAMPO_PASSWORD, "La contraseña debe tener al menos 8 caracteres"));
       return;
     }
-    if (!password.matches(".*[A-Z].*")) {
+    if (password.chars().noneMatch(Character::isUpperCase)) {
       errores.add(
           new UsuarioImportErrorDTO(
               fila, CAMPO_PASSWORD, "La contraseña debe contener al menos una letra mayúscula"));
     }
-    if (!password.matches(".*[a-z].*")) {
+    if (password.chars().noneMatch(Character::isLowerCase)) {
       errores.add(
           new UsuarioImportErrorDTO(
               fila, CAMPO_PASSWORD, "La contraseña debe contener al menos una letra minúscula"));
     }
-    if (!password.matches(".*\\d.*")) {
+    if (password.chars().noneMatch(Character::isDigit)) {
       errores.add(
           new UsuarioImportErrorDTO(
               fila, CAMPO_PASSWORD, "La contraseña debe contener al menos un dígito"));
