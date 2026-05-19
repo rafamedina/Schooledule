@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminImparticionService {
 
+  private static final String ERR_IMPARTICION = "Impartición no encontrada: ";
+
   private final ImparticionRepository imparticionRepository;
   private final ModuloRepository moduloRepository;
   private final GrupoRepository grupoRepository;
@@ -89,7 +91,7 @@ public class AdminImparticionService {
     Imparticion imparticion =
         imparticionRepository
             .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Impartición no encontrada: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ERR_IMPARTICION + id));
     return adminImparticionMapper.toFormDTO(imparticion);
   }
 
@@ -133,7 +135,7 @@ public class AdminImparticionService {
     Imparticion imparticion =
         imparticionRepository
             .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Impartición no encontrada: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ERR_IMPARTICION + id));
     if (imparticionRepository.existsByModuloIdAndGrupoIdAndIdNot(
         dto.getModuloId(), dto.getGrupoId(), id)) {
       throw new IllegalArgumentException("Este módulo ya se imparte en ese grupo");
@@ -169,7 +171,7 @@ public class AdminImparticionService {
   @Transactional
   public void eliminar(Integer id) {
     if (!imparticionRepository.existsById(id)) {
-      throw new EntityNotFoundException("Impartición no encontrada: " + id);
+      throw new EntityNotFoundException(ERR_IMPARTICION + id);
     }
     if (matriculaRepository.existsByImparticionId(id)) {
       throw new IllegalStateException("No se puede eliminar: tiene matrículas asociadas");

@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminGrupoService {
 
+  private static final String ERR_GRUPO = "Grupo no encontrado: ";
+
   private final GrupoRepository grupoRepository;
   private final ImparticionRepository imparticionRepository;
   private final CentroRepository centroRepository;
@@ -92,9 +94,7 @@ public class AdminGrupoService {
   @Transactional(readOnly = true)
   public AdminGrupoFormDTO obtenerParaEditar(Integer id) {
     Grupo grupo =
-        grupoRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Grupo no encontrado: " + id));
+        grupoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(ERR_GRUPO + id));
     return adminGrupoMapper.toFormDTO(grupo);
   }
 
@@ -130,9 +130,7 @@ public class AdminGrupoService {
   @Transactional
   public void actualizar(Integer id, AdminGrupoFormDTO dto) {
     Grupo grupo =
-        grupoRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Grupo no encontrado: " + id));
+        grupoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(ERR_GRUPO + id));
     Centro centro =
         centroRepository
             .findById(dto.getCentroId())
@@ -167,7 +165,7 @@ public class AdminGrupoService {
   @Transactional
   public void eliminar(Integer id) {
     if (!grupoRepository.existsById(id)) {
-      throw new EntityNotFoundException("Grupo no encontrado: " + id);
+      throw new EntityNotFoundException(ERR_GRUPO + id);
     }
     if (imparticionRepository.existsByGrupoId(id)) {
       throw new IllegalStateException(

@@ -87,7 +87,7 @@ class TeacherDashboardServiceTest {
 
   @Test
   void getCentersForTeacher_devuelveSoloCentrosVinculados() {
-    when(mapper.toCenterDto(eq(centro), eq(1L)))
+    when(mapper.toCenterDto(centro, 1L))
         .thenReturn(new TeacherCenterDTO(1, "IES Central", "Madrid", 1L));
     when(imparticionRepo.findByProfesorIdAndCentroId(2, 1)).thenReturn(List.of(imparticion));
 
@@ -103,7 +103,7 @@ class TeacherDashboardServiceTest {
     when(imparticionRepo.findByProfesorIdAndCentroId(2, 1)).thenReturn(List.of(imparticion));
     when(matriculaRepo.findByImparticionIdAndEstado(1, EstadoMatricula.ACTIVA))
         .thenReturn(List.of(matricula));
-    when(mapper.toSubjectDto(eq(imparticion), eq(1L)))
+    when(mapper.toSubjectDto(imparticion, 1L))
         .thenReturn(new TeacherSubjectDTO(1, "M1", "Modulo1", "DAW1-A", "2025/2026", 1L));
 
     List<TeacherSubjectDTO> result = service.getSubjectsForTeacherAndCenter(2, 1);
@@ -180,7 +180,7 @@ class TeacherDashboardServiceTest {
     when(calificacionRepo.findByMatriculaIdAndCriterioEvaluacionIdIn(eq(1), any()))
         .thenReturn(List.of(calA));
 
-    when(mapper.toCriterioGrade(eq(ceA), eq(calA)))
+    when(mapper.toCriterioGrade(ceA, calA))
         .thenReturn(
             new TeacherCriterioGradeDTO(
                 1, "a", "CE-a", new BigDecimal("8.00"), null, 1, BigDecimal.ZERO));
@@ -275,15 +275,15 @@ class TeacherDashboardServiceTest {
     when(calificacionRepo.findByMatriculaIdAndCriterioEvaluacionIdIn(eq(1), any()))
         .thenReturn(List.of(calA, calB, calC));
 
-    when(mapper.toCriterioGrade(eq(ceA), eq(calA)))
+    when(mapper.toCriterioGrade(ceA, calA))
         .thenReturn(
             new TeacherCriterioGradeDTO(
                 1, "a", "x", new BigDecimal("6.00"), null, 1, BigDecimal.ZERO));
-    when(mapper.toCriterioGrade(eq(ceB), eq(calB)))
+    when(mapper.toCriterioGrade(ceB, calB))
         .thenReturn(
             new TeacherCriterioGradeDTO(
                 2, "b", "y", new BigDecimal("8.00"), null, 2, BigDecimal.ZERO));
-    when(mapper.toCriterioGrade(eq(ceC), eq(calC)))
+    when(mapper.toCriterioGrade(ceC, calC))
         .thenReturn(
             new TeacherCriterioGradeDTO(
                 3, "c", "z", new BigDecimal("7.00"), null, 3, BigDecimal.ZERO));
@@ -841,11 +841,11 @@ class TeacherDashboardServiceTest {
         .thenReturn(List.of(calA, calB));
 
     // ceA peso=25, ceB peso=75 → media = (4*25 + 10*75) / (25+75) = 850/100 = 8.50
-    when(mapper.toCriterioGrade(eq(ceA), eq(calA)))
+    when(mapper.toCriterioGrade(ceA, calA))
         .thenReturn(
             new TeacherCriterioGradeDTO(
                 1, "a", "x", new BigDecimal("4.00"), null, 1, new BigDecimal("25.00")));
-    when(mapper.toCriterioGrade(eq(ceB), eq(calB)))
+    when(mapper.toCriterioGrade(ceB, calB))
         .thenReturn(
             new TeacherCriterioGradeDTO(
                 2, "b", "y", new BigDecimal("10.00"), null, 2, new BigDecimal("75.00")));
@@ -942,11 +942,11 @@ class TeacherDashboardServiceTest {
     // item1: ce1 peso=0 → mediaRa1 = 4.00 (fallback), raPeso=30
     // item2: ce2 peso=0 → mediaRa2 = 8.00 (fallback), raPeso=70
     // mediaPeriodo = (4*30 + 8*70) / (30+70) = (120+560)/100 = 6.80
-    when(mapper.toCriterioGrade(eq(ce1), eq(cal1)))
+    when(mapper.toCriterioGrade(ce1, cal1))
         .thenReturn(
             new TeacherCriterioGradeDTO(
                 1, "a", "x", new BigDecimal("4.00"), null, 1, BigDecimal.ZERO));
-    when(mapper.toCriterioGrade(eq(ce2), eq(cal2)))
+    when(mapper.toCriterioGrade(ce2, cal2))
         .thenReturn(
             new TeacherCriterioGradeDTO(
                 2, "b", "y", new BigDecimal("8.00"), null, 2, BigDecimal.ZERO));

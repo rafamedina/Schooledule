@@ -32,6 +32,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminImparticionController {
 
+  private static final String VIEW_FORM = "admin/imparticiones/formulario";
+  private static final String ATTR_ERROR = "error";
+  private static final String REDIRECT_IMPARTICIONES = "redirect:/admin/imparticiones";
+
   private final AdminImparticionService adminImparticionService;
   private final ModuloRepository moduloRepository;
   private final GrupoRepository grupoRepository;
@@ -100,7 +104,7 @@ public class AdminImparticionController {
   public String nuevo(Model model) {
     model.addAttribute("form", new AdminImparticionFormDTO());
     cargarListas(model);
-    return "admin/imparticiones/formulario";
+    return VIEW_FORM;
   }
 
   @Operation(
@@ -122,16 +126,16 @@ public class AdminImparticionController {
       Model model) {
     if (bindingResult.hasErrors()) {
       cargarListas(model);
-      return "admin/imparticiones/formulario";
+      return VIEW_FORM;
     }
     try {
       adminImparticionService.crear(form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", ex.getMessage());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
       cargarListas(model);
-      return "admin/imparticiones/formulario";
+      return VIEW_FORM;
     }
-    return "redirect:/admin/imparticiones";
+    return REDIRECT_IMPARTICIONES;
   }
 
   @Operation(
@@ -153,7 +157,7 @@ public class AdminImparticionController {
       Model model) {
     model.addAttribute("form", adminImparticionService.obtenerParaEditar(id));
     cargarListas(model);
-    return "admin/imparticiones/formulario";
+    return VIEW_FORM;
   }
 
   @Operation(
@@ -177,16 +181,16 @@ public class AdminImparticionController {
       Model model) {
     if (bindingResult.hasErrors()) {
       cargarListas(model);
-      return "admin/imparticiones/formulario";
+      return VIEW_FORM;
     }
     try {
       adminImparticionService.actualizar(id, form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", ex.getMessage());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
       cargarListas(model);
-      return "admin/imparticiones/formulario";
+      return VIEW_FORM;
     }
-    return "redirect:/admin/imparticiones";
+    return REDIRECT_IMPARTICIONES;
   }
 
   @Operation(
@@ -211,9 +215,9 @@ public class AdminImparticionController {
     try {
       adminImparticionService.eliminar(id);
     } catch (IllegalStateException ex) {
-      redirectAttributes.addFlashAttribute("error", ex.getMessage());
+      redirectAttributes.addFlashAttribute(ATTR_ERROR, ex.getMessage());
     }
-    return "redirect:/admin/imparticiones";
+    return REDIRECT_IMPARTICIONES;
   }
 
   private void cargarListas(Model model) {

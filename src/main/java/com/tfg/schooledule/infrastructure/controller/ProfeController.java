@@ -34,6 +34,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @PreAuthorize("hasRole('PROFESOR')")
 public class ProfeController {
 
+  private static final String ATTR_ERROR_ITEM = "errorItem";
+  private static final String REDIRECT_IMPARTICION = "redirect:/profe/imparticion/";
+  private static final String PATH_ALUMNOS = "/alumnos";
+
   private final UsuarioService usuarioService;
   private final TeacherDashboardService teacherService;
   private final ItemEvaluableRepository itemEvaluableRepository;
@@ -248,17 +252,17 @@ public class ProfeController {
       Principal principal,
       RedirectAttributes ra) {
     if (result.hasErrors()) {
-      ra.addFlashAttribute("errorItem", "Datos del ítem no válidos.");
-      return "redirect:/profe/imparticion/" + imparticionId + "/alumnos";
+      ra.addFlashAttribute(ATTR_ERROR_ITEM, "Datos del ítem no válidos.");
+      return REDIRECT_IMPARTICION + imparticionId + PATH_ALUMNOS;
     }
     Usuario profesor = resolveProfesor(principal);
     try {
       teacherService.crearItem(imparticionId, profesor.getId(), dto);
       ra.addFlashAttribute("okItem", "Ítem añadido correctamente.");
     } catch (Exception ex) {
-      ra.addFlashAttribute("errorItem", ex.getMessage());
+      ra.addFlashAttribute(ATTR_ERROR_ITEM, ex.getMessage());
     }
-    return "redirect:/profe/imparticion/" + imparticionId + "/alumnos";
+    return REDIRECT_IMPARTICION + imparticionId + PATH_ALUMNOS;
   }
 
   @Operation(
@@ -287,9 +291,9 @@ public class ProfeController {
     try {
       Integer imparticionId = teacherService.eliminarItem(itemId, profesor.getId());
       ra.addFlashAttribute("okItem", "Ítem eliminado.");
-      return "redirect:/profe/imparticion/" + imparticionId + "/alumnos";
+      return REDIRECT_IMPARTICION + imparticionId + PATH_ALUMNOS;
     } catch (Exception ex) {
-      ra.addFlashAttribute("errorItem", ex.getMessage());
+      ra.addFlashAttribute(ATTR_ERROR_ITEM, ex.getMessage());
       return "redirect:/profe/dashboard";
     }
   }

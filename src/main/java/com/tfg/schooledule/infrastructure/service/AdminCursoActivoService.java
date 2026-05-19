@@ -16,13 +16,17 @@ public class AdminCursoActivoService {
 
   @Transactional(readOnly = true)
   public CursoAcademico getCursoActivo() {
-    return cursoAcademicoRepository
-        .findByActivo(true)
-        .orElseThrow(() -> new IllegalStateException("No hay curso académico activo"));
+    return loadCursoActivo();
   }
 
   @Transactional(readOnly = true)
   public Integer getCursoActivoId() {
-    return getCursoActivo().getId();
+    return loadCursoActivo().getId();
+  }
+
+  private CursoAcademico loadCursoActivo() {
+    return cursoAcademicoRepository
+        .findByActivo(true)
+        .orElseThrow(() -> new IllegalStateException("No hay curso académico activo"));
   }
 }

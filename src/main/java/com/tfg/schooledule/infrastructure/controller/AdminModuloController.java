@@ -40,6 +40,12 @@ public class AdminModuloController {
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           "application/octet-stream");
 
+  private static final String VIEW_IMPORTAR = "admin/modulos/importar";
+  private static final String VIEW_EDITAR_PESOS = "admin/modulos/editar-pesos";
+  private static final String ATTR_ERROR = "error";
+  private static final String ATTR_MODULO_ID = "moduloId";
+  private static final String REDIRECT_MODULOS = "redirect:/admin/modulos";
+
   private final AdminModuloService adminModuloService;
 
   public AdminModuloController(AdminModuloService adminModuloService) {
@@ -74,7 +80,7 @@ public class AdminModuloController {
   @GetMapping("/importar")
   public String formularioImportar(Model model) {
     model.addAttribute("form", new AdminModuloImportarFormDTO());
-    return "admin/modulos/importar";
+    return VIEW_IMPORTAR;
   }
 
   @Operation(summary = "Acción: importar módulo desde Excel")
@@ -91,16 +97,16 @@ public class AdminModuloController {
       Model model,
       RedirectAttributes redirectAttributes) {
     if (bindingResult.hasErrors()) {
-      return "admin/modulos/importar";
+      return VIEW_IMPORTAR;
     }
     if (archivo.isEmpty()) {
-      model.addAttribute("error", "Debes seleccionar un archivo Excel (.xlsx).");
-      return "admin/modulos/importar";
+      model.addAttribute(ATTR_ERROR, "Debes seleccionar un archivo Excel (.xlsx).");
+      return VIEW_IMPORTAR;
     }
     if (!esXlsx(archivo)) {
       model.addAttribute(
-          "error", "El archivo debe tener extensión .xlsx y tipo de contenido Excel.");
-      return "admin/modulos/importar";
+          ATTR_ERROR, "El archivo debe tener extensión .xlsx y tipo de contenido Excel.");
+      return VIEW_IMPORTAR;
     }
     try {
       byte[] bytes = archivo.getBytes();
@@ -109,16 +115,16 @@ public class AdminModuloController {
               form.getCodigo(), form.getNombre(), form.getCursoAcademicoId(), bytes);
       redirectAttributes.addFlashAttribute(
           "exito", totalCes + " criterios de evaluación importados correctamente.");
-      return "redirect:/admin/modulos";
+      return REDIRECT_MODULOS;
     } catch (ModuloImportException e) {
       model.addAttribute("errores", e.getErrores());
-      return "admin/modulos/importar";
+      return VIEW_IMPORTAR;
     } catch (IllegalStateException | EntityNotFoundException e) {
-      model.addAttribute("error", e.getMessage());
-      return "admin/modulos/importar";
+      model.addAttribute(ATTR_ERROR, e.getMessage());
+      return VIEW_IMPORTAR;
     } catch (IOException e) {
-      model.addAttribute("error", "No se pudo leer el archivo subido.");
-      return "admin/modulos/importar";
+      model.addAttribute(ATTR_ERROR, "No se pudo leer el archivo subido.");
+      return VIEW_IMPORTAR;
     }
   }
 
@@ -131,9 +137,9 @@ public class AdminModuloController {
       @Parameter(description = "ID del módulo formativo", required = true) @PathVariable @Positive
           Integer id,
       Model model) {
-    model.addAttribute("moduloId", id);
+    model.addAttribute(ATTR_MODULO_ID, id);
     model.addAttribute("form", adminModuloService.obtenerParaEditarPesos(id));
-    return "admin/modulos/editar-pesos";
+    return VIEW_EDITAR_PESOS;
   }
 
   @Operation(summary = "Acción: actualizar pesos de RAs y CEs de un módulo")
@@ -151,18 +157,18 @@ public class AdminModuloController {
       Model model,
       RedirectAttributes redirectAttributes) {
     if (bindingResult.hasErrors()) {
-      model.addAttribute("moduloId", id);
-      return "admin/modulos/editar-pesos";
+      model.addAttribute(ATTR_MODULO_ID, id);
+      return VIEW_EDITAR_PESOS;
     }
     try {
       adminModuloService.actualizarPesos(id, form);
       redirectAttributes.addFlashAttribute("exito", "Módulo actualizado correctamente.");
     } catch (IllegalArgumentException | EntityNotFoundException ex) {
-      model.addAttribute("error", ex.getMessage());
-      model.addAttribute("moduloId", id);
-      return "admin/modulos/editar-pesos";
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
+      model.addAttribute(ATTR_MODULO_ID, id);
+      return VIEW_EDITAR_PESOS;
     }
-    return "redirect:/admin/modulos";
+    return REDIRECT_MODULOS;
   }
 
   @Operation(summary = "Acción: activar/desactivar módulo")
@@ -176,9 +182,9 @@ public class AdminModuloController {
     try {
       adminModuloService.toggleActivo(id);
     } catch (IllegalStateException ex) {
-      redirectAttributes.addFlashAttribute("error", ex.getMessage());
+      redirectAttributes.addFlashAttribute(ATTR_ERROR, ex.getMessage());
     }
-    return "redirect:/admin/modulos";
+    return REDIRECT_MODULOS;
   }
 
   private boolean esXlsx(MultipartFile archivo) {

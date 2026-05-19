@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminModuloService {
 
+  private static final String ERR_MODULO = "Módulo no encontrado: ";
+
   private final ModuloRepository moduloRepository;
   private final ImparticionRepository imparticionRepository;
   private final ResultadoAprendizajeRepository raRepository;
@@ -84,7 +86,7 @@ public class AdminModuloService {
     Modulo modulo =
         moduloRepository
             .findById(moduloId)
-            .orElseThrow(() -> new EntityNotFoundException("Módulo no encontrado: " + moduloId));
+            .orElseThrow(() -> new EntityNotFoundException(ERR_MODULO + moduloId));
 
     List<ResultadoAprendizaje> ras =
         raRepository.findByModuloIdOrderByCursoAcademicoIdAscCodigoAsc(moduloId);
@@ -137,7 +139,7 @@ public class AdminModuloService {
     Modulo modulo =
         moduloRepository
             .findById(moduloId)
-            .orElseThrow(() -> new EntityNotFoundException("Módulo no encontrado: " + moduloId));
+            .orElseThrow(() -> new EntityNotFoundException(ERR_MODULO + moduloId));
 
     if (moduloRepository.existsByCodigoAndIdNot(form.getCodigo(), moduloId)) {
       throw new IllegalArgumentException(
@@ -150,35 +152,42 @@ public class AdminModuloService {
     if (form.getRas() == null) return;
 
     for (AdminModuloRaPesoDTO raDto : form.getRas()) {
-      if (raDto.getId() == null) continue;
-      ResultadoAprendizaje ra =
-          raRepository
-              .findById(raDto.getId())
-              .orElseThrow(() -> new EntityNotFoundException("RA no encontrado: " + raDto.getId()));
-      if (!ra.getModulo().getId().equals(moduloId)) {
-        throw new IllegalArgumentException(
-            "El RA " + raDto.getId() + " no pertenece al módulo " + moduloId);
-      }
-      ra.setPesoSugerido(raDto.getPesoSugerido());
-      raRepository.save(ra);
-
-      if (raDto.getCes() == null) continue;
-
-      for (AdminModuloCePesoDTO ceDto : raDto.getCes()) {
-        if (ceDto.getId() == null) continue;
-        CriterioEvaluacion ce =
-            ceRepository
-                .findById(ceDto.getId())
-                .orElseThrow(
-                    () -> new EntityNotFoundException("CE no encontrado: " + ceDto.getId()));
-        if (!ce.getResultadoAprendizaje().getId().equals(ra.getId())) {
-          throw new IllegalArgumentException(
-              "El CE " + ceDto.getId() + " no pertenece al RA " + ra.getId());
-        }
-        ce.setPeso(ceDto.getPeso());
-        ceRepository.save(ce);
-      }
+      actualizarPesoRa(moduloId, raDto);
     }
+  }
+
+  private void actualizarPesoRa(Integer moduloId, AdminModuloRaPesoDTO raDto) {
+    if (raDto.getId() == null) return;
+    ResultadoAprendizaje ra =
+        raRepository
+            .findById(raDto.getId())
+            .orElseThrow(() -> new EntityNotFoundException("RA no encontrado: " + raDto.getId()));
+    if (!ra.getModulo().getId().equals(moduloId)) {
+      throw new IllegalArgumentException(
+          "El RA " + raDto.getId() + " no pertenece al módulo " + moduloId);
+    }
+    ra.setPesoSugerido(raDto.getPesoSugerido());
+    raRepository.save(ra);
+
+    if (raDto.getCes() == null) return;
+
+    for (AdminModuloCePesoDTO ceDto : raDto.getCes()) {
+      actualizarPesoCe(ra, ceDto);
+    }
+  }
+
+  private void actualizarPesoCe(ResultadoAprendizaje ra, AdminModuloCePesoDTO ceDto) {
+    if (ceDto.getId() == null) return;
+    CriterioEvaluacion ce =
+        ceRepository
+            .findById(ceDto.getId())
+            .orElseThrow(() -> new EntityNotFoundException("CE no encontrado: " + ceDto.getId()));
+    if (!ce.getResultadoAprendizaje().getId().equals(ra.getId())) {
+      throw new IllegalArgumentException(
+          "El CE " + ceDto.getId() + " no pertenece al RA " + ra.getId());
+    }
+    ce.setPeso(ceDto.getPeso());
+    ceRepository.save(ce);
   }
 
   @Transactional(readOnly = true)
@@ -186,7 +195,7 @@ public class AdminModuloService {
     Modulo modulo =
         moduloRepository
             .findById(moduloId)
-            .orElseThrow(() -> new EntityNotFoundException("Módulo no encontrado: " + moduloId));
+            .orElseThrow(() -> new EntityNotFoundException(ERR_MODULO + moduloId));
 
     int numImparticiones = imparticionRepository.countByModuloId(moduloId);
 
@@ -283,7 +292,7 @@ public class AdminModuloService {
     Modulo modulo =
         moduloRepository
             .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Módulo no encontrado: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ERR_MODULO + id));
     if (Boolean.TRUE.equals(modulo.getActivo())) {
       if (imparticionRepository.existsByModuloId(id)) {
         throw new IllegalStateException(

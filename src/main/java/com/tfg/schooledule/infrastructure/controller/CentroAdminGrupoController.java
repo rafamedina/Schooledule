@@ -20,6 +20,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @PreAuthorize("hasRole('ADMIN_CENTRO')")
 public class CentroAdminGrupoController {
 
+  private static final String VIEW_FORM = "centro-admin/grupos/formulario";
+  private static final String ATTR_ERROR = "error";
+  private static final String REDIRECT_GRUPOS = "redirect:/centro-admin/grupos";
+
   private final CentroAdminGrupoService grupoService;
   private final CursoAcademicoRepository cursoAcademicoRepository;
   private final UsuarioRepository usuarioRepository;
@@ -45,7 +49,7 @@ public class CentroAdminGrupoController {
     int adminId = resolveId(principal);
     model.addAttribute("form", new AdminGrupoFormDTO());
     cargarListas(model, adminId);
-    return "centro-admin/grupos/formulario";
+    return VIEW_FORM;
   }
 
   @PostMapping("/nuevo")
@@ -57,16 +61,16 @@ public class CentroAdminGrupoController {
     int adminId = resolveId(principal);
     if (bindingResult.hasErrors()) {
       cargarListas(model, adminId);
-      return "centro-admin/grupos/formulario";
+      return VIEW_FORM;
     }
     try {
       grupoService.crear(adminId, form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", ex.getMessage());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
       cargarListas(model, adminId);
-      return "centro-admin/grupos/formulario";
+      return VIEW_FORM;
     }
-    return "redirect:/centro-admin/grupos";
+    return REDIRECT_GRUPOS;
   }
 
   @GetMapping("/{id}/editar")
@@ -74,7 +78,7 @@ public class CentroAdminGrupoController {
     int adminId = resolveId(principal);
     model.addAttribute("form", grupoService.obtenerParaEditar(adminId, id));
     cargarListas(model, adminId);
-    return "centro-admin/grupos/formulario";
+    return VIEW_FORM;
   }
 
   @PostMapping("/{id}/editar")
@@ -87,16 +91,16 @@ public class CentroAdminGrupoController {
     int adminId = resolveId(principal);
     if (bindingResult.hasErrors()) {
       cargarListas(model, adminId);
-      return "centro-admin/grupos/formulario";
+      return VIEW_FORM;
     }
     try {
       grupoService.actualizar(adminId, id, form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", ex.getMessage());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
       cargarListas(model, adminId);
-      return "centro-admin/grupos/formulario";
+      return VIEW_FORM;
     }
-    return "redirect:/centro-admin/grupos";
+    return REDIRECT_GRUPOS;
   }
 
   @PostMapping("/{id}/eliminar")
@@ -108,9 +112,9 @@ public class CentroAdminGrupoController {
     try {
       grupoService.eliminar(adminId, id);
     } catch (IllegalStateException ex) {
-      redirectAttributes.addFlashAttribute("error", ex.getMessage());
+      redirectAttributes.addFlashAttribute(ATTR_ERROR, ex.getMessage());
     }
-    return "redirect:/centro-admin/grupos";
+    return REDIRECT_GRUPOS;
   }
 
   private void cargarListas(Model model, int adminId) {

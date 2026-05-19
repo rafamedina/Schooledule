@@ -38,7 +38,7 @@ class AuditoriaExcelExportServiceTest {
     try (XSSFWorkbook wb = new XSSFWorkbook(new ByteArrayInputStream(bytes))) {
       Sheet sheet = wb.getSheet("Auditoría");
       assertThat(sheet).isNotNull();
-      assertThat(sheet.getLastRowNum()).isEqualTo(0);
+      assertThat(sheet.getLastRowNum()).isZero();
       assertThat((int) sheet.getRow(0).getLastCellNum()).isEqualTo(9);
     }
   }

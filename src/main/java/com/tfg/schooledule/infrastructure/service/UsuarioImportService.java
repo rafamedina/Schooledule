@@ -148,13 +148,13 @@ public class UsuarioImportService {
       filaOk = false;
     }
 
-    if (fila.email() != null && !fila.email().isBlank()) {
-      if (usuarioRepository.existsByEmail(fila.email())) {
-        errores.add(
-            new UsuarioImportErrorDTO(
-                f, "email", "El email '" + fila.email() + "' ya está registrado en el sistema"));
-        filaOk = false;
-      }
+    if (fila.email() != null
+        && !fila.email().isBlank()
+        && usuarioRepository.existsByEmail(fila.email())) {
+      errores.add(
+          new UsuarioImportErrorDTO(
+              f, "email", "El email '" + fila.email() + "' ya está registrado en el sistema"));
+      filaOk = false;
     }
 
     if (filaOk) {

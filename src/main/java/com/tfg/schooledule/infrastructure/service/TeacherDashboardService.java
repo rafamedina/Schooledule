@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class TeacherDashboardService {
 
+  private static final String ERR_ACCESO = "El profesor no tiene acceso a la impartición ";
+
   private final ImparticionRepository imparticionRepo;
   private final MatriculaRepository matriculaRepo;
   private final ItemEvaluableRepository itemEvaluableRepo;
@@ -81,14 +83,13 @@ public class TeacherDashboardService {
                       .size();
               return mapper.toSubjectDto(imp, alumnosCount);
             })
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<TeacherStudentRowDTO> getRosterForImparticion(
       Integer profesorId, Integer imparticionId) {
     if (!imparticionRepo.existsByIdAndProfesorId(imparticionId, profesorId)) {
-      throw new AccessDeniedException(
-          "El profesor no tiene acceso a la impartición " + imparticionId);
+      throw new AccessDeniedException(ERR_ACCESO + imparticionId);
     }
     return buildRoster(imparticionId);
   }
@@ -109,7 +110,7 @@ public class TeacherDashboardService {
                   base.esRepetidor(),
                   suspensas);
             })
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public TeacherStudentGradesDTO getStudentGrades(Integer profesorId, Integer matriculaId) {
@@ -245,10 +246,7 @@ public class TeacherDashboardService {
         .findById(imparticionId)
         .filter(i -> i.getProfesor().getId().equals(profesorId))
         .map(i -> i.getModulo().getId())
-        .orElseThrow(
-            () ->
-                new AccessDeniedException(
-                    "El profesor no tiene acceso a la impartición " + imparticionId));
+        .orElseThrow(() -> new AccessDeniedException(ERR_ACCESO + imparticionId));
   }
 
   public Integer getCentroIdByImparticion(Integer profesorId, Integer imparticionId) {
@@ -256,10 +254,7 @@ public class TeacherDashboardService {
         .findById(imparticionId)
         .filter(i -> i.getProfesor().getId().equals(profesorId))
         .map(i -> i.getCentro().getId())
-        .orElseThrow(
-            () ->
-                new AccessDeniedException(
-                    "El profesor no tiene acceso a la impartición " + imparticionId));
+        .orElseThrow(() -> new AccessDeniedException(ERR_ACCESO + imparticionId));
   }
 
   // ─── helpers privados ────────────────────────────────────────────────────────
@@ -370,7 +365,7 @@ public class TeacherDashboardService {
 
   private BigDecimal computeCeMedia(List<TeacherCriterioGradeDTO> criterios) {
     List<TeacherCriterioGradeDTO> conNota =
-        criterios.stream().filter(c -> c.valor() != null).collect(Collectors.toList());
+        criterios.stream().filter(c -> c.valor() != null).toList();
     if (conNota.isEmpty()) return null;
 
     BigDecimal sumaPesos =
@@ -394,8 +389,7 @@ public class TeacherDashboardService {
   }
 
   private BigDecimal computePeriodoMedia(List<TeacherGradeItemDTO> items) {
-    List<TeacherGradeItemDTO> conNota =
-        items.stream().filter(i -> i.mediaRa() != null).collect(Collectors.toList());
+    List<TeacherGradeItemDTO> conNota = items.stream().filter(i -> i.mediaRa() != null).toList();
     if (conNota.isEmpty()) return null;
 
     BigDecimal sumaPesos =
@@ -420,7 +414,7 @@ public class TeacherDashboardService {
 
   private BigDecimal computeMediaGlobal(List<TeacherPeriodoGradesDTO> periodos) {
     List<TeacherPeriodoGradesDTO> conNota =
-        periodos.stream().filter(p -> p.media() != null).collect(Collectors.toList());
+        periodos.stream().filter(p -> p.media() != null).toList();
     if (conNota.isEmpty()) return null;
 
     BigDecimal sumaPonderada = BigDecimal.ZERO;

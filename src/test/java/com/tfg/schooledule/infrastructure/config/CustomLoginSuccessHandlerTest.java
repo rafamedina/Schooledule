@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -50,40 +52,21 @@ class CustomLoginSuccessHandlerTest {
     verify(response).sendRedirect("/change-password");
   }
 
-  @Test
-  void testRedirectAdmin() throws Exception {
+  @ParameterizedTest(name = "rol={0} → redirect={1}")
+  @CsvSource({
+    "ROLE_ADMIN, /admin/dashboard",
+    "ROLE_PROFESOR, /profe/dashboard",
+    "ROLE_ALUMNO, /alumno/dashboard"
+  })
+  void testRedirectPorRol(String rol, String urlEsperada) throws Exception {
     givenUserMustChangePassword(false);
-    doReturn(Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN")))
+    doReturn(Collections.singleton(new SimpleGrantedAuthority(rol)))
         .when(authentication)
         .getAuthorities();
 
     handler.onAuthenticationSuccess(request, response, authentication);
 
-    verify(response).sendRedirect("/admin/dashboard");
-  }
-
-  @Test
-  void testRedirectProfesor() throws Exception {
-    givenUserMustChangePassword(false);
-    doReturn(Collections.singleton(new SimpleGrantedAuthority("ROLE_PROFESOR")))
-        .when(authentication)
-        .getAuthorities();
-
-    handler.onAuthenticationSuccess(request, response, authentication);
-
-    verify(response).sendRedirect("/profe/dashboard");
-  }
-
-  @Test
-  void testRedirectAlumno() throws Exception {
-    givenUserMustChangePassword(false);
-    doReturn(Collections.singleton(new SimpleGrantedAuthority("ROLE_ALUMNO")))
-        .when(authentication)
-        .getAuthorities();
-
-    handler.onAuthenticationSuccess(request, response, authentication);
-
-    verify(response).sendRedirect("/alumno/dashboard");
+    verify(response).sendRedirect(urlEsperada);
   }
 
   @Test

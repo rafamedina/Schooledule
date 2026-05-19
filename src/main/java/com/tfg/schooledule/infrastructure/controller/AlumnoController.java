@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,7 +30,11 @@ import org.springframework.web.server.ResponseStatusException;
 @PreAuthorize("hasRole('ALUMNO')")
 public class AlumnoController {
 
-  @Autowired private UsuarioService usuarioService;
+  private final UsuarioService usuarioService;
+
+  public AlumnoController(UsuarioService usuarioService) {
+    this.usuarioService = usuarioService;
+  }
 
   @Operation(
       summary = "Dashboard del alumno",

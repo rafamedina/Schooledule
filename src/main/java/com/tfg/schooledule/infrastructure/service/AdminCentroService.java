@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminCentroService {
 
+  private static final String ERR_CENTRO = "Centro no encontrado: ";
+
   private final CentroRepository centroRepository;
   private final GrupoRepository grupoRepository;
   private final AdminCentroMapper adminCentroMapper;
@@ -55,7 +57,7 @@ public class AdminCentroService {
     Centro centro =
         centroRepository
             .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Centro no encontrado: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ERR_CENTRO + id));
     return adminCentroMapper.toFormDTO(centro);
   }
 
@@ -74,7 +76,7 @@ public class AdminCentroService {
     Centro centro =
         centroRepository
             .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Centro no encontrado: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ERR_CENTRO + id));
     if (centroRepository.existsByNombreAndIdNot(dto.getNombre(), id)) {
       throw new IllegalArgumentException(
           "Ya existe un centro con el nombre '" + dto.getNombre() + "'");
@@ -88,7 +90,7 @@ public class AdminCentroService {
     Centro centro =
         centroRepository
             .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Centro no encontrado: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ERR_CENTRO + id));
     if (Boolean.TRUE.equals(centro.getActivo()) && grupoRepository.existsByCentroId(id)) {
       throw new IllegalStateException(
           "No se puede desactivar el centro porque tiene grupos asignados");

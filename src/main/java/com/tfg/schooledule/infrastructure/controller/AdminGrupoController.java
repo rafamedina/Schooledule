@@ -30,6 +30,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminGrupoController {
 
+  private static final String VIEW_FORM = "admin/grupos/formulario";
+  private static final String ATTR_ERROR = "error";
+  private static final String REDIRECT_GRUPOS = "redirect:/admin/grupos";
+
   private final AdminGrupoService adminGrupoService;
   private final CentroRepository centroRepository;
   private final CursoAcademicoRepository cursoAcademicoRepository;
@@ -83,7 +87,7 @@ public class AdminGrupoController {
   public String nuevo(Model model) {
     model.addAttribute("form", new AdminGrupoFormDTO());
     cargarListas(model);
-    return "admin/grupos/formulario";
+    return VIEW_FORM;
   }
 
   @Operation(
@@ -102,16 +106,16 @@ public class AdminGrupoController {
       Model model) {
     if (bindingResult.hasErrors()) {
       cargarListas(model);
-      return "admin/grupos/formulario";
+      return VIEW_FORM;
     }
     try {
       adminGrupoService.crear(form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", ex.getMessage());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
       cargarListas(model);
-      return "admin/grupos/formulario";
+      return VIEW_FORM;
     }
-    return "redirect:/admin/grupos";
+    return REDIRECT_GRUPOS;
   }
 
   @Operation(
@@ -134,7 +138,7 @@ public class AdminGrupoController {
       Model model) {
     model.addAttribute("form", adminGrupoService.obtenerParaEditar(id));
     cargarListas(model);
-    return "admin/grupos/formulario";
+    return VIEW_FORM;
   }
 
   @Operation(
@@ -156,16 +160,16 @@ public class AdminGrupoController {
       Model model) {
     if (bindingResult.hasErrors()) {
       cargarListas(model);
-      return "admin/grupos/formulario";
+      return VIEW_FORM;
     }
     try {
       adminGrupoService.actualizar(id, form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", ex.getMessage());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
       cargarListas(model);
-      return "admin/grupos/formulario";
+      return VIEW_FORM;
     }
-    return "redirect:/admin/grupos";
+    return REDIRECT_GRUPOS;
   }
 
   @Operation(
@@ -188,9 +192,9 @@ public class AdminGrupoController {
     try {
       adminGrupoService.eliminar(id);
     } catch (IllegalStateException ex) {
-      redirectAttributes.addFlashAttribute("error", ex.getMessage());
+      redirectAttributes.addFlashAttribute(ATTR_ERROR, ex.getMessage());
     }
-    return "redirect:/admin/grupos";
+    return REDIRECT_GRUPOS;
   }
 
   private void cargarListas(Model model) {

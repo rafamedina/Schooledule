@@ -22,7 +22,7 @@ class UsuarioPlantillaExcelServiceTest {
     byte[] bytes = service.generarPlantilla();
 
     try (XSSFWorkbook wb = new XSSFWorkbook(new ByteArrayInputStream(bytes))) {
-      assertThat(wb.getNumberOfSheets()).isGreaterThan(0);
+      assertThat(wb.getNumberOfSheets()).isPositive();
     }
   }
 

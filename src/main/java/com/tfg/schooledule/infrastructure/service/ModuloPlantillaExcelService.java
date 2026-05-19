@@ -47,8 +47,13 @@ public class ModuloPlantillaExcelService {
               .createCellComment(new XSSFClientAnchor(0, 0, 0, 0, 6, 1, 10, 5));
       comentario.setString(
           new XSSFRichTextString(
-              "Valores válidos:\nPRUEBA_OBJETIVA\nACTIVIDAD_EVALUABLE\n"
-                  + "TRABAJO_PROYECTO\nEXPOSICION_ORAL\nOBSERVACION_ACTITUD"));
+              """
+              Valores válidos:
+              PRUEBA_OBJETIVA
+              ACTIVIDAD_EVALUABLE
+              TRABAJO_PROYECTO
+              EXPOSICION_ORAL
+              OBSERVACION_ACTITUD"""));
       filaEjemplo.getCell(6).setCellComment(comentario);
 
       for (int i = 0; i < CABECERAS.length; i++) {

@@ -59,7 +59,7 @@ class ModuloImportValidatorServiceTest {
     assertThat(resultado.valido()).isFalse();
     assertThat(resultado.errores()).hasSize(1);
     ModuloImportErrorDTO err = resultado.errores().get(0);
-    assertThat(err.fila()).isEqualTo(0);
+    assertThat(err.fila()).isZero();
     assertThat(err.mensaje()).contains("no contiene filas");
   }
 

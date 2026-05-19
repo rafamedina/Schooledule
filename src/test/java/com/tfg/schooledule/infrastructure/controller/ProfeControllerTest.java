@@ -410,8 +410,7 @@ class ProfeControllerTest {
   void eliminarItem_profesorNoPropietario_flashError() throws Exception {
     Usuario profe = buildProfe();
     when(usuarioService.buscarPorCorreo("juan@tfg.com")).thenReturn(Optional.of(profe));
-    when(teacherService.eliminarItem(eq(1), eq(2)))
-        .thenThrow(new AccessDeniedException("forbidden"));
+    when(teacherService.eliminarItem(1, 2)).thenThrow(new AccessDeniedException("forbidden"));
 
     mockMvc
         .perform(

@@ -1,8 +1,6 @@
 package com.tfg.schooledule.infrastructure.config;
 
-import com.tfg.schooledule.infrastructure.security.CustomUserDetailsService;
 import com.tfg.schooledule.infrastructure.security.LoginRateLimitFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -24,15 +22,15 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-  @Autowired private CustomLoginSuccessHandler successHandler;
+  private static final String LOGIN_URL = "/login";
 
-  private final CustomUserDetailsService userDetailsService;
   private final LoginRateLimitFilter loginRateLimitFilter;
+  private final CustomLoginSuccessHandler successHandler;
 
   public SecurityConfig(
-      CustomUserDetailsService userDetailsService, LoginRateLimitFilter loginRateLimitFilter) {
-    this.userDetailsService = userDetailsService;
+      LoginRateLimitFilter loginRateLimitFilter, CustomLoginSuccessHandler successHandler) {
     this.loginRateLimitFilter = loginRateLimitFilter;
+    this.successHandler = successHandler;
   }
 
   @Bean
@@ -74,7 +72,7 @@ public class SecurityConfig {
                     .hasRole("ALUMNO")
                     .requestMatchers(
                         "/",
-                        "/login",
+                        LOGIN_URL,
                         "/register",
                         "/change-password",
                         "/css/**",
@@ -86,8 +84,8 @@ public class SecurityConfig {
                     .authenticated())
         .formLogin(
             form ->
-                form.loginPage("/login")
-                    .loginProcessingUrl("/login")
+                form.loginPage(LOGIN_URL)
+                    .loginProcessingUrl(LOGIN_URL)
                     .successHandler(successHandler)
                     .permitAll())
         .logout(

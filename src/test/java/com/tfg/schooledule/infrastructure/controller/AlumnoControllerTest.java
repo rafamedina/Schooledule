@@ -31,7 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(AlumnoController.class)
 @Import(AlumnoControllerTest.MethodSecurityTestConfig.class)
-public class AlumnoControllerTest {
+class AlumnoControllerTest {
 
   @EnableMethodSecurity
   static class MethodSecurityTestConfig {}
@@ -64,7 +64,7 @@ public class AlumnoControllerTest {
 
   @Test
   @WithMockUser(username = "ana@tfg.com", roles = "ALUMNO")
-  public void dashboard_modelContieneAsignaturas() throws Exception {
+  void dashboard_modelContieneAsignaturas() throws Exception {
     Usuario u = buildAlumno();
     List<Matricula> matriculas =
         List.of(buildMatricula(10, "Desarrollo Web"), buildMatricula(11, "Bases de Datos"));
@@ -82,7 +82,7 @@ public class AlumnoControllerTest {
 
   @Test
   @WithMockUser(username = "ana@tfg.com", roles = "ALUMNO")
-  public void dashboard_modelContieneAlumnoNombre() throws Exception {
+  void dashboard_modelContieneAlumnoNombre() throws Exception {
     Usuario u = buildAlumno();
     when(usuarioService.buscarPorCorreo("ana@tfg.com")).thenReturn(Optional.of(u));
     when(usuarioService.getAsignaturasAlumno(1)).thenReturn(List.of());
@@ -95,7 +95,7 @@ public class AlumnoControllerTest {
 
   @Test
   @WithMockUser(username = "ana@tfg.com", roles = "ALUMNO")
-  public void notas_sinParams_eligePrimerPeriodoAutomaticamente() throws Exception {
+  void notas_sinParams_eligePrimerPeriodoAutomaticamente() throws Exception {
     Usuario u = buildAlumno();
     PeriodoEvaluacion p1 = PeriodoEvaluacion.builder().id(7).nombre("1er Trimestre").build();
     PeriodoEvaluacion p2 = PeriodoEvaluacion.builder().id(8).nombre("2º Trimestre").build();
@@ -116,7 +116,7 @@ public class AlumnoControllerTest {
 
   @Test
   @WithMockUser(username = "ana@tfg.com", roles = "ALUMNO")
-  public void notas_conImparticionId_colocaSelectedImparticionIdEnModel() throws Exception {
+  void notas_conImparticionId_colocaSelectedImparticionIdEnModel() throws Exception {
     Usuario u = buildAlumno();
     when(usuarioService.buscarPorCorreo("ana@tfg.com")).thenReturn(Optional.of(u));
     when(usuarioService.getAsignaturasAlumno(1)).thenReturn(List.of(buildMatricula(42, "Prog")));
@@ -131,7 +131,7 @@ public class AlumnoControllerTest {
 
   @Test
   @WithMockUser(username = "ana@tfg.com", roles = "ALUMNO")
-  public void perfil_200_yModelContienePerfil() throws Exception {
+  void perfil_200_yModelContienePerfil() throws Exception {
     Usuario u = buildAlumno();
     AlumnoProfileDTO profile =
         new AlumnoProfileDTO(
@@ -149,7 +149,7 @@ public class AlumnoControllerTest {
 
   @Test
   @WithMockUser(username = "juan@tfg.com", roles = "PROFESOR")
-  public void rolProfesor_accedeDashboardAlumno_retorna403() throws Exception {
+  void rolProfesor_accedeDashboardAlumno_retorna403() throws Exception {
     mockMvc.perform(get("/alumno/dashboard")).andExpect(status().isForbidden());
   }
 

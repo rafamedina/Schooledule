@@ -16,12 +16,14 @@ public class ModuloImportValidatorService {
   private static final int MAX_CES = 100;
   private static final BigDecimal CERO = BigDecimal.ZERO;
   private static final BigDecimal CIEN = new BigDecimal("100");
+  private static final String CAMPO_ARCHIVO = "archivo";
 
   public ModuloImportPreviewDTO validar(List<ModuloImportRowDTO> filas) {
     List<ModuloImportErrorDTO> errores = new ArrayList<>();
 
     if (filas.isEmpty()) {
-      errores.add(new ModuloImportErrorDTO(0, "archivo", "El archivo no contiene filas de datos"));
+      errores.add(
+          new ModuloImportErrorDTO(0, CAMPO_ARCHIVO, "El archivo no contiene filas de datos"));
       return new ModuloImportPreviewDTO(false, errores, List.of(), 0, 0);
     }
 
@@ -54,10 +56,11 @@ public class ModuloImportValidatorService {
     if (distinctRas > MAX_RAS) {
       errores.add(
           new ModuloImportErrorDTO(
-              0, "archivo", "El archivo supera el límite de 15 RAs por módulo"));
+              0, CAMPO_ARCHIVO, "El archivo supera el límite de 15 RAs por módulo"));
     }
     if (filas.size() > MAX_CES) {
-      errores.add(new ModuloImportErrorDTO(0, "archivo", "El archivo supera el límite de 100 CEs"));
+      errores.add(
+          new ModuloImportErrorDTO(0, CAMPO_ARCHIVO, "El archivo supera el límite de 100 CEs"));
     }
   }
 
@@ -91,16 +94,16 @@ public class ModuloImportValidatorService {
       errores.add(
           new ModuloImportErrorDTO(n, "ce_peso", "El peso de CE debe ser un número entre 1 y 100"));
     }
-    if (fila.instrumento() != null && !fila.instrumento().isBlank()) {
-      if (InstrumentoEvaluacion.fromTexto(fila.instrumento()).isEmpty()) {
-        errores.add(
-            new ModuloImportErrorDTO(
-                n,
-                "instrumento",
-                "Instrumento no válido. Valores aceptados: PRUEBA_OBJETIVA,"
-                    + " ACTIVIDAD_EVALUABLE, TRABAJO_PROYECTO, EXPOSICION_ORAL,"
-                    + " OBSERVACION_ACTITUD"));
-      }
+    if (fila.instrumento() != null
+        && !fila.instrumento().isBlank()
+        && InstrumentoEvaluacion.fromTexto(fila.instrumento()).isEmpty()) {
+      errores.add(
+          new ModuloImportErrorDTO(
+              n,
+              "instrumento",
+              "Instrumento no válido. Valores aceptados: PRUEBA_OBJETIVA,"
+                  + " ACTIVIDAD_EVALUABLE, TRABAJO_PROYECTO, EXPOSICION_ORAL,"
+                  + " OBSERVACION_ACTITUD"));
     }
     if (fila.trimestre() != null && fila.trimestre() != 1 && fila.trimestre() != 2) {
       errores.add(new ModuloImportErrorDTO(n, "trimestre", "El trimestre debe ser 1 o 2"));

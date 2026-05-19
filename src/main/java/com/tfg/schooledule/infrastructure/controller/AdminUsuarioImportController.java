@@ -27,6 +27,9 @@ public class AdminUsuarioImportController {
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           "application/octet-stream");
 
+  private static final String VIEW_IMPORTAR = "admin/usuarios/importar";
+  private static final String ATTR_ERROR = "error";
+
   private final UsuarioImportService usuarioImportService;
   private final UsuarioPlantillaExcelService plantillaService;
 
@@ -46,7 +49,7 @@ public class AdminUsuarioImportController {
 
   @GetMapping("/importar")
   public String formulario() {
-    return "admin/usuarios/importar";
+    return VIEW_IMPORTAR;
   }
 
   @PostMapping("/importar")
@@ -55,8 +58,8 @@ public class AdminUsuarioImportController {
       Model model,
       RedirectAttributes redirectAttributes) {
     if (!esXlsx(archivo)) {
-      model.addAttribute("error", "El archivo debe ser .xlsx y no puede estar vacío");
-      return "admin/usuarios/importar";
+      model.addAttribute(ATTR_ERROR, "El archivo debe ser .xlsx y no puede estar vacío");
+      return VIEW_IMPORTAR;
     }
     try {
       UsuarioImportResultado resultado = usuarioImportService.importar(archivo.getBytes());
@@ -69,13 +72,13 @@ public class AdminUsuarioImportController {
       return "redirect:/admin/usuarios";
     } catch (UsuarioImportException ex) {
       model.addAttribute("errores", ex.getErrores());
-      return "admin/usuarios/importar";
+      return VIEW_IMPORTAR;
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", "El archivo no es un Excel .xlsx válido");
-      return "admin/usuarios/importar";
+      model.addAttribute(ATTR_ERROR, "El archivo no es un Excel .xlsx válido");
+      return VIEW_IMPORTAR;
     } catch (IOException ex) {
-      model.addAttribute("error", "No se pudo leer el archivo");
-      return "admin/usuarios/importar";
+      model.addAttribute(ATTR_ERROR, "No se pudo leer el archivo");
+      return VIEW_IMPORTAR;
     }
   }
 

@@ -28,7 +28,6 @@ class CentroAdminAlumnoServiceTest {
   @Mock private AdminAlumnoService adminAlumnoService;
   @Mock private MatriculaRepository matriculaRepository;
   @Mock private ImparticionRepository imparticionRepository;
-  @Mock private UsuarioRepository usuarioRepository;
 
   @InjectMocks private CentroAdminAlumnoService service;
 

@@ -21,6 +21,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @PreAuthorize("isAuthenticated()")
 public class ChangePasswordController {
 
+  private static final String VIEW_CHANGE_PASSWORD = "change-password";
+
   private final UsuarioRepository usuarioRepository;
   private final PasswordEncoder passwordEncoder;
 
@@ -37,7 +39,7 @@ public class ChangePasswordController {
       return redirectToDashboard(usuario);
     }
     model.addAttribute("form", new ChangePasswordForm());
-    return "change-password";
+    return VIEW_CHANGE_PASSWORD;
   }
 
   @PostMapping
@@ -55,12 +57,12 @@ public class ChangePasswordController {
     }
 
     if (result.hasErrors()) {
-      return "change-password";
+      return VIEW_CHANGE_PASSWORD;
     }
 
     if (!form.getNuevaPassword().equals(form.getConfirmarPassword())) {
       model.addAttribute("errorConfirm", "Las contraseñas no coinciden.");
-      return "change-password";
+      return VIEW_CHANGE_PASSWORD;
     }
 
     usuario.setPasswordHash(passwordEncoder.encode(form.getNuevaPassword()));

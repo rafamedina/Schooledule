@@ -2,11 +2,8 @@ package com.tfg.schooledule.infrastructure.service;
 
 import com.tfg.schooledule.domain.dto.AdminGrupoFormDTO;
 import com.tfg.schooledule.domain.dto.AdminGrupoListDTO;
-import com.tfg.schooledule.infrastructure.repository.CentroRepository;
-import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.repository.GrupoRepository;
 import com.tfg.schooledule.infrastructure.repository.ImparticionRepository;
-import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import java.util.List;
 import java.util.Set;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,25 +17,16 @@ public class CentroAdminGrupoService {
   private final AdminGrupoService adminGrupoService;
   private final GrupoRepository grupoRepository;
   private final ImparticionRepository imparticionRepository;
-  private final CentroRepository centroRepository;
-  private final CursoAcademicoRepository cursoAcademicoRepository;
-  private final UsuarioRepository usuarioRepository;
 
   public CentroAdminGrupoService(
       CentroAdminContextService context,
       AdminGrupoService adminGrupoService,
       GrupoRepository grupoRepository,
-      ImparticionRepository imparticionRepository,
-      CentroRepository centroRepository,
-      CursoAcademicoRepository cursoAcademicoRepository,
-      UsuarioRepository usuarioRepository) {
+      ImparticionRepository imparticionRepository) {
     this.context = context;
     this.adminGrupoService = adminGrupoService;
     this.grupoRepository = grupoRepository;
     this.imparticionRepository = imparticionRepository;
-    this.centroRepository = centroRepository;
-    this.cursoAcademicoRepository = cursoAcademicoRepository;
-    this.usuarioRepository = usuarioRepository;
   }
 
   @Transactional(readOnly = true)

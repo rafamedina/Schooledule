@@ -23,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminUsuarioService {
 
+  private static final String ERR_USUARIO = "Usuario no encontrado: ";
+  private static final String ERR_EN_USO = "' ya está en uso";
+
   private final UsuarioRepository usuarioRepository;
   private final RolRepository rolRepository;
   private final CentroRepository centroRepository;
@@ -75,7 +78,7 @@ public class AdminUsuarioService {
     Usuario usuario =
         usuarioRepository
             .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ERR_USUARIO + id));
     return adminUsuarioMapper.toFormDTO(usuario);
   }
 
@@ -85,10 +88,10 @@ public class AdminUsuarioService {
       throw new IllegalArgumentException("La contraseña es obligatoria para nuevos usuarios");
     }
     if (usuarioRepository.existsByUsername(dto.getUsername())) {
-      throw new IllegalArgumentException("El username '" + dto.getUsername() + "' ya está en uso");
+      throw new IllegalArgumentException("El username '" + dto.getUsername() + ERR_EN_USO);
     }
     if (usuarioRepository.existsByEmail(dto.getEmail())) {
-      throw new IllegalArgumentException("El email '" + dto.getEmail() + "' ya está en uso");
+      throw new IllegalArgumentException("El email '" + dto.getEmail() + ERR_EN_USO);
     }
 
     List<Rol> roles = rolRepository.findAllById(dto.getRoleIds());
@@ -114,13 +117,13 @@ public class AdminUsuarioService {
     Usuario usuario =
         usuarioRepository
             .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ERR_USUARIO + id));
 
     if (usuarioRepository.existsByUsernameAndIdNot(dto.getUsername(), id)) {
-      throw new IllegalArgumentException("El username '" + dto.getUsername() + "' ya está en uso");
+      throw new IllegalArgumentException("El username '" + dto.getUsername() + ERR_EN_USO);
     }
     if (usuarioRepository.existsByEmailAndIdNot(dto.getEmail(), id)) {
-      throw new IllegalArgumentException("El email '" + dto.getEmail() + "' ya está en uso");
+      throw new IllegalArgumentException("El email '" + dto.getEmail() + ERR_EN_USO);
     }
 
     usuario.setUsername(dto.getUsername());
@@ -145,7 +148,7 @@ public class AdminUsuarioService {
     Usuario usuario =
         usuarioRepository
             .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ERR_USUARIO + id));
     boolean esAdmin = usuario.getRoles().stream().anyMatch(r -> r.getNombre().contains("ADMIN"));
     if (Boolean.TRUE.equals(usuario.getActivo()) && esAdmin) {
       long adminsActivos = usuarioRepository.countAdminsActivos();

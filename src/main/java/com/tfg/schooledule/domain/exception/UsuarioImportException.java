@@ -5,7 +5,9 @@ import java.util.List;
 
 public class UsuarioImportException extends RuntimeException {
 
-  private final List<UsuarioImportErrorDTO> errores;
+  private static final long serialVersionUID = 1L;
+
+  private final transient List<UsuarioImportErrorDTO> errores;
 
   public UsuarioImportException(List<UsuarioImportErrorDTO> errores) {
     super("Importación de usuarios fallida con " + errores.size() + " error(es)");

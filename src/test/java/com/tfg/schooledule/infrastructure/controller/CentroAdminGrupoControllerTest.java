@@ -11,7 +11,6 @@ import com.tfg.schooledule.domain.entity.*;
 import com.tfg.schooledule.infrastructure.repository.*;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
 import com.tfg.schooledule.infrastructure.service.*;
-import com.tfg.schooledule.infrastructure.service.AdminCursoActivoService;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;

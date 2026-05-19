@@ -32,6 +32,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminAlumnoController {
 
+  private static final String ATTR_ALUMNO = "alumno";
+  private static final String VIEW_MATRICULA_FORM = "admin/alumnos/matricula-formulario";
+  private static final String REDIRECT_ALUMNOS = "redirect:/admin/alumnos/";
+  private static final String PATH_MATRICULAS = "/matriculas";
+
   private final AdminAlumnoService adminAlumnoService;
   private final ImparticionRepository imparticionRepository;
   private final CentroRepository centroRepository;
@@ -94,7 +99,7 @@ public class AdminAlumnoController {
           @Positive
           Integer alumnoId,
       Model model) {
-    model.addAttribute("alumno", adminAlumnoService.obtenerAlumno(alumnoId));
+    model.addAttribute(ATTR_ALUMNO, adminAlumnoService.obtenerAlumno(alumnoId));
     model.addAttribute("matriculas", adminAlumnoService.listarMatriculas(alumnoId));
     return "admin/alumnos/matriculas";
   }
@@ -117,10 +122,10 @@ public class AdminAlumnoController {
           @Positive
           Integer alumnoId,
       Model model) {
-    model.addAttribute("alumno", adminAlumnoService.obtenerAlumno(alumnoId));
+    model.addAttribute(ATTR_ALUMNO, adminAlumnoService.obtenerAlumno(alumnoId));
     model.addAttribute("form", new AdminMatriculaFormDTO());
     cargarImparticionesYEstados(model);
-    return "admin/alumnos/matricula-formulario";
+    return VIEW_MATRICULA_FORM;
   }
 
   @Operation(
@@ -145,19 +150,19 @@ public class AdminAlumnoController {
       BindingResult bindingResult,
       Model model) {
     if (bindingResult.hasErrors()) {
-      model.addAttribute("alumno", adminAlumnoService.obtenerAlumno(alumnoId));
+      model.addAttribute(ATTR_ALUMNO, adminAlumnoService.obtenerAlumno(alumnoId));
       cargarImparticionesYEstados(model);
-      return "admin/alumnos/matricula-formulario";
+      return VIEW_MATRICULA_FORM;
     }
     try {
       adminAlumnoService.crearMatricula(alumnoId, form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("alumno", adminAlumnoService.obtenerAlumno(alumnoId));
+      model.addAttribute(ATTR_ALUMNO, adminAlumnoService.obtenerAlumno(alumnoId));
       model.addAttribute("error", ex.getMessage());
       cargarImparticionesYEstados(model);
-      return "admin/alumnos/matricula-formulario";
+      return VIEW_MATRICULA_FORM;
     }
-    return "redirect:/admin/alumnos/" + alumnoId + "/matriculas";
+    return REDIRECT_ALUMNOS + alumnoId + PATH_MATRICULAS;
   }
 
   @Operation(
@@ -183,10 +188,10 @@ public class AdminAlumnoController {
           @Positive
           Integer id,
       Model model) {
-    model.addAttribute("alumno", adminAlumnoService.obtenerAlumno(alumnoId));
+    model.addAttribute(ATTR_ALUMNO, adminAlumnoService.obtenerAlumno(alumnoId));
     model.addAttribute("form", adminAlumnoService.obtenerMatriculaParaEditar(id));
     cargarImparticionesYEstados(model);
-    return "admin/alumnos/matricula-formulario";
+    return VIEW_MATRICULA_FORM;
   }
 
   @Operation(
@@ -213,12 +218,12 @@ public class AdminAlumnoController {
       BindingResult bindingResult,
       Model model) {
     if (bindingResult.hasErrors()) {
-      model.addAttribute("alumno", adminAlumnoService.obtenerAlumno(alumnoId));
+      model.addAttribute(ATTR_ALUMNO, adminAlumnoService.obtenerAlumno(alumnoId));
       cargarImparticionesYEstados(model);
-      return "admin/alumnos/matricula-formulario";
+      return VIEW_MATRICULA_FORM;
     }
     adminAlumnoService.actualizarMatricula(id, form);
-    return "redirect:/admin/alumnos/" + alumnoId + "/matriculas";
+    return REDIRECT_ALUMNOS + alumnoId + PATH_MATRICULAS;
   }
 
   @Operation(
@@ -249,7 +254,7 @@ public class AdminAlumnoController {
     } catch (IllegalStateException ex) {
       redirectAttributes.addFlashAttribute("error", ex.getMessage());
     }
-    return "redirect:/admin/alumnos/" + alumnoId + "/matriculas";
+    return REDIRECT_ALUMNOS + alumnoId + PATH_MATRICULAS;
   }
 
   private void cargarImparticionesYEstados(Model model) {

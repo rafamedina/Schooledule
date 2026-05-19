@@ -26,6 +26,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminUsuarioController {
 
+  private static final String ATTR_ROLES = "roles";
+  private static final String ATTR_CENTROS = "centros";
+  private static final String VIEW_FORM = "admin/usuarios/formulario";
+  private static final String ATTR_ERROR = "error";
+  private static final String REDIRECT_USUARIOS = "redirect:/admin/usuarios";
+
   private final AdminUsuarioService adminUsuarioService;
   private final RolRepository rolRepository;
   private final CentroRepository centroRepository;
@@ -55,7 +61,7 @@ public class AdminUsuarioController {
       Model model) {
     model.addAttribute("usuarios", adminUsuarioService.listarFiltrado(rolNombre));
     model.addAttribute(
-        "roles",
+        ATTR_ROLES,
         java.util.List.of("ROLE_ADMIN", "ROLE_PROFESOR", "ROLE_ALUMNO", "ROLE_ADMIN_CENTRO"));
     model.addAttribute("rolNombre", rolNombre);
     return "admin/usuarios/lista";
@@ -75,9 +81,9 @@ public class AdminUsuarioController {
   @GetMapping("/nuevo")
   public String nuevo(Model model) {
     model.addAttribute("form", new AdminUsuarioFormDTO());
-    model.addAttribute("roles", rolRepository.findAll());
-    model.addAttribute("centros", centroRepository.findAll());
-    return "admin/usuarios/formulario";
+    model.addAttribute(ATTR_ROLES, rolRepository.findAll());
+    model.addAttribute(ATTR_CENTROS, centroRepository.findAll());
+    return VIEW_FORM;
   }
 
   @Operation(
@@ -99,19 +105,19 @@ public class AdminUsuarioController {
       BindingResult bindingResult,
       Model model) {
     if (bindingResult.hasErrors()) {
-      model.addAttribute("roles", rolRepository.findAll());
-      model.addAttribute("centros", centroRepository.findAll());
-      return "admin/usuarios/formulario";
+      model.addAttribute(ATTR_ROLES, rolRepository.findAll());
+      model.addAttribute(ATTR_CENTROS, centroRepository.findAll());
+      return VIEW_FORM;
     }
     try {
       adminUsuarioService.crear(form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("roles", rolRepository.findAll());
-      model.addAttribute("centros", centroRepository.findAll());
-      model.addAttribute("error", ex.getMessage());
-      return "admin/usuarios/formulario";
+      model.addAttribute(ATTR_ROLES, rolRepository.findAll());
+      model.addAttribute(ATTR_CENTROS, centroRepository.findAll());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
+      return VIEW_FORM;
     }
-    return "redirect:/admin/usuarios";
+    return REDIRECT_USUARIOS;
   }
 
   @Operation(
@@ -134,9 +140,9 @@ public class AdminUsuarioController {
           Integer id,
       Model model) {
     model.addAttribute("form", adminUsuarioService.obtenerParaEditar(id));
-    model.addAttribute("roles", rolRepository.findAll());
-    model.addAttribute("centros", centroRepository.findAll());
-    return "admin/usuarios/formulario";
+    model.addAttribute(ATTR_ROLES, rolRepository.findAll());
+    model.addAttribute(ATTR_CENTROS, centroRepository.findAll());
+    return VIEW_FORM;
   }
 
   @Operation(
@@ -160,19 +166,19 @@ public class AdminUsuarioController {
       BindingResult bindingResult,
       Model model) {
     if (bindingResult.hasErrors()) {
-      model.addAttribute("roles", rolRepository.findAll());
-      model.addAttribute("centros", centroRepository.findAll());
-      return "admin/usuarios/formulario";
+      model.addAttribute(ATTR_ROLES, rolRepository.findAll());
+      model.addAttribute(ATTR_CENTROS, centroRepository.findAll());
+      return VIEW_FORM;
     }
     try {
       adminUsuarioService.actualizar(id, form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("roles", rolRepository.findAll());
-      model.addAttribute("centros", centroRepository.findAll());
-      model.addAttribute("error", ex.getMessage());
-      return "admin/usuarios/formulario";
+      model.addAttribute(ATTR_ROLES, rolRepository.findAll());
+      model.addAttribute(ATTR_CENTROS, centroRepository.findAll());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
+      return VIEW_FORM;
     }
-    return "redirect:/admin/usuarios";
+    return REDIRECT_USUARIOS;
   }
 
   @Operation(
@@ -194,8 +200,8 @@ public class AdminUsuarioController {
     try {
       adminUsuarioService.toggleActivo(id);
     } catch (IllegalStateException ex) {
-      redirectAttributes.addFlashAttribute("error", ex.getMessage());
+      redirectAttributes.addFlashAttribute(ATTR_ERROR, ex.getMessage());
     }
-    return "redirect:/admin/usuarios";
+    return REDIRECT_USUARIOS;
   }
 }

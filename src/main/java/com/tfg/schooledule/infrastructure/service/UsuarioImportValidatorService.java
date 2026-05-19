@@ -15,6 +15,9 @@ public class UsuarioImportValidatorService {
 
   private static final int MAX_USUARIOS = 200;
   private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+  private static final String CAMPO_USERNAME = "username";
+  private static final String CAMPO_EMAIL = "email";
+  private static final String CAMPO_PASSWORD = "password";
 
   public UsuarioImportPreviewDTO validar(List<UsuarioImportRowDTO> filas) {
     List<UsuarioImportErrorDTO> errores = new ArrayList<>();
@@ -41,68 +44,78 @@ public class UsuarioImportValidatorService {
 
   private void validarCampos(UsuarioImportRowDTO fila, List<UsuarioImportErrorDTO> errores) {
     int f = fila.numeroFila();
+    validarUsername(f, fila.username(), errores);
+    validarNombre(f, fila.nombre(), errores);
+    validarApellidos(f, fila.apellidos(), errores);
+    validarEmail(f, fila.email(), errores);
+    validarPasswordObligatoria(f, fila.password(), errores);
+    validarCamposAcademicos(f, fila, errores);
+  }
 
-    // username
-    if (fila.username() == null || fila.username().isBlank()) {
-      errores.add(new UsuarioImportErrorDTO(f, "username", "El nombre de usuario es obligatorio"));
-    } else if (fila.username().contains(" ")) {
+  private void validarUsername(int f, String username, List<UsuarioImportErrorDTO> errores) {
+    if (username == null || username.isBlank()) {
+      errores.add(
+          new UsuarioImportErrorDTO(f, CAMPO_USERNAME, "El nombre de usuario es obligatorio"));
+    } else if (username.contains(" ")) {
       errores.add(
           new UsuarioImportErrorDTO(
-              f, "username", "El nombre de usuario no puede contener espacios"));
-    } else if (fila.username().length() > 50) {
+              f, CAMPO_USERNAME, "El nombre de usuario no puede contener espacios"));
+    } else if (username.length() > 50) {
       errores.add(
           new UsuarioImportErrorDTO(
-              f, "username", "El nombre de usuario no puede superar 50 caracteres"));
+              f, CAMPO_USERNAME, "El nombre de usuario no puede superar 50 caracteres"));
     }
+  }
 
-    // nombre
-    if (fila.nombre() == null || fila.nombre().isBlank()) {
+  private void validarNombre(int f, String nombre, List<UsuarioImportErrorDTO> errores) {
+    if (nombre == null || nombre.isBlank()) {
       errores.add(new UsuarioImportErrorDTO(f, "nombre", "El nombre es obligatorio"));
-    } else if (fila.nombre().length() > 100) {
+    } else if (nombre.length() > 100) {
       errores.add(
           new UsuarioImportErrorDTO(f, "nombre", "El nombre no puede superar 100 caracteres"));
     }
+  }
 
-    // apellidos
-    if (fila.apellidos() == null || fila.apellidos().isBlank()) {
+  private void validarApellidos(int f, String apellidos, List<UsuarioImportErrorDTO> errores) {
+    if (apellidos == null || apellidos.isBlank()) {
       errores.add(new UsuarioImportErrorDTO(f, "apellidos", "Los apellidos son obligatorios"));
-    } else if (fila.apellidos().length() > 100) {
+    } else if (apellidos.length() > 100) {
       errores.add(
           new UsuarioImportErrorDTO(
               f, "apellidos", "Los apellidos no pueden superar 100 caracteres"));
     }
+  }
 
-    // email (opcional)
-    if (fila.email() != null && !fila.email().isBlank()) {
-      if (fila.email().length() > 150) {
-        errores.add(
-            new UsuarioImportErrorDTO(f, "email", "El email no puede superar 150 caracteres"));
-      } else if (!EMAIL_PATTERN.matcher(fila.email()).matches()) {
-        errores.add(new UsuarioImportErrorDTO(f, "email", "El email no tiene un formato válido"));
-      }
+  private void validarEmail(int f, String email, List<UsuarioImportErrorDTO> errores) {
+    if (email == null || email.isBlank()) return;
+    if (email.length() > 150) {
+      errores.add(
+          new UsuarioImportErrorDTO(f, CAMPO_EMAIL, "El email no puede superar 150 caracteres"));
+    } else if (!EMAIL_PATTERN.matcher(email).matches()) {
+      errores.add(new UsuarioImportErrorDTO(f, CAMPO_EMAIL, "El email no tiene un formato válido"));
     }
+  }
 
-    // password
-    if (fila.password() == null || fila.password().isBlank()) {
-      errores.add(new UsuarioImportErrorDTO(f, "password", "La contraseña es obligatoria"));
+  private void validarPasswordObligatoria(
+      int f, String password, List<UsuarioImportErrorDTO> errores) {
+    if (password == null || password.isBlank()) {
+      errores.add(new UsuarioImportErrorDTO(f, CAMPO_PASSWORD, "La contraseña es obligatoria"));
     } else {
-      validarPassword(f, fila.password(), errores);
+      validarPassword(f, password, errores);
     }
+  }
 
-    // centro_nombre
+  private void validarCamposAcademicos(
+      int f, UsuarioImportRowDTO fila, List<UsuarioImportErrorDTO> errores) {
     if (fila.centroNombre() == null || fila.centroNombre().isBlank()) {
       errores.add(
           new UsuarioImportErrorDTO(f, "centro_nombre", "El nombre del centro es obligatorio"));
     }
-
-    // curso_academico_nombre
     if (fila.cursoAcademicoNombre() == null || fila.cursoAcademicoNombre().isBlank()) {
       errores.add(
           new UsuarioImportErrorDTO(
               f, "curso_academico_nombre", "El nombre del curso académico es obligatorio"));
     }
-
-    // grupo_nombre
     if (fila.grupoNombre() == null || fila.grupoNombre().isBlank()) {
       errores.add(
           new UsuarioImportErrorDTO(f, "grupo_nombre", "El nombre del grupo es obligatorio"));
@@ -113,23 +126,23 @@ public class UsuarioImportValidatorService {
     if (password.length() < 8) {
       errores.add(
           new UsuarioImportErrorDTO(
-              fila, "password", "La contraseña debe tener al menos 8 caracteres"));
+              fila, CAMPO_PASSWORD, "La contraseña debe tener al menos 8 caracteres"));
       return;
     }
     if (!password.matches(".*[A-Z].*")) {
       errores.add(
           new UsuarioImportErrorDTO(
-              fila, "password", "La contraseña debe contener al menos una letra mayúscula"));
+              fila, CAMPO_PASSWORD, "La contraseña debe contener al menos una letra mayúscula"));
     }
     if (!password.matches(".*[a-z].*")) {
       errores.add(
           new UsuarioImportErrorDTO(
-              fila, "password", "La contraseña debe contener al menos una letra minúscula"));
+              fila, CAMPO_PASSWORD, "La contraseña debe contener al menos una letra minúscula"));
     }
-    if (!password.matches(".*[0-9].*")) {
+    if (!password.matches(".*\\d.*")) {
       errores.add(
           new UsuarioImportErrorDTO(
-              fila, "password", "La contraseña debe contener al menos un dígito"));
+              fila, CAMPO_PASSWORD, "La contraseña debe contener al menos un dígito"));
     }
   }
 
@@ -145,7 +158,7 @@ public class UsuarioImportValidatorService {
           errores.add(
               new UsuarioImportErrorDTO(
                   fila.numeroFila(),
-                  "username",
+                  CAMPO_USERNAME,
                   "Username '"
                       + fila.username()
                       + "' duplicado en el lote (filas "
@@ -164,7 +177,7 @@ public class UsuarioImportValidatorService {
           errores.add(
               new UsuarioImportErrorDTO(
                   fila.numeroFila(),
-                  "email",
+                  CAMPO_EMAIL,
                   "Email '"
                       + fila.email()
                       + "' duplicado en el lote (filas "

@@ -11,7 +11,6 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
     if (value.length() < 8) return false;
     if (!value.matches(".*[A-Z].*")) return false;
     if (!value.matches(".*[a-z].*")) return false;
-    if (!value.matches(".*[0-9].*")) return false;
-    return true;
+    return value.matches(".*\\d.*");
   }
 }

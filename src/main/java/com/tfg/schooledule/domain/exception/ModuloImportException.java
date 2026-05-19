@@ -5,7 +5,9 @@ import java.util.List;
 
 public class ModuloImportException extends RuntimeException {
 
-  private final List<ModuloImportErrorDTO> errores;
+  private static final long serialVersionUID = 1L;
+
+  private final transient List<ModuloImportErrorDTO> errores;
 
   public ModuloImportException(List<ModuloImportErrorDTO> errores) {
     super("Importación fallida con " + errores.size() + " error(es)");
