@@ -1,8 +1,0 @@
-{
-  "track_id": "refactor_login_20260225",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-25T20:52:00Z",
-  "updated_at": "2026-02-25T20:52:00Z",
-  "description": "Refactor login to use standard Spring Security mechanism and role-based redirection."
-}
