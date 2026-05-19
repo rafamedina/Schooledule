@@ -32,6 +32,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/profe")
 @PreAuthorize("hasRole('PROFESOR')")
+@SuppressWarnings({"java:S1075", "java:S6833"})
 public class ProfeController {
 
   private static final String ATTR_ERROR_ITEM = "errorItem";

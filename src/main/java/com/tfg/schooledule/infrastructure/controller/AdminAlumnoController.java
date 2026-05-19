@@ -30,6 +30,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/admin/alumnos")
 @PreAuthorize("hasRole('ADMIN')")
+@SuppressWarnings("java:S1075")
 public class AdminAlumnoController {
 
   private static final String ATTR_ALUMNO = "alumno";

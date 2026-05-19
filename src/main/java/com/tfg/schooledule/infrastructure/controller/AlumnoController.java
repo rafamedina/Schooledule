@@ -28,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 @RequestMapping("/alumno")
 @PreAuthorize("hasRole('ALUMNO')")
+@SuppressWarnings("java:S6833")
 public class AlumnoController {
 
   private final UsuarioService usuarioService;

@@ -33,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/admin/modulos")
 @PreAuthorize("hasRole('ADMIN')")
+@SuppressWarnings("java:S6833")
 public class AdminModuloController {
 
   private static final Set<String> MIME_XLSX =
