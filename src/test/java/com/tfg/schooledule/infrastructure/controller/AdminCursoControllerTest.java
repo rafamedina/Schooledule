@@ -6,7 +6,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.tfg.schooledule.domain.dto.AdminCursoFormDTO;
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
+import com.tfg.schooledule.infrastructure.service.AdminCursoActivoService;
 import com.tfg.schooledule.infrastructure.service.AdminCursoService;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,8 @@ class AdminCursoControllerTest {
   @Autowired private MockMvc mockMvc;
 
   @MockBean private AdminCursoService adminCursoService;
+  @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
+  @MockBean private AdminCursoActivoService adminCursoActivoService;
   @MockBean private SecurityAuditLogger securityAuditLogger;
 
   @Test

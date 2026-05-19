@@ -12,7 +12,6 @@ import com.tfg.schooledule.infrastructure.repository.PeriodoEvaluacionRepository
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,14 +19,33 @@ import org.springframework.stereotype.Service;
 @Service
 public class UsuarioService {
 
-  @Autowired private UsuarioRepository usuarioRepository;
-  @Autowired private PasswordEncoder passwordEncoder;
-  @Autowired private MatriculaRepository matriculaRepository;
-  @Autowired private CalificacionRepository calificacionRepository;
-  @Autowired private PeriodoEvaluacionRepository periodoRepository;
-  @Autowired private AlumnoProfileMapper alumnoProfileMapper;
-  @Autowired private GradeDashboardMapper gradeDashboardMapper;
-  @Autowired private TeacherDashboardService teacherDashboardService;
+  private final UsuarioRepository usuarioRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final MatriculaRepository matriculaRepository;
+  private final CalificacionRepository calificacionRepository;
+  private final PeriodoEvaluacionRepository periodoRepository;
+  private final AlumnoProfileMapper alumnoProfileMapper;
+  private final GradeDashboardMapper gradeDashboardMapper;
+  private final TeacherDashboardService teacherDashboardService;
+
+  public UsuarioService(
+      UsuarioRepository usuarioRepository,
+      PasswordEncoder passwordEncoder,
+      MatriculaRepository matriculaRepository,
+      CalificacionRepository calificacionRepository,
+      PeriodoEvaluacionRepository periodoRepository,
+      AlumnoProfileMapper alumnoProfileMapper,
+      GradeDashboardMapper gradeDashboardMapper,
+      TeacherDashboardService teacherDashboardService) {
+    this.usuarioRepository = usuarioRepository;
+    this.passwordEncoder = passwordEncoder;
+    this.matriculaRepository = matriculaRepository;
+    this.calificacionRepository = calificacionRepository;
+    this.periodoRepository = periodoRepository;
+    this.alumnoProfileMapper = alumnoProfileMapper;
+    this.gradeDashboardMapper = gradeDashboardMapper;
+    this.teacherDashboardService = teacherDashboardService;
+  }
 
   public AlumnoProfileDTO getAlumnoProfile(Integer usuarioId) {
     Usuario usuario =

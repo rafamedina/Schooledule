@@ -9,7 +9,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
-import java.util.stream.Collectors;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +20,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/centro-admin/usuarios")
 @PreAuthorize("hasRole('ADMIN_CENTRO')")
 public class CentroAdminUsuarioController {
+
+  private static final String VIEW_FORM = "centro-admin/usuarios/formulario";
+  private static final String ATTR_ERROR = "error";
+  private static final String REDIRECT_USUARIOS = "redirect:/centro-admin/usuarios";
 
   private final CentroAdminUsuarioService usuarioService;
   private final CentroAdminGrupoService grupoService;
@@ -50,7 +53,7 @@ public class CentroAdminUsuarioController {
     int adminId = resolveId(principal);
     model.addAttribute("form", new AdminUsuarioFormDTO());
     cargarListas(model, adminId);
-    return "centro-admin/usuarios/formulario";
+    return VIEW_FORM;
   }
 
   @PostMapping("/nuevo")
@@ -62,16 +65,16 @@ public class CentroAdminUsuarioController {
     int adminId = resolveId(principal);
     if (bindingResult.hasErrors()) {
       cargarListas(model, adminId);
-      return "centro-admin/usuarios/formulario";
+      return VIEW_FORM;
     }
     try {
       usuarioService.crear(adminId, form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", ex.getMessage());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
       cargarListas(model, adminId);
-      return "centro-admin/usuarios/formulario";
+      return VIEW_FORM;
     }
-    return "redirect:/centro-admin/usuarios";
+    return REDIRECT_USUARIOS;
   }
 
   @GetMapping("/{id}/editar")
@@ -79,7 +82,7 @@ public class CentroAdminUsuarioController {
     int adminId = resolveId(principal);
     model.addAttribute("form", usuarioService.obtenerParaEditar(adminId, id));
     cargarListas(model, adminId);
-    return "centro-admin/usuarios/formulario";
+    return VIEW_FORM;
   }
 
   @PostMapping("/{id}/editar")
@@ -92,16 +95,16 @@ public class CentroAdminUsuarioController {
     int adminId = resolveId(principal);
     if (bindingResult.hasErrors()) {
       cargarListas(model, adminId);
-      return "centro-admin/usuarios/formulario";
+      return VIEW_FORM;
     }
     try {
       usuarioService.actualizar(adminId, id, form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", ex.getMessage());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
       cargarListas(model, adminId);
-      return "centro-admin/usuarios/formulario";
+      return VIEW_FORM;
     }
-    return "redirect:/centro-admin/usuarios";
+    return REDIRECT_USUARIOS;
   }
 
   @PostMapping("/{id}/toggle-activo")
@@ -113,9 +116,9 @@ public class CentroAdminUsuarioController {
     try {
       usuarioService.eliminar(adminId, id);
     } catch (IllegalStateException ex) {
-      redirectAttributes.addFlashAttribute("error", ex.getMessage());
+      redirectAttributes.addFlashAttribute(ATTR_ERROR, ex.getMessage());
     }
-    return "redirect:/centro-admin/usuarios";
+    return REDIRECT_USUARIOS;
   }
 
   private void cargarListas(Model model, int adminId) {
@@ -123,7 +126,7 @@ public class CentroAdminUsuarioController {
         rolRepository.findAll().stream()
             .filter(
                 r -> r.getNombre().equals("ROLE_PROFESOR") || r.getNombre().equals("ROLE_ALUMNO"))
-            .collect(Collectors.toList());
+            .toList();
     model.addAttribute("roles", rolesPermitidos);
     model.addAttribute("centros", grupoService.getCentrosDelAdmin(adminId));
   }

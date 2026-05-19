@@ -21,6 +21,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @PreAuthorize("hasRole('ADMIN_CENTRO')")
 public class CentroAdminImparticionController {
 
+  private static final String VIEW_FORM = "centro-admin/imparticiones/formulario";
+  private static final String ATTR_ERROR = "error";
+  private static final String REDIRECT_IMPARTICIONES = "redirect:/centro-admin/imparticiones";
+
   private final CentroAdminImparticionService imparticionService;
   private final CentroAdminGrupoService grupoService;
   private final ModuloRepository moduloRepository;
@@ -49,7 +53,7 @@ public class CentroAdminImparticionController {
     int adminId = resolveId(principal);
     model.addAttribute("form", new AdminImparticionFormDTO());
     cargarListas(model, adminId);
-    return "centro-admin/imparticiones/formulario";
+    return VIEW_FORM;
   }
 
   @PostMapping("/nueva")
@@ -61,16 +65,16 @@ public class CentroAdminImparticionController {
     int adminId = resolveId(principal);
     if (bindingResult.hasErrors()) {
       cargarListas(model, adminId);
-      return "centro-admin/imparticiones/formulario";
+      return VIEW_FORM;
     }
     try {
       imparticionService.crear(adminId, form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", ex.getMessage());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
       cargarListas(model, adminId);
-      return "centro-admin/imparticiones/formulario";
+      return VIEW_FORM;
     }
-    return "redirect:/centro-admin/imparticiones";
+    return REDIRECT_IMPARTICIONES;
   }
 
   @GetMapping("/{id}/editar")
@@ -78,7 +82,7 @@ public class CentroAdminImparticionController {
     int adminId = resolveId(principal);
     model.addAttribute("form", imparticionService.obtenerParaEditar(adminId, id));
     cargarListas(model, adminId);
-    return "centro-admin/imparticiones/formulario";
+    return VIEW_FORM;
   }
 
   @PostMapping("/{id}/editar")
@@ -91,16 +95,16 @@ public class CentroAdminImparticionController {
     int adminId = resolveId(principal);
     if (bindingResult.hasErrors()) {
       cargarListas(model, adminId);
-      return "centro-admin/imparticiones/formulario";
+      return VIEW_FORM;
     }
     try {
       imparticionService.actualizar(adminId, id, form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", ex.getMessage());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
       cargarListas(model, adminId);
-      return "centro-admin/imparticiones/formulario";
+      return VIEW_FORM;
     }
-    return "redirect:/centro-admin/imparticiones";
+    return REDIRECT_IMPARTICIONES;
   }
 
   @PostMapping("/{id}/eliminar")
@@ -112,9 +116,9 @@ public class CentroAdminImparticionController {
     try {
       imparticionService.eliminar(adminId, id);
     } catch (IllegalStateException ex) {
-      redirectAttributes.addFlashAttribute("error", ex.getMessage());
+      redirectAttributes.addFlashAttribute(ATTR_ERROR, ex.getMessage());
     }
-    return "redirect:/centro-admin/imparticiones";
+    return REDIRECT_IMPARTICIONES;
   }
 
   private void cargarListas(Model model, int adminId) {

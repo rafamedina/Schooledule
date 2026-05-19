@@ -1,12 +1,12 @@
 package com.tfg.schooledule.infrastructure.controller;
 
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.tfg.schooledule.domain.dto.*;
 import com.tfg.schooledule.domain.entity.*;
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
 import com.tfg.schooledule.infrastructure.service.*;
@@ -34,6 +34,8 @@ class CentroAdminControllerTest {
   @MockBean private UsuarioRepository usuarioRepository;
   @MockBean private UsuarioService usuarioService;
   @MockBean private SecurityAuditLogger securityAuditLogger;
+  @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
+  @MockBean private AdminCursoActivoService adminCursoActivoService;
 
   // --- Dashboard ---
 

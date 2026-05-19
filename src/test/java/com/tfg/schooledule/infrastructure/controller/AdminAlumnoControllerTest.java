@@ -9,9 +9,13 @@ import com.tfg.schooledule.domain.dto.AdminMatriculaFormDTO;
 import com.tfg.schooledule.domain.entity.Rol;
 import com.tfg.schooledule.domain.entity.Usuario;
 import com.tfg.schooledule.domain.enums.EstadoMatricula;
+import com.tfg.schooledule.infrastructure.repository.CentroRepository;
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
+import com.tfg.schooledule.infrastructure.repository.GrupoRepository;
 import com.tfg.schooledule.infrastructure.repository.ImparticionRepository;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
 import com.tfg.schooledule.infrastructure.service.AdminAlumnoService;
+import com.tfg.schooledule.infrastructure.service.AdminCursoActivoService;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -34,6 +38,10 @@ class AdminAlumnoControllerTest {
 
   @MockBean private AdminAlumnoService adminAlumnoService;
   @MockBean private ImparticionRepository imparticionRepository;
+  @MockBean private CentroRepository centroRepository;
+  @MockBean private GrupoRepository grupoRepository;
+  @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
+  @MockBean private AdminCursoActivoService adminCursoActivoService;
   @MockBean private SecurityAuditLogger securityAuditLogger;
 
   @Test
@@ -59,7 +67,7 @@ class AdminAlumnoControllerTest {
   @Test
   @WithMockUser(roles = "ADMIN")
   void lista_conAdmin_200_retornaVista() throws Exception {
-    when(adminAlumnoService.listarAlumnos()).thenReturn(Collections.emptyList());
+    when(adminAlumnoService.listarFiltrado(any())).thenReturn(Collections.emptyList());
 
     mockMvc
         .perform(get("/admin/alumnos"))

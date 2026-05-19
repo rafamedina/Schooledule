@@ -19,7 +19,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/centro-admin/alumnos")
 @PreAuthorize("hasRole('ADMIN_CENTRO')")
+@SuppressWarnings("java:S1075")
 public class CentroAdminAlumnoController {
+
+  private static final String ATTR_ALUMNO = "alumno";
+  private static final String VIEW_MATRICULA_FORM = "centro-admin/alumnos/matricula-formulario";
+  private static final String PATH_MATRICULAS = "/matriculas";
+  private static final String REDIRECT_ALUMNOS = "redirect:/centro-admin/alumnos/";
 
   private final CentroAdminAlumnoService alumnoService;
   private final CentroAdminImparticionService imparticionService;
@@ -45,7 +51,7 @@ public class CentroAdminAlumnoController {
   public String matriculas(
       Principal principal, @PathVariable @Positive Integer alumnoId, Model model) {
     int adminId = resolveId(principal);
-    model.addAttribute("alumno", alumnoService.obtenerAlumno(adminId, alumnoId));
+    model.addAttribute(ATTR_ALUMNO, alumnoService.obtenerAlumno(adminId, alumnoId));
     model.addAttribute("matriculas", alumnoService.listarMatriculas(adminId, alumnoId));
     return "centro-admin/alumnos/matriculas";
   }
@@ -54,10 +60,10 @@ public class CentroAdminAlumnoController {
   public String nuevaMatricula(
       Principal principal, @PathVariable @Positive Integer alumnoId, Model model) {
     int adminId = resolveId(principal);
-    model.addAttribute("alumno", alumnoService.obtenerAlumno(adminId, alumnoId));
+    model.addAttribute(ATTR_ALUMNO, alumnoService.obtenerAlumno(adminId, alumnoId));
     model.addAttribute("form", new AdminMatriculaFormDTO());
     cargarImparticionesYEstados(model, adminId);
-    return "centro-admin/alumnos/matricula-formulario";
+    return VIEW_MATRICULA_FORM;
   }
 
   @PostMapping("/{alumnoId}/matriculas/nueva")
@@ -69,19 +75,19 @@ public class CentroAdminAlumnoController {
       Model model) {
     int adminId = resolveId(principal);
     if (bindingResult.hasErrors()) {
-      model.addAttribute("alumno", alumnoService.obtenerAlumno(adminId, alumnoId));
+      model.addAttribute(ATTR_ALUMNO, alumnoService.obtenerAlumno(adminId, alumnoId));
       cargarImparticionesYEstados(model, adminId);
-      return "centro-admin/alumnos/matricula-formulario";
+      return VIEW_MATRICULA_FORM;
     }
     try {
       alumnoService.crearMatricula(adminId, alumnoId, form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("alumno", alumnoService.obtenerAlumno(adminId, alumnoId));
+      model.addAttribute(ATTR_ALUMNO, alumnoService.obtenerAlumno(adminId, alumnoId));
       model.addAttribute("error", ex.getMessage());
       cargarImparticionesYEstados(model, adminId);
-      return "centro-admin/alumnos/matricula-formulario";
+      return VIEW_MATRICULA_FORM;
     }
-    return "redirect:/centro-admin/alumnos/" + alumnoId + "/matriculas";
+    return REDIRECT_ALUMNOS + alumnoId + PATH_MATRICULAS;
   }
 
   @GetMapping("/{alumnoId}/matriculas/{id}/editar")
@@ -91,10 +97,10 @@ public class CentroAdminAlumnoController {
       @PathVariable @Positive Integer id,
       Model model) {
     int adminId = resolveId(principal);
-    model.addAttribute("alumno", alumnoService.obtenerAlumno(adminId, alumnoId));
+    model.addAttribute(ATTR_ALUMNO, alumnoService.obtenerAlumno(adminId, alumnoId));
     model.addAttribute("form", alumnoService.obtenerMatriculaParaEditar(adminId, id));
     cargarImparticionesYEstados(model, adminId);
-    return "centro-admin/alumnos/matricula-formulario";
+    return VIEW_MATRICULA_FORM;
   }
 
   @PostMapping("/{alumnoId}/matriculas/{id}/editar")
@@ -107,12 +113,12 @@ public class CentroAdminAlumnoController {
       Model model) {
     int adminId = resolveId(principal);
     if (bindingResult.hasErrors()) {
-      model.addAttribute("alumno", alumnoService.obtenerAlumno(adminId, alumnoId));
+      model.addAttribute(ATTR_ALUMNO, alumnoService.obtenerAlumno(adminId, alumnoId));
       cargarImparticionesYEstados(model, adminId);
-      return "centro-admin/alumnos/matricula-formulario";
+      return VIEW_MATRICULA_FORM;
     }
     alumnoService.actualizarMatricula(adminId, id, form);
-    return "redirect:/centro-admin/alumnos/" + alumnoId + "/matriculas";
+    return REDIRECT_ALUMNOS + alumnoId + PATH_MATRICULAS;
   }
 
   @PostMapping("/{alumnoId}/matriculas/{id}/eliminar")
@@ -127,7 +133,7 @@ public class CentroAdminAlumnoController {
     } catch (IllegalStateException ex) {
       redirectAttributes.addFlashAttribute("error", ex.getMessage());
     }
-    return "redirect:/centro-admin/alumnos/" + alumnoId + "/matriculas";
+    return REDIRECT_ALUMNOS + alumnoId + PATH_MATRICULAS;
   }
 
   private void cargarImparticionesYEstados(Model model, int adminId) {

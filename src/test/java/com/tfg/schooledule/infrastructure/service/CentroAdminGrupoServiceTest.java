@@ -26,9 +26,6 @@ class CentroAdminGrupoServiceTest {
   @Mock private AdminGrupoService adminGrupoService;
   @Mock private GrupoRepository grupoRepository;
   @Mock private ImparticionRepository imparticionRepository;
-  @Mock private UsuarioRepository usuarioRepository;
-  @Mock private CentroRepository centroRepository;
-  @Mock private CursoAcademicoRepository cursoAcademicoRepository;
 
   @InjectMocks private CentroAdminGrupoService service;
 

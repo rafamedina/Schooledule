@@ -6,7 +6,6 @@ import com.tfg.schooledule.domain.dto.AdminMatriculaListDTO;
 import com.tfg.schooledule.domain.entity.Usuario;
 import com.tfg.schooledule.infrastructure.repository.ImparticionRepository;
 import com.tfg.schooledule.infrastructure.repository.MatriculaRepository;
-import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import java.util.List;
 import java.util.Set;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,19 +19,16 @@ public class CentroAdminAlumnoService {
   private final AdminAlumnoService adminAlumnoService;
   private final MatriculaRepository matriculaRepository;
   private final ImparticionRepository imparticionRepository;
-  private final UsuarioRepository usuarioRepository;
 
   public CentroAdminAlumnoService(
       CentroAdminContextService context,
       AdminAlumnoService adminAlumnoService,
       MatriculaRepository matriculaRepository,
-      ImparticionRepository imparticionRepository,
-      UsuarioRepository usuarioRepository) {
+      ImparticionRepository imparticionRepository) {
     this.context = context;
     this.adminAlumnoService = adminAlumnoService;
     this.matriculaRepository = matriculaRepository;
     this.imparticionRepository = imparticionRepository;
-    this.usuarioRepository = usuarioRepository;
   }
 
   @Transactional(readOnly = true)

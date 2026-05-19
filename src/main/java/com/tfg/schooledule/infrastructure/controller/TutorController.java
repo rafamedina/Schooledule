@@ -22,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 @RequestMapping("/tutor")
 @PreAuthorize("hasRole('PROFESOR')")
+@SuppressWarnings("java:S6833")
 public class TutorController {
 
   private final TutorService tutorService;

@@ -1,6 +1,7 @@
 package com.tfg.schooledule.infrastructure.controller;
 
 import com.tfg.schooledule.domain.dto.AdminGrupoFormDTO;
+import com.tfg.schooledule.domain.dto.GrupoFiltroDTO;
 import com.tfg.schooledule.infrastructure.repository.CentroRepository;
 import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Tag(name = "Admin - Grupos")
@@ -27,6 +29,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin/grupos")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminGrupoController {
+
+  private static final String VIEW_FORM = "admin/grupos/formulario";
+  private static final String ATTR_ERROR = "error";
+  private static final String REDIRECT_GRUPOS = "redirect:/admin/grupos";
 
   private final AdminGrupoService adminGrupoService;
   private final CentroRepository centroRepository;
@@ -54,8 +60,15 @@ public class AdminGrupoController {
       description = "Vista HTML: admin/grupos/lista. Modelo: grupos (List<AdminGrupoListDTO>)")
   @ApiResponse(responseCode = "403", description = "Acceso denegado — requiere ROLE_ADMIN")
   @GetMapping
-  public String lista(Model model) {
-    model.addAttribute("grupos", adminGrupoService.listarTodos());
+  public String lista(
+      @RequestParam(required = false) Integer centroId,
+      @RequestParam(required = false) Integer cursoAcademicoId,
+      Model model) {
+    GrupoFiltroDTO filtro = new GrupoFiltroDTO(centroId, cursoAcademicoId);
+    model.addAttribute("grupos", adminGrupoService.listarFiltrado(filtro));
+    model.addAttribute("centros", centroRepository.findAllByOrderByNombreAsc());
+    model.addAttribute("cursos", cursoAcademicoRepository.findAllByOrderByNombreAsc());
+    model.addAttribute("filtro", filtro);
     return "admin/grupos/lista";
   }
 
@@ -74,7 +87,7 @@ public class AdminGrupoController {
   public String nuevo(Model model) {
     model.addAttribute("form", new AdminGrupoFormDTO());
     cargarListas(model);
-    return "admin/grupos/formulario";
+    return VIEW_FORM;
   }
 
   @Operation(
@@ -93,16 +106,16 @@ public class AdminGrupoController {
       Model model) {
     if (bindingResult.hasErrors()) {
       cargarListas(model);
-      return "admin/grupos/formulario";
+      return VIEW_FORM;
     }
     try {
       adminGrupoService.crear(form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", ex.getMessage());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
       cargarListas(model);
-      return "admin/grupos/formulario";
+      return VIEW_FORM;
     }
-    return "redirect:/admin/grupos";
+    return REDIRECT_GRUPOS;
   }
 
   @Operation(
@@ -125,7 +138,7 @@ public class AdminGrupoController {
       Model model) {
     model.addAttribute("form", adminGrupoService.obtenerParaEditar(id));
     cargarListas(model);
-    return "admin/grupos/formulario";
+    return VIEW_FORM;
   }
 
   @Operation(
@@ -147,16 +160,16 @@ public class AdminGrupoController {
       Model model) {
     if (bindingResult.hasErrors()) {
       cargarListas(model);
-      return "admin/grupos/formulario";
+      return VIEW_FORM;
     }
     try {
       adminGrupoService.actualizar(id, form);
     } catch (IllegalArgumentException ex) {
-      model.addAttribute("error", ex.getMessage());
+      model.addAttribute(ATTR_ERROR, ex.getMessage());
       cargarListas(model);
-      return "admin/grupos/formulario";
+      return VIEW_FORM;
     }
-    return "redirect:/admin/grupos";
+    return REDIRECT_GRUPOS;
   }
 
   @Operation(
@@ -179,9 +192,9 @@ public class AdminGrupoController {
     try {
       adminGrupoService.eliminar(id);
     } catch (IllegalStateException ex) {
-      redirectAttributes.addFlashAttribute("error", ex.getMessage());
+      redirectAttributes.addFlashAttribute(ATTR_ERROR, ex.getMessage());
     }
-    return "redirect:/admin/grupos";
+    return REDIRECT_GRUPOS;
   }
 
   private void cargarListas(Model model) {

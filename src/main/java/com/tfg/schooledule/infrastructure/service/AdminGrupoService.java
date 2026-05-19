@@ -2,6 +2,7 @@ package com.tfg.schooledule.infrastructure.service;
 
 import com.tfg.schooledule.domain.dto.AdminGrupoFormDTO;
 import com.tfg.schooledule.domain.dto.AdminGrupoListDTO;
+import com.tfg.schooledule.domain.dto.GrupoFiltroDTO;
 import com.tfg.schooledule.domain.entity.Centro;
 import com.tfg.schooledule.domain.entity.CursoAcademico;
 import com.tfg.schooledule.domain.entity.Grupo;
@@ -20,12 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminGrupoService {
 
+  private static final String ERR_GRUPO = "Grupo no encontrado: ";
+
   private final GrupoRepository grupoRepository;
   private final ImparticionRepository imparticionRepository;
   private final CentroRepository centroRepository;
   private final CursoAcademicoRepository cursoAcademicoRepository;
   private final UsuarioRepository usuarioRepository;
   private final AdminGrupoMapper adminGrupoMapper;
+  private final AdminCursoActivoService cursoActivoService;
 
   public AdminGrupoService(
       GrupoRepository grupoRepository,
@@ -33,13 +37,38 @@ public class AdminGrupoService {
       CentroRepository centroRepository,
       CursoAcademicoRepository cursoAcademicoRepository,
       UsuarioRepository usuarioRepository,
-      AdminGrupoMapper adminGrupoMapper) {
+      AdminGrupoMapper adminGrupoMapper,
+      AdminCursoActivoService cursoActivoService) {
     this.grupoRepository = grupoRepository;
     this.imparticionRepository = imparticionRepository;
     this.centroRepository = centroRepository;
     this.cursoAcademicoRepository = cursoAcademicoRepository;
     this.usuarioRepository = usuarioRepository;
     this.adminGrupoMapper = adminGrupoMapper;
+    this.cursoActivoService = cursoActivoService;
+  }
+
+  @Transactional(readOnly = true)
+  public List<AdminGrupoListDTO> listarFiltrado(GrupoFiltroDTO filtro) {
+    Integer cursoId =
+        filtro.cursoAcademicoId() != null
+            ? filtro.cursoAcademicoId()
+            : cursoActivoService.getCursoActivoId();
+    return grupoRepository.findByFiltro(filtro.centroId(), cursoId).stream()
+        .map(this::toListDTO)
+        .toList();
+  }
+
+  private AdminGrupoListDTO toListDTO(Grupo g) {
+    String tutorNombre =
+        g.getTutor() != null ? g.getTutor().getNombre() + " " + g.getTutor().getApellidos() : null;
+    return new AdminGrupoListDTO(
+        g.getId(),
+        g.getNombre(),
+        g.getCentro().getNombre(),
+        g.getCursoAcademico().getNombre(),
+        imparticionRepository.countByGrupoId(g.getId()),
+        tutorNombre);
   }
 
   @Transactional(readOnly = true)
@@ -65,9 +94,7 @@ public class AdminGrupoService {
   @Transactional(readOnly = true)
   public AdminGrupoFormDTO obtenerParaEditar(Integer id) {
     Grupo grupo =
-        grupoRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Grupo no encontrado: " + id));
+        grupoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(ERR_GRUPO + id));
     return adminGrupoMapper.toFormDTO(grupo);
   }
 
@@ -103,9 +130,7 @@ public class AdminGrupoService {
   @Transactional
   public void actualizar(Integer id, AdminGrupoFormDTO dto) {
     Grupo grupo =
-        grupoRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Grupo no encontrado: " + id));
+        grupoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(ERR_GRUPO + id));
     Centro centro =
         centroRepository
             .findById(dto.getCentroId())
@@ -140,7 +165,7 @@ public class AdminGrupoService {
   @Transactional
   public void eliminar(Integer id) {
     if (!grupoRepository.existsById(id)) {
-      throw new EntityNotFoundException("Grupo no encontrado: " + id);
+      throw new EntityNotFoundException(ERR_GRUPO + id);
     }
     if (imparticionRepository.existsByGrupoId(id)) {
       throw new IllegalStateException(

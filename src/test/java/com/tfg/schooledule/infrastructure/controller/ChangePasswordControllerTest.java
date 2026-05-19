@@ -8,8 +8,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.tfg.schooledule.domain.entity.Rol;
 import com.tfg.schooledule.domain.entity.Usuario;
+import com.tfg.schooledule.infrastructure.repository.CursoAcademicoRepository;
 import com.tfg.schooledule.infrastructure.repository.UsuarioRepository;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
+import com.tfg.schooledule.infrastructure.service.AdminCursoActivoService;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,8 @@ class ChangePasswordControllerTest {
   @MockBean private UsuarioRepository usuarioRepository;
   @MockBean private PasswordEncoder passwordEncoder;
   @MockBean private SecurityAuditLogger securityAuditLogger;
+  @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
+  @MockBean private AdminCursoActivoService adminCursoActivoService;
 
   private Usuario buildUsuario(boolean mustChange, String rolNombre) {
     Rol rol = new Rol();

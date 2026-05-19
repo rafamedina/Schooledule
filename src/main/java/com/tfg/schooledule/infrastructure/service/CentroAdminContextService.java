@@ -42,12 +42,16 @@ public class CentroAdminContextService {
 
   @Transactional(readOnly = true)
   public Set<Integer> getCentroIdsDelAdmin(Integer adminId) {
+    return loadCentroIds(adminId);
+  }
+
+  private Set<Integer> loadCentroIds(Integer adminId) {
     return loadAdmin(adminId).getCentros().stream().map(Centro::getId).collect(Collectors.toSet());
   }
 
   @Transactional(readOnly = true)
   public void validateGrupoBelongsToCentroAdmin(Integer adminId, Integer grupoId) {
-    Set<Integer> ids = getCentroIdsDelAdmin(adminId);
+    Set<Integer> ids = loadCentroIds(adminId);
     if (!grupoRepository.existsByIdAndCentroIdIn(grupoId, ids)) {
       throw new AccessDeniedException("Grupo no pertenece a tus centros");
     }
@@ -55,7 +59,7 @@ public class CentroAdminContextService {
 
   @Transactional(readOnly = true)
   public void validateImparticionBelongsToCentroAdmin(Integer adminId, Integer imparticionId) {
-    Set<Integer> ids = getCentroIdsDelAdmin(adminId);
+    Set<Integer> ids = loadCentroIds(adminId);
     if (!imparticionRepository.existsByIdAndCentroIdIn(imparticionId, ids)) {
       throw new AccessDeniedException("Impartición no pertenece a tus centros");
     }
@@ -63,7 +67,7 @@ public class CentroAdminContextService {
 
   @Transactional(readOnly = true)
   public void validateMatriculaBelongsToCentroAdmin(Integer adminId, Integer matriculaId) {
-    Set<Integer> ids = getCentroIdsDelAdmin(adminId);
+    Set<Integer> ids = loadCentroIds(adminId);
     if (!matriculaRepository.existsByIdAndImparticionCentroIdIn(matriculaId, ids)) {
       throw new AccessDeniedException("Matrícula no pertenece a tus centros");
     }

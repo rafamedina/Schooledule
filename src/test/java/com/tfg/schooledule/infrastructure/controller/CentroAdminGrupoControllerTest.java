@@ -6,7 +6,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.tfg.schooledule.domain.dto.*;
 import com.tfg.schooledule.domain.entity.*;
 import com.tfg.schooledule.infrastructure.repository.*;
 import com.tfg.schooledule.infrastructure.security.SecurityAuditLogger;
@@ -38,6 +37,7 @@ class CentroAdminGrupoControllerTest {
   @MockBean private CursoAcademicoRepository cursoAcademicoRepository;
   @MockBean private UsuarioService usuarioService;
   @MockBean private SecurityAuditLogger securityAuditLogger;
+  @MockBean private AdminCursoActivoService adminCursoActivoService;
 
   private static final String USER = "admin@getafe.es";
   private static final int ADMIN_ID = 10;
