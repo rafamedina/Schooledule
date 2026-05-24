@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin de Centro — Schooledule Apuntes</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav class="topnav">
+      <span class="topnav__brand">Schooledule TFG</span>
+      <a href="index.html">Inicio</a>
+      <a href="alumno.html">Alumno</a>
+      <a href="profesor.html">Profesor</a>
+      <a href="centro-admin.html" class="active">C.Admin</a>
+      <a href="admin.html">Admin</a>
+      <a href="login.html">Login</a>
+      <a href="seleccionar-rol.html">Sel.Rol</a>
+      <a href="seguridad.html">Seguridad</a>
+      <a href="owasp.html">OWASP</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="infraestructura.html">Infra</a>
+      <a href="diccionario.html">Diccionario</a>
+    </nav>
+    <div class="container">
+      <header class="page-header">
+        <span class="page-header__tag">Portal de Gestión</span>
+        <h1>Portal Admin de Centro</h1>
+        <p>
+          Gestión de usuarios, grupos e imparticiones limitada a los centros
+          asignados al administrador. No puede acceder a datos de otros centros.
+        </p>
+      </header>
+
+      <section>
+        <h2>Datos clave</h2>
+        <div class="card-grid">
+          <div class="card card--coral">
+            <div class="card__label">Rol requerido</div>
+            <div class="card__value">ROLE_ADMIN_CENTRO</div>
+          </div>
+          <div class="card">
+            <div class="card__label">URL base</div>
+            <div class="card__value">/centro-admin/**</div>
+          </div>
+          <div class="card card--green">
+            <div class="card__label">Controladores</div>
+            <div class="card__value">6 clases</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Controladores</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Clase</th>
+                <th>Responsabilidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CentroAdminController</td>
+                <td>
+                  Dashboard con estadísticas del centro (grupos, alumnos,
+                  imparticiones, profesores)
+                </td>
+              </tr>
+              <tr>
+                <td>CentroAdminUsuarioController</td>
+                <td>
+                  Crear, editar y gestionar usuarios dentro del centro asignado
+                </td>
+              </tr>
+              <tr>
+                <td>CentroAdminGrupoController</td>
+                <td>
+                  Gestión de grupos del centro (crear, editar, asignar tutor)
+                </td>
+              </tr>
+              <tr>
+                <td>CentroAdminImparticionController</td>
+                <td>
+                  Gestión de imparticiones (asignar profesor, módulo y grupo)
+                </td>
+              </tr>
+              <tr>
+                <td>CentroAdminAlumnoController</td>
+                <td>Gestión de alumnos y matrículas del centro</td>
+              </tr>
+              <tr>
+                <td>CentroAdminAuditoriaController</td>
+                <td>Ver el registro de auditoría de notas del centro</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Aislamiento multi-centro</h2>
+        <p>
+          El aislamiento es la característica más importante de este rol. Un
+          <code>ROLE_ADMIN_CENTRO</code> se asigna a uno o varios centros a
+          través de la tabla <code>profesores_sedes</code> (la misma tabla que
+          relaciona profesores con centros).
+        </p>
+        <div class="box box--coral">
+          <strong>Regla de negocio:</strong> Cada servicio valida que el
+          <code>centro_id</code> de los datos solicitados esté en la lista de
+          centros asignados al usuario autenticado. Si no, devuelve
+          <code>403 Forbidden</code> o <code>404 Not Found</code>.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Acción</th>
+                <th>¿Puede hacerlo?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Ver usuarios de su centro</td>
+                <td><span class="badge badge--ok">Sí</span></td>
+              </tr>
+              <tr>
+                <td>Crear grupos en su centro</td>
+                <td><span class="badge badge--ok">Sí</span></td>
+              </tr>
+              <tr>
+                <td>Asignar imparticiones en su centro</td>
+                <td><span class="badge badge--ok">Sí</span></td>
+              </tr>
+              <tr>
+                <td>Ver auditoría de su centro</td>
+                <td><span class="badge badge--ok">Sí</span></td>
+              </tr>
+              <tr>
+                <td>Acceder a datos de otro centro</td>
+                <td><span class="badge badge--danger">No</span></td>
+              </tr>
+              <tr>
+                <td>Crear módulos o cursos académicos</td>
+                <td>
+                  <span class="badge badge--danger">No</span> (solo ROLE_ADMIN)
+                </td>
+              </tr>
+              <tr>
+                <td>Gestionar centros (crear/eliminar)</td>
+                <td>
+                  <span class="badge badge--danger">No</span> (solo ROLE_ADMIN)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Diferencia con ROLE_ADMIN</h2>
+        <div class="card-grid">
+          <div class="card">
+            <h3>ROLE_ADMIN</h3>
+            <ul>
+              <li>Acceso global a todos los centros</li>
+              <li>Crea centros, módulos, cursos académicos</li>
+              <li>Importación masiva de usuarios (Excel)</li>
+              <li>Auditoría global del sistema</li>
+              <li>11 controladores</li>
+            </ul>
+          </div>
+          <div class="card card--coral">
+            <h3>ROLE_ADMIN_CENTRO</h3>
+            <ul>
+              <li>Solo sus centros asignados</li>
+              <li>No puede crear módulos ni cursos</li>
+              <li>Gestión operativa diaria del centro</li>
+              <li>Auditoría acotada a su centro</li>
+              <li>6 controladores</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Preguntas frecuentes</h2>
+        <div class="qa">
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Cómo se asigna un usuario como admin de centro?
+            </p>
+            <p class="qa__a">
+              El administrador global (<code>ROLE_ADMIN</code>) le asigna el rol
+              <code>ROLE_ADMIN_CENTRO</code> y lo vincula a uno o más centros en
+              la tabla <code>profesores_sedes</code> (usuario_id, centro_id).
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Puede un admin de centro ver los grupos de otro centro?
+            </p>
+            <p class="qa__a">
+              No. El servicio valida que el <code>centro_id</code> del grupo
+              esté dentro de los centros asignados al usuario. Si intenta
+              acceder a otro centro, recibe <code>403</code> o <code>404</code>.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Qué tabla controla a qué centros tiene acceso un admin de centro?
+            </p>
+            <p class="qa__a">
+              La tabla <code>profesores_sedes</code> con columnas
+              <code>usuario_id</code> y <code>centro_id</code>. Es la misma que
+              se usa para asignar profesores a centros.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

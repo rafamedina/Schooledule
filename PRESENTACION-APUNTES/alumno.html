@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portal Alumno — Schooledule Apuntes</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav class="topnav">
+      <span class="topnav__brand">Schooledule TFG</span>
+      <a href="index.html">Inicio</a>
+      <a href="alumno.html" class="active">Alumno</a>
+      <a href="profesor.html">Profesor</a>
+      <a href="centro-admin.html">C.Admin</a>
+      <a href="admin.html">Admin</a>
+      <a href="login.html">Login</a>
+      <a href="seleccionar-rol.html">Sel.Rol</a>
+      <a href="seguridad.html">Seguridad</a>
+      <a href="owasp.html">OWASP</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="infraestructura.html">Infra</a>
+      <a href="diccionario.html">Diccionario</a>
+    </nav>
+    <div class="container">
+      <header class="page-header">
+        <span class="page-header__tag">Portal de Usuario</span>
+        <h1>Portal Alumno</h1>
+        <p>
+          Acceso de estudiantes a sus calificaciones, asignaturas matriculadas y
+          perfil. Solo puede ver sus propios datos.
+        </p>
+      </header>
+
+      <section>
+        <h2>Datos clave</h2>
+        <div class="card-grid">
+          <div class="card card--coral">
+            <div class="card__label">Rol requerido</div>
+            <div class="card__value">ROLE_ALUMNO</div>
+          </div>
+          <div class="card">
+            <div class="card__label">URL base</div>
+            <div class="card__value">/alumno/**</div>
+          </div>
+          <div class="card card--green">
+            <div class="card__label">Controlador</div>
+            <div class="card__value">AlumnoController</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Páginas disponibles</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Ruta</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>/alumno/dashboard</td>
+                <td><span class="badge badge--get">GET</span> Web</td>
+                <td>
+                  Lista de asignaturas en las que está matriculado
+                  (imparticiones activas)
+                </td>
+              </tr>
+              <tr>
+                <td>/alumno/perfil</td>
+                <td><span class="badge badge--get">GET</span> Web</td>
+                <td>Datos del alumno, estado de matrícula, centro</td>
+              </tr>
+              <tr>
+                <td>/alumno/notas</td>
+                <td><span class="badge badge--get">GET</span> Web</td>
+                <td>
+                  Vista de calificaciones por asignatura y período (renderizado
+                  servidor)
+                </td>
+              </tr>
+              <tr>
+                <td>/alumno/api/matricula/{id}/notas</td>
+                <td><span class="badge badge--get">GET</span> JSON</td>
+                <td>
+                  Devuelve las notas detalladas de una matrícula en formato
+                  JSON. Solo si el <code>id</code> pertenece al alumno
+                  autenticado.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box box--coral">
+          <strong>Seguridad de propiedad:</strong> Si un alumno intenta acceder
+          a la matrícula de otro alumno por la API, recibe
+          <code>401 Unauthorized</code>. El servicio valida que
+          <code>matricula.alumnoId == usuario_autenticado.id</code>.
+        </div>
+      </section>
+
+      <section>
+        <h2>Estados de matrícula</h2>
+        <p>
+          Cada alumno tiene una <code>Matricula</code> por cada
+          <code>Imparticion</code>. Los estados posibles son:
+        </p>
+        <div class="card-grid">
+          <div class="card card--green">
+            <h3>ACTIVA</h3>
+            <p>El alumno está cursando la asignatura normalmente.</p>
+          </div>
+          <div class="card card--coral">
+            <h3>BAJA</h3>
+            <p>El alumno ha causado baja en esa asignatura.</p>
+          </div>
+          <div class="card card--amber">
+            <h3>CONVALIDADO</h3>
+            <p>
+              La asignatura ha sido convalidada por estudios previos o traslado.
+            </p>
+          </div>
+        </div>
+        <p style="margin-top: 0.75rem">
+          El campo <code>es_repetidor</code> (booleano) indica si el alumno
+          repite la asignatura ese curso.
+        </p>
+      </section>
+
+      <section>
+        <h2>Jerarquía de calificaciones</h2>
+        <p>
+          Las notas se almacenan a nivel de
+          <strong>Criterio de Evaluación (CE)</strong> y se agregan hacia arriba
+          con pesos:
+        </p>
+        <div class="flow">
+          <span class="flow__step">Calificacion (CE)</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">Resultado Aprendizaje (RA)</span>
+          <span class="flow__step--muted">(peso CE)</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">Período Evaluación</span>
+          <span class="flow__step--muted">(pesoSugerido RA)</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step flow__step--coral">Nota Global</span>
+          <span class="flow__step--muted">(peso Período)</span>
+        </div>
+        <div class="box">
+          Si todos los pesos de un nivel son 0, se usa media simple como
+          fallback para evitar división por cero.
+        </div>
+      </section>
+
+      <section>
+        <h2>Modelo de datos relevante</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Entidad</th>
+                <th>Tabla</th>
+                <th>Campos clave</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Matricula</td>
+                <td>matriculas</td>
+                <td>
+                  alumno_id, imparticion_id, centro_id, es_repetidor, estado
+                  (enum)
+                </td>
+              </tr>
+              <tr>
+                <td>Imparticion</td>
+                <td>imparticiones</td>
+                <td>modulo_id, grupo_id, profesor_id, centro_id</td>
+              </tr>
+              <tr>
+                <td>Calificacion</td>
+                <td>calificaciones</td>
+                <td>
+                  matricula_id, criterio_evaluacion_id, valor (0-10), comentario
+                </td>
+              </tr>
+              <tr>
+                <td>CriterioEvaluacion</td>
+                <td>criterios_evaluacion</td>
+                <td>
+                  resultado_aprendizaje_id, codigo, peso, instrumento, trimestre
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Preguntas frecuentes</h2>
+        <div class="qa">
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Qué ocurre si un alumno intenta ver las notas de otro alumno?
+            </p>
+            <p class="qa__a">
+              El servicio comprueba que la matrícula pertenezca al alumno
+              autenticado. Si no, devuelve <code>401</code>. Además,
+              <code>@PreAuthorize</code> garantiza que solo usuarios con
+              <code>ROLE_ALUMNO</code> accedan a <code>/alumno/**</code>.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">¿Cuáles son los estados de matrícula?</p>
+            <p class="qa__a">
+              <code>ACTIVA</code>, <code>BAJA</code> y <code>CONVALIDADO</code>.
+              Es un enum PostgreSQL (<code>estado_matricula</code>). No existe
+              el estado TRASLADO.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">¿Cómo se calcula la nota final de un módulo?</p>
+            <p class="qa__a">
+              Se agregan las calificaciones de CE con el <code>peso</code> de
+              cada CE para obtener la nota del RA. Los RAs se ponderan con
+              <code>peso_sugerido</code> para el período. Los períodos se
+              ponderan con su <code>peso</code> para la nota global. Si todos
+              los pesos son 0, se aplica media simple.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Qué endpoint JSON usa el alumno para ver sus notas?
+            </p>
+            <p class="qa__a">
+              <code>GET /alumno/api/matricula/{matriculaId}/notas</code> —
+              devuelve JSON con las notas detalladas. Solo funciona si la
+              matrícula pertenece al alumno autenticado.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">¿Qué significa <code>es_repetidor</code>?</p>
+            <p class="qa__a">
+              Es un campo booleano en <code>matriculas</code> que indica si el
+              alumno está cursando esa asignatura por segunda vez o más. Se
+              puede importar en el Excel de usuarios.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

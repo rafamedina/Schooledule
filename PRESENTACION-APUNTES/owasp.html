@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OWASP Top 10 — Schooledule Apuntes</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav class="topnav">
+      <span class="topnav__brand">Schooledule TFG</span>
+      <a href="index.html">Inicio</a>
+      <a href="alumno.html">Alumno</a>
+      <a href="profesor.html">Profesor</a>
+      <a href="centro-admin.html">C.Admin</a>
+      <a href="admin.html">Admin</a>
+      <a href="login.html">Login</a>
+      <a href="seleccionar-rol.html">Sel.Rol</a>
+      <a href="seguridad.html">Seguridad</a>
+      <a href="owasp.html" class="active">OWASP</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="infraestructura.html">Infra</a>
+      <a href="diccionario.html">Diccionario</a>
+    </nav>
+    <div class="container">
+      <header class="page-header">
+        <span class="page-header__tag">Seguridad — OWASP 2021</span>
+        <h1>OWASP Top 10 en Schooledule</h1>
+        <p>
+          Las 10 categorías de riesgo de seguridad web más críticas (OWASP 2021)
+          y cómo las aborda Schooledule.
+        </p>
+      </header>
+
+      <section>
+        <h2>A01 — Broken Access Control</h2>
+        <div class="box box--coral">
+          <strong>Riesgo:</strong> Un usuario accede a recursos o acciones para
+          las que no tiene permiso.
+        </div>
+        <p><strong>Medidas en Schooledule:</strong></p>
+        <ul>
+          <li>
+            Reglas por URL en
+            <code>SecurityConfig</code> (<code>hasRole()</code>) como primera
+            barrera.
+          </li>
+          <li>
+            <code>@PreAuthorize</code> en todas las clases de controlador como
+            segunda barrera.
+          </li>
+          <li>
+            Validación de propiedad en servicios: el alumno solo accede a sus
+            propias matrículas; el profesor solo edita notas de sus propias
+            imparticiones.
+          </li>
+          <li>
+            Aislamiento multi-centro: los servicios de
+            <code>/centro-admin/**</code> verifican que el
+            <code>centro_id</code> pertenece a los centros asignados al usuario.
+          </li>
+          <li>
+            <code>/snap-admin/**</code> → <code>denyAll</code> (defensa en
+            profundidad contra panel CRUD no autorizado).
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>A02 — Cryptographic Failures</h2>
+        <div class="box box--amber">
+          <strong>Riesgo:</strong> Datos sensibles expuestos por cifrado débil o
+          ausente.
+        </div>
+        <p><strong>Medidas en Schooledule:</strong></p>
+        <ul>
+          <li>
+            Contraseñas almacenadas con <strong>BCrypt</strong> (hash
+            irreversible con salt). Nunca en texto plano.
+          </li>
+          <li>
+            <code>show-sql=false</code> en producción (perfil
+            <code>prod</code>): no se imprimen queries con datos en logs.
+          </li>
+          <li>
+            Cookie de sesión con <code>Secure=true</code> en producción (solo se
+            envía por HTTPS).
+          </li>
+          <li>
+            Credenciales de base de datos en variables de entorno, no
+            hardcodeadas en el código (excepto valores locales de desarrollo).
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>A03 — Injection</h2>
+        <div class="box box--coral">
+          <strong>Riesgo:</strong> Datos maliciosos ejecutados como código (SQL
+          injection, XSS, etc.).
+        </div>
+        <p><strong>Medidas en Schooledule:</strong></p>
+        <ul>
+          <li>
+            <strong>SQL Injection:</strong> Spring Data JPA usa queries
+            parametrizadas (Hibernate). No hay concatenación de strings en SQL.
+          </li>
+          <li>
+            <strong>XSS (Cross-Site Scripting):</strong> Thymeleaf usa
+            <code>th:text</code> en todos los datos de usuario.
+            <code>th:utext</code> (que no escapa HTML) no se usa para datos de
+            usuario.
+          </li>
+          <li>
+            <strong>Header injection en auditoría:</strong>
+            <code>set_config('app.usuario_actual', :email, true)</code> se pasa
+            como parámetro enlazado, no concatenado.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>A04 — Insecure Design</h2>
+        <div class="box box--amber">
+          <strong>Riesgo:</strong> Falta de controles de seguridad en el diseño
+          de la arquitectura.
+        </div>
+        <p><strong>Medidas en Schooledule:</strong></p>
+        <ul>
+          <li>
+            Arquitectura multi-tenant desde el diseño:
+            <code>centro_id</code> presente en todas las entidades críticas,
+            validado en servicios.
+          </li>
+          <li>
+            RBAC implementado a nivel de URL, método
+            (<code>@PreAuthorize</code>) y servicio.
+          </li>
+          <li>
+            Principio de mínimo privilegio: cada rol solo accede a lo
+            estrictamente necesario.
+          </li>
+          <li>
+            Separación de portales: <code>/admin</code>,
+            <code>/centro-admin</code>, <code>/profe</code>,
+            <code>/alumno</code> completamente aislados.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>A05 — Security Misconfiguration</h2>
+        <div class="box box--coral">
+          <strong>Riesgo:</strong> Configuración incorrecta o permisiva que
+          expone vulnerabilidades.
+        </div>
+        <p><strong>Medidas en Schooledule:</strong></p>
+        <ul>
+          <li>
+            Cabeceras HTTP de seguridad: CSP, Referrer-Policy,
+            Permissions-Policy (manual) + X-Frame-Options, nosniff, HSTS (Spring
+            Security default).
+          </li>
+          <li>Sesión: HttpOnly, SameSite=strict, timeout 30 min.</li>
+          <li>
+            La dependencia <code>snap-admin</code> (que exponía panel CRUD sin
+            auth) fue eliminada del <code>pom.xml</code>.
+          </li>
+          <li>
+            Perfiles Spring separados: <code>dev</code> (debug, show-sql) vs
+            <code>prod</code> (WARN, sin debug, cookies seguras).
+          </li>
+          <li>
+            Swagger tiene su propia CSP más permisiva (necesita
+            <code>unsafe-inline</code> y <code>unsafe-eval</code>) pero el resto
+            de la app no.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>A06 — Vulnerable and Outdated Components</h2>
+        <div class="box box--coral">
+          <strong>Vulnerabilidad real detectada:</strong>
+          <code>snap-admin:0.2.1</code> exponía todas las entidades JPA sin
+          autenticación de Schooledule. Severidad CRÍTICA.
+        </div>
+        <p><strong>Medidas en Schooledule:</strong></p>
+        <ul>
+          <li>
+            Dependencia <code>snap-admin</code> eliminada completamente del
+            <code>pom.xml</code>.
+          </li>
+          <li>
+            Regla <code>/snap-admin/** → denyAll</code> añadida como primera
+            entrada en <code>SecurityConfig</code> como defensa adicional.
+          </li>
+          <li>
+            Spring Boot 3.3.5 (versión relativamente reciente) con gestión de
+            dependencias por BOM.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>A07 — Identification and Authentication Failures</h2>
+        <div class="box box--amber">
+          <strong>Riesgo:</strong> Autenticación débil, reutilización de sesión,
+          credenciales por defecto.
+        </div>
+        <p><strong>Medidas en Schooledule:</strong></p>
+        <ul>
+          <li>
+            <strong>BCryptPasswordEncoder</strong> para almacenamiento seguro de
+            contraseñas.
+          </li>
+          <li>
+            <code>changeSessionId()</code> previene session fixation al
+            autenticar.
+          </li>
+          <li>
+            <code>maximumSessions(1)</code> evita sesiones concurrentes no
+            autorizadas.
+          </li>
+          <li>
+            <strong>LoginRateLimitFilter</strong> (Bucket4j): 10 intentos/15 min
+            por IP → <code>HTTP 429</code>. Previene fuerza bruta.
+          </li>
+          <li>
+            <code>@ValidPassword</code>: validación de fortaleza de contraseña
+            en creación de usuarios.
+          </li>
+          <li>
+            <code>must_change_password</code>: flag para forzar cambio en el
+            primer login.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>A08 — Software and Data Integrity Failures</h2>
+        <div class="box box--amber">
+          <strong>Riesgo:</strong> Código o datos sin verificación de integridad
+          en el pipeline.
+        </div>
+        <p><strong>Medidas en Schooledule:</strong></p>
+        <ul>
+          <li>
+            Pipeline CI/CD (GitHub Actions) con 4 jobs: lint → build → test →
+            promote.
+          </li>
+          <li>
+            Pre-commit hooks: Spotless (Java), Prettier (HTML/CSS/JS), detección
+            de secretos, validación XML/YAML.
+          </li>
+          <li>
+            JaCoCo: cobertura mínima del 80% obligatoria. El pipeline falla si
+            no se cumple.
+          </li>
+          <li>
+            Purge &amp; Promote: antes de llegar a <code>main</code>, el código
+            pasa por <code>pre-prod</code> con todos los archivos de desarrollo
+            eliminados.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>A09 — Security Logging and Monitoring Failures</h2>
+        <div class="box box--coral">
+          <strong>Riesgo:</strong> No se registran eventos de seguridad
+          críticos.
+        </div>
+        <p><strong>Medidas en Schooledule:</strong></p>
+        <ul>
+          <li>
+            <strong>Tabla <code>auditoria_notas</code>:</strong> registra
+            automáticamente cada cambio de calificación (valor anterior, nuevo,
+            usuario responsable, fecha).
+          </li>
+          <li>
+            <strong>Trigger PL/pgSQL</strong>
+            (<code>trigger_auditoria_notas</code>): se dispara AFTER UPDATE en
+            <code>calificaciones</code>. No puede ser eludido por el código de
+            aplicación.
+          </li>
+          <li>
+            <strong><code>app.usuario_actual</code>:</strong> variable de sesión
+            PostgreSQL inyectada por el servicio para registrar quién realizó el
+            cambio en el trigger.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>A10 — Server-Side Request Forgery (SSRF)</h2>
+        <div class="box box--green">
+          <strong>No aplicable:</strong> Schooledule no realiza peticiones HTTP
+          salientes a URLs controladas por el usuario. No hay funcionalidad de
+          webhook, proxy ni descarga de recursos remotos. El riesgo SSRF no
+          existe en la superficie de ataque actual.
+        </div>
+      </section>
+
+      <section>
+        <h2>Resumen</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>OWASP</th>
+                <th>Severidad original</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>A01 Broken Access Control</td>
+                <td><span class="badge badge--danger">Alta</span></td>
+                <td>
+                  <span class="badge badge--ok">Mitigado</span> @PreAuthorize +
+                  ownership checks
+                </td>
+              </tr>
+              <tr>
+                <td>A02 Cryptographic Failures</td>
+                <td><span class="badge badge--warn">Media</span></td>
+                <td>
+                  <span class="badge badge--ok">Mitigado</span> BCrypt + prod
+                  profile
+                </td>
+              </tr>
+              <tr>
+                <td>A03 Injection</td>
+                <td><span class="badge badge--warn">Media</span></td>
+                <td>
+                  <span class="badge badge--ok">Mitigado</span> JPA + th:text
+                </td>
+              </tr>
+              <tr>
+                <td>A04 Insecure Design</td>
+                <td><span class="badge badge--danger">Alta</span></td>
+                <td>
+                  <span class="badge badge--ok">Mitigado</span> RBAC +
+                  multi-tenant design
+                </td>
+              </tr>
+              <tr>
+                <td>A05 Security Misconfiguration</td>
+                <td><span class="badge badge--danger">Alta</span></td>
+                <td>
+                  <span class="badge badge--ok">Mitigado</span> CSP headers +
+                  perfiles
+                </td>
+              </tr>
+              <tr>
+                <td>A06 Vulnerable Components</td>
+                <td><span class="badge badge--danger">Crítica</span></td>
+                <td>
+                  <span class="badge badge--ok">Mitigado</span> snap-admin
+                  eliminado
+                </td>
+              </tr>
+              <tr>
+                <td>A07 Auth Failures</td>
+                <td><span class="badge badge--warn">Media</span></td>
+                <td>
+                  <span class="badge badge--ok">Mitigado</span> BCrypt + rate
+                  limit + session
+                </td>
+              </tr>
+              <tr>
+                <td>A08 Integrity Failures</td>
+                <td><span class="badge badge--warn">Media</span></td>
+                <td>
+                  <span class="badge badge--ok">Mitigado</span> CI/CD + hooks +
+                  JaCoCo
+                </td>
+              </tr>
+              <tr>
+                <td>A09 Logging Failures</td>
+                <td><span class="badge badge--warn">Media</span></td>
+                <td>
+                  <span class="badge badge--ok">Mitigado</span> auditoria_notas
+                  trigger
+                </td>
+              </tr>
+              <tr>
+                <td>A10 SSRF</td>
+                <td><span class="badge badge--gray">N/A</span></td>
+                <td><span class="badge badge--gray">No aplica</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
