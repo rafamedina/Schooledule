@@ -216,22 +216,131 @@ El objetivo principal es superar las limitaciones de rigidez que presentan los s
 
 \section{English}
 
-The project involves the design and development of a comprehensive web application (educational ERP) for the administrative and academic management of training centers.
+Schooledule is a full-stack educational ERP built with Java 21, Spring Boot 3.3.5 and
+PostgreSQL, designed to manage the administrative and academic operations of multi-site
+vocational training institutions.
 
-The primary objective is to overcome the rigidity of current systems by creating a data architecture capable of supporting complex scenarios. This includes multi-site management, educational curriculum versioning, and forensic traceability of grades. The system also features a complete administration panel with eight management modules, a granular grading system per evaluation criterion with recovery support, and a security hardening plan based on the OWASP Top 10 standard.
+The core technical challenge is real multi-tenancy: a single application instance
+handles multiple physical campuses with strict data isolation enforced at the database
+level via a mandatory \texttt{centro\_id} predicate on every academic query. Role-based
+access control is implemented with four distinct roles
+(\texttt{ROLE\_ADMIN}, \texttt{ROLE\_ADMIN\_CENTRO}, \texttt{ROLE\_PROFESOR},
+\texttt{ROLE\_ALUMNO}) and a role-selection screen for users with multiple profiles.
+
+Grade integrity is guaranteed by a PL/pgSQL trigger (\texttt{trigger\_auditoria\_notas})
+that fires \texttt{AFTER UPDATE ON calificaciones} and writes an immutable record to
+\texttt{auditoria\_notas} whenever a grade value changes, capturing the previous value,
+the new value, the responsible teacher's email (propagated via
+\texttt{set\_config('app.usuario\_actual', :u, true)}) and an exact timestamp.
+This forensic audit log cannot be modified or deleted through any application endpoint.
+
+Security was treated as a first-class requirement: nine OWASP Top 10 vulnerability
+categories were identified and remediated, including rate limiting on \texttt{POST /login}
+(Bucket4j, 10 attempts per 15 minutes per IP), session fixation prevention,
+a custom \texttt{@ValidPassword} constraint, structured security event logging and
+a strict Content-Security-Policy. Thirty-two automated security tests validate
+these controls on every CI build.
+
+The system is delivered as a Docker Compose stack with a fully automated GitHub Actions
+pipeline (lint → build → containerised tests with a real PostgreSQL instance →
+80\% JaCoCo coverage gate → purge and promote to pre-production).
 
 %=============================================================
 % CAPITULO 3 - JUSTIFICACION DEL PROYECTO
 %=============================================================
 \chapter{Justificación del Proyecto}
 
-Actualmente, muchos centros educativos encuentran dificultades para digitalizar procesos complejos, recurriendo a menudo a hojas de cálculo o software obsoleto. Las plataformas estándar suelen fallar en tres aspectos críticos que este proyecto viene a resolver:
+La gestión académica de los centros de Formación Profesional en España combina
+requisitos que ninguna plataforma generalista resuelve de forma satisfactoria:
+múltiples sedes físicas bajo una misma razón social, profesores que imparten en
+varios centros, evaluación competencial por Resultados de Aprendizaje y Criterios
+de Evaluación, y la obligación legal de mantener un expediente académico íntegro
+y auditable.
+
+\section{Análisis de Soluciones Existentes}
+
+\subsection{Moodle}
+
+Moodle es la plataforma de e-learning de código abierto más extendida en el ámbito
+educativo. Sin embargo, su modelo de datos está orientado a la gestión de contenidos
+y actividades formativas, no a la administración académica:
 
 \begin{itemize}
-  \item \textbf{Gestión Multi-Sede:} La dificultad de gestionar profesores que imparten docencia en varios centros distintos con un único usuario, sin mezclar datos de alumnos ni grupos.
-  \item \textbf{Integridad del Dato (Auditoría):} La necesidad de garantizar que las notas y faltas no se modifican por error o malintencionadamente sin dejar rastro.
-  \item \textbf{Cambios Normativos:} La capacidad de adaptar los criterios de evaluación a nuevas leyes educativas a\~no tras a\~no sin alterar los expedientes históricos de los alumnos antiguos.
+  \item \textbf{Sin gestión multi-sede real:} Moodle no tiene un concepto nativo de
+        «centro educativo» como unidad de aislamiento de datos. Gestionar varias sedes
+        requiere instancias separadas o plugins de terceros con mantenimiento propio.
+  \item \textbf{Sin auditoría forense de calificaciones:} El historial de cambios de
+        notas en Moodle es accesible para el profesor y puede ser alterado. No existe
+        un mecanismo inmutable a nivel de base de datos equivalente a un trigger
+        PL/pgSQL append-only.
+  \item \textbf{Sin modelo RA/CE:} La evaluación por Resultados de Aprendizaje y
+        Criterios de Evaluación ponderados, obligatoria en los módulos de FP según
+        el Real Decreto 659/2023, no tiene representación directa en el modelo de
+        datos de Moodle.
 \end{itemize}
+
+\subsection{Additio App}
+
+Additio es el cuaderno del profesor digital más usado en los centros de FP españoles.
+Ofrece una interfaz ágil para la introducción de calificaciones, pero tiene
+limitaciones estructurales para el caso de uso planteado:
+
+\begin{itemize}
+  \item \textbf{Aplicación de usuario único:} Additio está diseñada para el uso
+        individual del docente. No dispone de un panel de administración de centro
+        ni de una capa de gestión institucional (matrículas, grupos, imparticiones).
+  \item \textbf{Datos en silo:} Cada profesor gestiona su propio cuaderno de forma
+        independiente. No existe un expediente académico centralizado consultable
+        por el alumno ni exportable por la dirección del centro.
+  \item \textbf{Sin API ni integración:} Additio no ofrece integración con sistemas
+        de gestión de centros ni posibilidad de automatizar la carga masiva de alumnos
+        al inicio de curso.
+\end{itemize}
+
+\subsection{ERP educativos propietarios (Raíces, Itaca, Alexia)}
+
+Las plataformas autonómicas como Raíces (Madrid), Itaca (Valencia) o Alexia son
+soluciones propietarias gestionadas por las administraciones educativas. Sus
+limitaciones para el caso de este proyecto son de naturaleza diferente:
+
+\begin{itemize}
+  \item \textbf{Dependencia institucional:} Solo están disponibles para centros
+        públicos concertados con la administración correspondiente. Los centros
+        privados o de otras comunidades no pueden acceder a ellas.
+  \item \textbf{Sin control sobre el modelo de datos:} El equipo técnico del centro
+        no puede adaptar la estructura de evaluación, añadir criterios personalizados
+        ni integrar el sistema con herramientas propias.
+  \item \textbf{Sin despliegue propio:} No es posible instalar estas plataformas
+        en infraestructura propia ni auditarlas desde el punto de vista de seguridad.
+\end{itemize}
+
+\section{Propuesta Diferencial de Schooledule}
+
+Schooledule nace para cubrir el hueco que dejan las soluciones anteriores, con tres
+diferenciadores técnicos verificables:
+
+\begin{enumerate}
+  \item \textbf{Multi-sede real con aislamiento garantizado a nivel de base de datos:}
+        La columna \texttt{centro\_id} actúa como predicado obligatorio en cada consulta
+        académica. El aislamiento no depende de la lógica de la aplicación, sino de
+        restricciones en el esquema relacional y de la capa de servicio
+        (\texttt{CentroAdminContextService}).
+
+  \item \textbf{Auditoría forense inmutable mediante trigger PL/pgSQL:}
+        Cada modificación de calificación activa el trigger
+        \texttt{trigger\_auditoria\_notas}, que inserta en \texttt{auditoria\_notas}
+        el valor anterior, el nuevo, el email del docente responsable y la fecha exacta.
+        Esta tabla no tiene endpoints de escritura desde la aplicación: su
+        inmutabilidad está garantizada a nivel de base de datos, no de política de
+        acceso.
+
+  \item \textbf{Evaluación competencial alineada con la LOFP:}
+        El modelo Resultado de Aprendizaje \(\rightarrow\) Criterio de Evaluación
+        \(\rightarrow\) Calificación, con pesos porcentuales configurables sin
+        redespliegue, refleja directamente la estructura de evaluación por
+        competencias que exige la Ley Orgánica 3/2022 de Ordenación e Integración
+        de la Formación Profesional.
+\end{enumerate}
 
 %=============================================================
 % CAPITULO 4 - INTRODUCCION
