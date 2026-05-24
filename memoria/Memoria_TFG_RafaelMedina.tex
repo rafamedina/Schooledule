@@ -33,6 +33,7 @@
 \usepackage{caption}
 \usepackage{float}
 \usepackage{subcaption}
+\usepackage{tikz}
 
 % Ruta de imagenes (misma carpeta que el .tex)
 \graphicspath{{./}}
@@ -56,6 +57,9 @@
 \definecolor{azulTFG}{RGB}{0, 70, 127}
 \definecolor{grisClaro}{RGB}{245, 245, 245}
 \definecolor{grisTexto}{RGB}{80, 80, 80}
+\definecolor{azulMarca}{RGB}{46, 58, 92}
+\definecolor{coralMarca}{RGB}{194, 78, 61}
+\definecolor{papelMarca}{RGB}{247, 242, 234}
 
 %-------------------------------------------------------------
 % HIPERVíNCULOS
@@ -74,7 +78,7 @@
 %-------------------------------------------------------------
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\textcolor{grisTexto}{Schooledule -- Memoria TFG}}
+\fancyhead[L]{\logomark\enspace\small\textcolor{grisTexto}{\textbf{Schooledule} -- Memoria TFG}}
 \fancyhead[R]{\small\textcolor{grisTexto}{Rafael Medina Ayuso}}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -119,6 +123,15 @@
 % Logo helper para la tabla de tecnologias
 \newcommand{\logo}[1]{%
   \includegraphics[height=1cm,keepaspectratio]{#1}%
+}
+
+% Marca Schooledule para cabeceras (TikZ, sin dependencia externa)
+\newcommand{\logomark}{%
+  \begin{tikzpicture}[baseline=-0.08cm]
+    \fill[rounded corners=1.5pt, fill=azulMarca] (0,0) rectangle (0.40cm,0.40cm);
+    \fill[fill=coralMarca] (0,0) rectangle (0.048cm,0.40cm);
+    \node[text=papelMarca, font=\bfseries\itshape\tiny] at (0.225cm,0.20cm) {S};
+  \end{tikzpicture}%
 }
 
 %=============================================================
