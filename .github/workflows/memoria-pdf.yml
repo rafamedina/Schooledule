@@ -1,0 +1,33 @@
+name: Compilar Memoria PDF
+
+on:
+  push:
+    branches: ["dev", "feature/**"]
+    paths:
+      - "memoria/**"
+  workflow_dispatch:
+
+jobs:
+  compile-pdf:
+    name: 📄 Compilar PDF (LaTeX)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compilar Memoria TFG
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: memoria
+          root_file: Memoria_TFG_RafaelMedina.tex
+          latexmk_use_lualatex: false
+          latexmk_shell_escape: false
+          extra_system_packages: "py-pygments"
+
+      - name: Subir PDF como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: Memoria_TFG_RafaelMedina
+          path: memoria/Memoria_TFG_RafaelMedina.pdf
+          retention-days: 30
