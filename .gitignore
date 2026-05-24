@@ -61,6 +61,7 @@ docker-compose.override.yml
 
 # --- Production config (contains secrets) ---
 application-prod.properties
+infraestructura/.env.prod
 
 # --- System Files ---
 .DS_Store
@@ -101,7 +102,7 @@ Package-lock.json
 Package.json
 skills-lock.json
 sonarqube_issues.json
-
+worktrees/
 
 # --- OS Specific ---
 *.swp
