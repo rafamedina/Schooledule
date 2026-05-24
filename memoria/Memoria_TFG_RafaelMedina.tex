@@ -216,34 +216,15 @@ El objetivo principal es superar las limitaciones de rigidez que presentan los s
 
 \section{English}
 
-Schooledule is a full-stack educational ERP built with Java 21, Spring Boot 3.3.5 and
-PostgreSQL, designed to manage the administrative and academic operations of multi-site
-vocational training institutions.
+The project consists of the design and development of a comprehensive web application
+(educational ERP) for the administrative and academic management of training centres.
 
-The core technical challenge is real multi-tenancy: a single application instance
-handles multiple physical campuses with strict data isolation enforced at the database
-level via a mandatory \texttt{centro\_id} predicate on every academic query. Role-based
-access control is implemented with four distinct roles
-(\texttt{ROLE\_ADMIN}, \texttt{ROLE\_ADMIN\_CENTRO}, \texttt{ROLE\_PROFESOR},
-\texttt{ROLE\_ALUMNO}) and a role-selection screen for users with multiple profiles.
-
-Grade integrity is guaranteed by a PL/pgSQL trigger (\texttt{trigger\_auditoria\_notas})
-that fires \texttt{AFTER UPDATE ON calificaciones} and writes an immutable record to
-\texttt{auditoria\_notas} whenever a grade value changes, capturing the previous value,
-the new value, the responsible teacher's email (propagated via
-\texttt{set\_config('app.usuario\_actual', :u, true)}) and an exact timestamp.
-This forensic audit log cannot be modified or deleted through any application endpoint.
-
-Security was treated as a first-class requirement: nine OWASP Top 10 vulnerability
-categories were identified and remediated, including rate limiting on \texttt{POST /login}
-(Bucket4j, 10 attempts per 15 minutes per IP), session fixation prevention,
-a custom \texttt{@ValidPassword} constraint, structured security event logging and
-a strict Content-Security-Policy. Thirty-two automated security tests validate
-these controls on every CI build.
-
-The system is delivered as a Docker Compose stack with a fully automated GitHub Actions
-pipeline (lint → build → containerised tests with a real PostgreSQL instance →
-80\% JaCoCo coverage gate → purge and promote to pre-production).
+The primary objective is to overcome the rigidity of current systems by creating a data
+architecture capable of supporting complex scenarios such as multi-site management,
+educational curriculum versioning and forensic traceability of grades. The system also
+includes a complete administration panel with eight management modules, a granular
+grading system per evaluation criterion with recovery support, and a security hardening
+plan based on the OWASP Top 10 standard.
 
 %=============================================================
 % CAPITULO 3 - JUSTIFICACION DEL PROYECTO
