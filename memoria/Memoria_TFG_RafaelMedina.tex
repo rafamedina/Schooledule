@@ -1,4 +1,4 @@
-%=============================================================
+﻿%=============================================================
 %  MEMORIA TFG - SCHOOLEDULE
 %  Autor: Rafael Medina Ayuso
 %  Tutor: David Valbuena Segura
@@ -163,7 +163,7 @@
 
 La ejecución del proyecto se ha estructurado en cuatro fases críticas, alineadas con los porcentajes de entrega académica. Cada fase representa un avance incremental, desde la conceptualización hasta el despliegue final de la solución.
 
-\section{Hito 1: Cimentación y Dise\~no (25\% -- Fase Actual)}
+\section{Hito 1: Cimentación y Dise\~no (25\%)}
 
 En esta etapa inicial, el objetivo ha sido establecer una base técnica inquebrantable, centrándose en la toma de decisiones arquitectónicas y el dise\~no del modelo de datos, que es el corazón de la plataforma.
 
@@ -189,7 +189,7 @@ En este punto, el sistema ya es funcional y se abordan los requisitos que aporta
 
 \begin{itemize}
   \item \textbf{Objetivos:} Desarrollo del módulo de Auditoría Forense para calificaciones (rastro inmutable). Implementación de la gestión académica compleja: resultados de aprendizaje, criterios de evaluación y cuadernos de notas. Construcción del panel de administración completo (gestión de usuarios, centros, módulos, cursos académicos, grupos, imparticiones y alumnos). Aplicación del plan de hardening OWASP Top 10 como capa de seguridad transversal.
-  \item \textbf{Entregables:} Frontend integrado con Thymeleaf para los tres roles (Admin, Profe, Alumno). Pipeline de CI/CD en GitHub Actions plenamente operativo con validación de cobertura de código superior al 80\%. Sistema de calificación granular por criterio de evaluación con soporte de recuperaciones.
+  \item \textbf{Entregables:} Frontend integrado con Thymeleaf para los cuatro roles (Admin Global, Admin Centro, Profesor y Alumno). Pipeline de CI/CD en GitHub Actions plenamente operativo con validación de cobertura de código superior al 80\%. Sistema de calificación granular por criterio de evaluación con soporte de recuperaciones.
   \item \textbf{Foco técnico:} Refinamiento de la lógica de negocio para la gestión de alumnos repetidores y evaluaciones por competencias. Implementación de medidas de seguridad frente a las vulnerabilidades OWASP A01, A02, A03, A04, A05, A06, A07 y A09.
 \end{itemize}
 
@@ -243,13 +243,14 @@ El núcleo del TFG es la implementación de un sistema \textbf{Full Stack} centr
 \begin{itemize}
   \item \textbf{Arquitectura de Base de Datos Relacional Compleja:} Dise\~no en PostgreSQL que soporte relaciones ``Muchos a Muchos'' para asignaciones de profesores a sedes y versionado temporal de Resultados de Aprendizaje (RA) y Criterios.
   \item \textbf{Gestión Académica Flexible:} Soporte para casuísticas reales como alumnos repetidores (matriculados solo en módulos sueltos) y matrículas duales (curso actual + módulos pendientes de cursos anteriores).
-  \item \textbf{Sistema de Roles Estricto (RBAC):} Implementación de seguridad basada en tres roles fundamentales:
+  \item \textbf{Sistema de Roles Estricto (RBAC):} Implementación de seguridad basada en cuatro roles fundamentales:
     \begin{itemize}
-      \item \textbf{Administrador:} Gestión global de sedes y usuarios.
-      \item \textbf{Profesor:} Gestión limitada a sus módulos asignados y alumnos.
-      \item \textbf{Alumno:} Acceso de solo lectura a su expediente y materiales.
+      \item \textbf{Administrador Global (\texttt{ROLE\_ADMIN}):} Gestión completa de centros, usuarios, módulos, cursos académicos, grupos, imparticiones y auditoría del sistema.
+      \item \textbf{Administrador de Centro (\texttt{ROLE\_ADMIN\_CENTRO}):} Gestión delegada limitada a los centros asignados: grupos, imparticiones, matrículas y usuarios sin privilegios de administrador.
+      \item \textbf{Profesor (\texttt{ROLE\_PROFESOR}):} Gestión limitada a sus módulos asignados y alumnos. Los profesores designados como tutores de grupo acceden adicionalmente al portal de tutor (\texttt{/tutor/**}).
+      \item \textbf{Alumno (\texttt{ROLE\_ALUMNO}):} Acceso de solo lectura a su expediente académico y calificaciones.
     \end{itemize}
-  \item \textbf{Sistema de Auditoría (Logs):} Desarrollo de un módulo de trazabilidad que registre inmutablemente cualquier cambio crítico (modificación de notas o asistencia), guardando el valor anterior, el nuevo, el autor y la fecha.
+  \item \textbf{Sistema de Auditoría (Logs):} Desarrollo de un módulo de trazabilidad que registre inmutablemente cualquier cambio crítico en las calificaciones, guardando el valor anterior, el nuevo, el autor y la fecha.
   \item \textbf{Evaluación por Competencias:} Cuaderno del profesor digital que permite calificar evidencias basándose en Rúbricas y pesos porcentuales configurables.
   \item \textbf{Seguridad OWASP Top 10:} Análisis sistemático y remediación de las categorías de vulnerabilidad más críticas: eliminación de dependencias inseguras, headers HTTP de seguridad, gestión robusta de sesiones, limitación de tasa en el login, control de acceso en profundidad, política de contraseñas y registro de eventos de seguridad.
 \end{itemize}
@@ -281,7 +282,7 @@ La solución se fundamenta en un modelo de capas que separa claramente las respo
 \begin{enumerate}
   \item \textbf{Capa de Presentación (Interfaz de Usuario):} Se ha optado por una combinación de Thymeleaf con Vanilla CSS y JavaScript. Esta elección busca minimizar la carga en el cliente y garantizar una respuesta rápida del sistema, proporcionando una interfaz limpia y profesional que facilite la gestión de notas y perfiles.
 
-  \item \textbf{Capa de Lógica de Negocio (Servidor):} El núcleo de la aplicación está desarrollado con Spring Boot 3.3.5 y Java 21. Esta capa orquesta todas las reglas académicas, desde la gestión de matrículas hasta la validación de roles (RBAC).
+  \item \textbf{Capa de Lógica de Negocio (Servidor):} El núcleo de la aplicación está desarrollado con Spring Boot 3.3.5 y Java 21. Esta capa orquesta todas las reglas académicas, desde la gestión de matrículas hasta la validación de roles (RBAC), apoyándose en Spring Data JPA y Spring MVC.
 
   \item \textbf{Capa de Datos (Persistencia):} La base de datos PostgreSQL actúa como el pilar de integridad. Se ha implementado un sistema de Auditoría Forense que registra cualquier modificación en las calificaciones, asegurando que el historial académico sea fiable y auditable en todo momento.
 \end{enumerate}
@@ -315,12 +316,13 @@ Para asegurar que la entrega final sea impecable y profesional, se ha dise\~nado
 
 \section{Casos de Uso}
 
-Los tres actores del sistema son:
+Los cuatro actores del sistema son:
 
 \begin{enumerate}
-  \item \textbf{Alumno:} Usuario final que consulta su progreso académico, horarios y perfil personal.
-  \item \textbf{Profesor:} Responsable de la gestión académica de sus módulos, evaluación de ítems y seguimiento del alumnado.
-  \item \textbf{Administrador:} Perfil con privilegios elevados para la gestión de la infraestructura del centro, usuarios y auditoría del sistema.
+  \item \textbf{Alumno:} Usuario final que consulta su progreso académico, calificaciones y perfil personal.
+  \item \textbf{Profesor:} Responsable de la gestión académica de sus módulos y de la evaluación de los alumnos matriculados. Los profesores asignados como tutores de grupo acceden adicionalmente a la vista de seguimiento del tutor.
+  \item \textbf{Administrador de Centro:} Gestor delegado con alcance limitado a los centros que tiene asignados: gestiona grupos, imparticiones, matrículas y usuarios sin privilegios de administración global.
+  \item \textbf{Administrador Global:} Perfil con privilegios completos sobre toda la infraestructura del sistema: centros, usuarios, módulos, cursos académicos, grupos, imparticiones, alumnos y auditoría.
 \end{enumerate}
 
 \begin{figure}[H]
@@ -339,8 +341,7 @@ Los tres actores del sistema son:
 
 \subsubsection{Interacciones del Alumnado}
 \begin{itemize}
-  \item \textbf{Consultar Notas:} Acceso a las calificaciones obtenidas en los diferentes ítems evaluables y resultados de aprendizaje.
-  \item \textbf{Visualizar Horario:} Consulta de la planificación semanal y periodos lectivos.
+  \item \textbf{Consultar Notas:} Acceso a las calificaciones obtenidas en los diferentes criterios de evaluación y resultados de aprendizaje, desglosadas por período.
 \end{itemize}
 
 \subsubsection{Gestión Docente}
@@ -420,7 +421,7 @@ La entidad \textbf{IMPARTICIóN} es el pivot fundamental del sistema. Vincula cu
 \subsection{Gestión de Matrícula y Aislamiento de Sedes}
 \begin{itemize}
   \item \textbf{Multi-Tenencia:} La entidad \textbf{CENTRO} es la raíz de la seguridad. Mediante relaciones directas con \texttt{GRUPO}, \texttt{IMPARTICIóN} y \texttt{MATRICULA}, el sistema garantiza que un usuario solo pueda acceder a los registros del centro donde tiene permisos activos.
-  \item \textbf{Estado de la Matrícula:} La entidad \textbf{MATRICULA} permite rastrear la situación del alumno (activo, baja, traslado) y si este es repetidor.
+  \item \textbf{Estado de la Matrícula:} La entidad \textbf{MATRICULA} permite rastrear la situación del alumno mediante el enumerado \texttt{estado\_matricula} con los valores \texttt{ACTIVA}, \texttt{BAJA} y \texttt{CONVALIDADO}, y si el alumno es repetidor.
 \end{itemize}
 
 \subsection{Ciclo de Evaluación y Auditoría Forense}
@@ -431,7 +432,7 @@ La entidad \textbf{IMPARTICIóN} es el pivot fundamental del sistema. Vincula cu
 
 \subsection{Identidad y Roles N:M}
 
-La relación entre \textbf{USUARIO} y \textbf{ROL} mediante la tabla intermedia \texttt{USUARIO\_ROL} elimina la rigidez de los perfiles únicos. Un usuario puede actuar como ``Profesor'' en una impartición y como ``Administrador'' de su sede simultáneamente.
+La relación entre \textbf{USUARIO} y \textbf{ROL} mediante la tabla intermedia \texttt{usuarios\_roles} elimina la rigidez de los perfiles únicos. Un usuario puede actuar como ``Profesor'' en una impartición y como ``Administrador'' de su sede simultáneamente.
 
 %=============================================================
 % CAPITULO 6 - TECNOLOGIA
@@ -516,7 +517,7 @@ A continuación se describen las tecnologías y herramientas utilizadas en el pr
 
 \chapter{Análisis de Requisitos}
 
-A continuación se presenta el desglose RFTP (\textbf{R}equisitos, \textbf{F}unciones, \textbf{T}areas y \textbf{P}ruebas) de las funcionalidades implementadas hasta la fecha. Cada requisito expresa en lenguaje coloquial lo que el sistema debe lograr; sus funciones lo desglosan en términos técnicos; las tareas describen el alcance concreto de cada desarrollo; y las pruebas planificadas demuestran que cada tarea ha sido completada satisfactoriamente.
+A continuación se presenta el desglose RFTP (\textbf{R}equisitos, \textbf{F}unciones, \textbf{T}areas y \textbf{P}ruebas) de las funcionalidades implementadas hasta la fecha. Cada requisito expresa en lenguaje coloquial lo que el sistema debe lograr; sus funciones lo desglosan en términos técnicos; las tareas describen el alcance concreto de cada desarrollo; y las pruebas planificadas demuestran que cada tarea ha sido completada satisfactoriamente, siguiendo la metodología TDD.
 
 %-------------------------------------------------------------
 \section{R01 -- El sistema debe permitir el acceso únicamente a usuarios registrados con credenciales válidas}
@@ -534,7 +535,7 @@ Diseñar y aplicar mediante Flyway (migración V1) la tabla \texttt{usuarios} co
 \end{itemize}
 
 \subsubsection{R01F01T02 -- Crear las tablas \texttt{roles} y \texttt{usuarios\_roles} para el control de acceso basado en roles (RBAC)}
-Diseñar la tabla \texttt{roles} con los valores \texttt{ADMIN}, \texttt{PROFESOR} y \texttt{ALUMNO}, y la tabla de unión \texttt{usuarios\_roles} con clave primaria compuesta que implementa la relación N:M entre usuarios y roles.
+Diseñar la tabla \texttt{roles} con los cuatro valores \texttt{ROLE\_ADMIN}, \texttt{ROLE\_ADMIN\_CENTRO}, \texttt{ROLE\_PROFESOR} y \texttt{ROLE\_ALUMNO}, y la tabla de unión \texttt{usuarios\_roles} que implementa la relación N:M entre usuarios y roles.
 \begin{itemize}
   \item \textbf{R01F01T02P01 --} Insertar un usuario de prueba con rol \texttt{PROFESOR} y confirmar que el registro aparece correctamente en la tabla \texttt{usuarios\_roles}.
 \end{itemize}
@@ -556,7 +557,7 @@ Crear la vista Thymeleaf con los campos de email y contraseña, el botón de acc
 \end{itemize}
 
 \subsubsection{R01F02T02 -- Configurar \texttt{SecurityConfig} para procesar el login en \texttt{/login}}
-Definir el \texttt{SecurityFilterChain} con \texttt{loginProcessingUrl("/login")}, proteger las rutas por rol (\texttt{/admin/**}, \texttt{/profe/**}, \texttt{/alumno/**}) y configurar el cierre de sesión en \texttt{/logout}.
+Definir el \texttt{SecurityFilterChain} con \texttt{loginProcessingUrl("/login")}, proteger las rutas por rol (\texttt{/admin/**} para ADMIN, \texttt{/centro-admin/**} para ADMIN\_CENTRO, \texttt{/profe/**} y \texttt{/tutor/**} para PROFESOR, \texttt{/alumno/**} para ALUMNO) y configurar el cierre de sesión en \texttt{/logout}.
 \begin{itemize}
   \item \textbf{R01F02T02P01 --} Enviar credenciales correctas al endpoint \texttt{/login} y comprobar que la sesión HTTP se establece y redirige al panel correspondiente.
 \end{itemize}
@@ -572,7 +573,7 @@ Registrar el bean \texttt{BCryptPasswordEncoder} en \texttt{SecurityConfig} y ut
 Dado que un usuario puede tener múltiples roles funcionales, el sistema determina automáticamente el destino de la redirección o presenta una pantalla de selección cuando hay ambigüedad.
 
 \subsubsection{R01F03T01 -- Implementar \texttt{CustomLoginSuccessHandler} con lógica de redirección por rol}
-Crear el componente que inspecciona las autoridades del objeto \texttt{Authentication} y redirige a \texttt{/admin/dashboard}, \texttt{/profe/dashboard} o \texttt{/alumno/dashboard} según el rol activo. Si el usuario tiene más de un rol funcional, redirigir a \texttt{/seleccionar-rol}.
+Crear el componente que inspecciona las autoridades del objeto \texttt{Authentication} y redirige a \texttt{/admin/dashboard}, \texttt{/centro-admin/dashboard}, \texttt{/profe/dashboard} o \texttt{/alumno/dashboard} según el rol activo. Si el usuario tiene más de un rol funcional, redirigir a \texttt{/seleccionar-rol}. Si no tiene ningún rol válido, redirigir a \texttt{/login?norole}.
 \begin{itemize}
   \item \textbf{R01F03T01P01 --} Iniciar sesión con un usuario de rol único \texttt{PROFESOR} y comprobar que la redirección aterriza directamente en \texttt{/profe/dashboard}.
 \end{itemize}
@@ -1212,7 +1213,7 @@ Modificar \texttt{SecurityConfig} para incluir \texttt{https://cdn.jsdelivr.net}
 %=============================================================
 \chapter{Seguridad}
 
-La seguridad de la plataforma ha sido tratada como un requisito transversal de primer orden, no como un añadido posterior. Se realizó un análisis sistemático de vulnerabilidades siguiendo el estándar OWASP Top 10 y se aplicaron contramedidas específicas en cada capa de la arquitectura. El resultado es una batería de veinticinco pruebas de seguridad automatizadas integradas en el pipeline de CI/CD que validan las medidas implementadas en cada build.
+La seguridad de la plataforma ha sido tratada como un requisito transversal de primer orden, no como un añadido posterior. Se realizó un análisis sistemático de vulnerabilidades siguiendo el estándar OWASP Top 10 y se aplicaron contramedidas específicas en cada capa de la arquitectura. El resultado es una batería de treinta y dos pruebas de seguridad automatizadas integradas en el pipeline de CI/CD que validan las medidas implementadas en cada build.
 
 \section{Análisis de Vulnerabilidades Identificadas}
 
@@ -1374,44 +1375,992 @@ Como resultado del análisis OWASP, se establecieron las siguientes reglas oblig
   \item \textbf{Templates}: uso exclusivo de \texttt{th:text} para datos de usuario o base de datos; \texttt{th:action="@\{/ruta\}"} en formularios POST para la inclusión implícita del token CSRF de Thymeleaf.
 \end{itemize}
 
-% \chapter{Dise\~no del Sistema}
-% TODO
+%=============================================================
+% CAPITULO 9 - DISEÑO DEL SISTEMA
+%=============================================================
+\chapter{Diseño del Sistema}
 
-% \chapter{Implementación}
-% TODO
+\section{Arquitectura en Capas}
 
-% \chapter{Pruebas}
-% TODO
+La aplicación sigue el patrón de arquitectura en tres capas de Spring MVC,
+reflejado directamente en la estructura de paquetes del proyecto:
 
-% \chapter{Conclusiones y Trabajo Futuro}
-% TODO
+\begin{itemize}
+  \item \textbf{Capa de Presentación:} Veintidós controladores Spring MVC anotados
+        con \texttt{@PreAuthorize} a nivel de clase y plantillas Thymeleaf
+        organizadas por portal (\texttt{admin/}, \texttt{centro-admin/},
+        \texttt{profe/}, \texttt{tutor/}, \texttt{alumno/}).
+  \item \textbf{Capa de Lógica de Negocio:} Veinticinco servicios
+        \texttt{@Service} bajo \texttt{infrastructure/service/} que encapsulan
+        las reglas académicas: validación de importaciones, cálculo de
+        calificaciones ponderadas y verificación de pertenencia de recursos al
+        centro del usuario autenticado.
+  \item \textbf{Capa de Persistencia:} Repositorios Spring Data JPA bajo
+        \texttt{infrastructure/repository/} y esquema de base de datos versionado
+        con Flyway. Solo existen dos migraciones:
+        \texttt{V1\_\_schema\_definitivo.sql} (DDL completo) y
+        \texttt{V2\_\_seeds\_desarrollo.sql} (datos de demo).
+\end{itemize}
+
+El paquete \texttt{domain/} centraliza las entidades JPA, los DTOs, los
+enumerados y las anotaciones de validación personalizadas, sin dependencias
+hacia ninguna capa de infraestructura.
+
+\section{Modelo de Datos}
+
+El esquema relacional, descrito mediante el diagrama E/R del capítulo
+\textit{Descripción} (figura \ref{fig:diagrama-er}), presenta las siguientes
+decisiones de diseño relevantes:
+
+\begin{itemize}
+  \item \textbf{Multi-rol mediante tabla intermedia:} La relación N:M entre
+        \texttt{usuarios} y \texttt{roles} (tabla \texttt{usuarios\_roles}) permite
+        que un mismo usuario disponga de varios perfiles simultáneamente. Los roles
+        se cargan con \texttt{FetchType.EAGER} para que Spring Security los tenga
+        disponibles en cada petición sin consultas adicionales.
+  \item \textbf{Aislamiento por \texttt{centro\_id}:} La columna aparece como
+        clave foránea en \texttt{grupos}, \texttt{imparticiones} y
+        \texttt{matriculas}. Toda consulta que involucre datos de un alumno o un
+        grupo incluye este campo como predicado de filtrado obligatorio.
+  \item \textbf{Asignación de profesores a sedes:} La tabla
+        \texttt{profesores\_sedes} modela la relación N:M entre docentes y centros,
+        permitiendo que un mismo profesor imparta en varios centros sin duplicar su
+        registro de usuario.
+  \item \textbf{Auditoría forense inmutable:} La tabla \texttt{auditoria\_notas}
+        solo admite inserciones, efectuadas exclusivamente por el trigger PL/pgSQL
+        \texttt{trigger\_auditoria\_notas} que se dispara \texttt{AFTER UPDATE}
+        sobre \texttt{calificaciones}. No existe ningún endpoint \texttt{DELETE}
+        ni \texttt{PUT} sobre esta tabla.
+  \item \textbf{Sesiones persistentes:} Las sesiones HTTP se almacenan en la
+        base de datos mediante Spring Session JDBC (tablas
+        \texttt{SPRING\_SESSION} y \texttt{SPRING\_SESSION\_ATTRIBUTES}),
+        garantizando la supervivencia de sesiones ante reinicios de la aplicación.
+\end{itemize}
+
+\section{Decisiones Arquitectónicas}
+
+\begin{longtable}{p{2.8cm} p{3.2cm} p{6.2cm}}
+  \toprule
+  \textbf{Decisión} & \textbf{Alternativa descartada} & \textbf{Motivo} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Decisión} & \textbf{Alternativa descartada} & \textbf{Motivo} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  PostgreSQL & MySQL & Soporte nativo de JSONB (campo \texttt{configuracion} en
+                       \texttt{centros}), triggers PL/pgSQL y la función
+                       \texttt{current\_setting()} usada por el trigger de
+                       auditoría. \\[4pt]
+  Thymeleaf (SSR) & React / Angular & Renderizado en servidor, sin API REST pública
+                       que proteger; menor superficie de ataque y sin complejidad
+                       de CORS ni tokens JWT. \\[4pt]
+  Spring Session JDBC & Cookie de sesión estándar & Persistencia de sesiones en
+                       base de datos, soporte de \texttt{maximumSessions(1)} para
+                       prevenir sesiones concurrentes sin caché externa. \\[4pt]
+  Flyway & Hibernate \texttt{ddl-auto} & Versionado explícito del esquema y
+                       posibilidad de incluir triggers PL/pgSQL que Hibernate no
+                       puede gestionar. \\[4pt]
+  Bucket4j (in-process) & API Gateway / Nginx & Sin infraestructura adicional para
+                       rate limiting del login; válido para el alcance del proyecto. \\
+\end{longtable}
+
+\section{Diseño del Control de Acceso (RBAC)}
+
+El control de acceso combina dos niveles de protección:
+
+\begin{enumerate}
+  \item \textbf{URL matching en \texttt{SecurityConfig}:} Cada prefijo de ruta
+        queda vinculado a un rol:
+        \texttt{/admin/**} requiere \texttt{ROLE\_ADMIN};
+        \texttt{/centro-admin/**} requiere \texttt{ROLE\_ADMIN\_CENTRO};
+        \texttt{/profe/**} y \texttt{/tutor/**} requieren \texttt{ROLE\_PROFESOR};
+        \texttt{/alumno/**} requiere \texttt{ROLE\_ALUMNO}.
+        La ruta \texttt{/snap-admin/**} tiene la regla \texttt{denyAll()} como
+        medida defensiva (véase capítulo Seguridad).
+  \item \textbf{\texttt{@PreAuthorize} a nivel de clase:} Cada controlador declara
+        su rol requerido como anotación de clase. Una ruta que no aparezca en
+        \texttt{SecurityConfig} queda igualmente protegida por la clase que la
+        sirve.
+\end{enumerate}
+
+La lógica de redirección post-login está centralizada en
+\texttt{CustomLoginSuccessHandler}: si el usuario tiene el flag
+\texttt{mustChangePassword} activo, se redirige a \texttt{/change-password};
+si tiene más de un rol funcional, a \texttt{/seleccionar-rol}; en caso contrario,
+al dashboard del rol único.
 
 %=============================================================
-% BIBLIOGRAFIA
+% CAPITULO 10 - IMPLEMENTACION
 %=============================================================
+\chapter{Implementación}
 
-\addcontentsline{toc}{chapter}{Bibliografía}
+\section{Autenticación y Gestión de Sesiones}
 
-\begin{thebibliography}{99}
-  \bibitem{spring} Spring Boot Documentation. \url{https://docs.spring.io/spring-boot/}
-  \bibitem{postgresql} PostgreSQL 16 Documentation. \url{https://www.postgresql.org/docs/16/}
-  \bibitem{flyway} Flyway Documentation. \url{https://documentation.red-gate.com/flyway}
-  \bibitem{docker} Docker Documentation. \url{https://docs.docker.com/}
-  \bibitem{jacoco} JaCoCo -- Java Code Coverage Library. \url{https://www.jacoco.org/jacoco/}
-  \bibitem{bucket4j} Bucket4j -- Java rate-limiting library based on the token-bucket algorithm. \url{https://github.com/bucket4j/bucket4j}
-  \bibitem{owasp} OWASP Foundation. OWASP Top Ten. \url{https://owasp.org/www-project-top-ten/}
-  \bibitem{springsecurity} Spring Security Reference Documentation. \url{https://docs.spring.io/spring-security/reference/}
-\end{thebibliography}
+El proceso de autenticación lo orquesta \texttt{CustomUserDetailsService}, que
+busca al usuario por email o nombre de usuario (en ese orden) y construye el objeto
+\texttt{UserDetails} mapeando cada \texttt{Rol} a una
+\texttt{SimpleGrantedAuthority} con el prefijo \texttt{ROLE\_}.
+
+Una vez autenticado, \texttt{CustomLoginSuccessHandler} aplica la siguiente lógica
+de redirección:
+
+\begin{enumerate}
+  \item Si \texttt{mustChangePassword == true} → \texttt{/change-password}.
+  \item Si el usuario tiene más de un rol funcional → \texttt{/seleccionar-rol}.
+  \item Si tiene un único rol → al dashboard de ese rol.
+  \item Si no tiene ningún rol válido → \texttt{/login?norole}.
+\end{enumerate}
+
+Las sesiones se almacenan en la base de datos mediante Spring Session JDBC con
+\texttt{maximumSessions(1)} y \texttt{changeSessionId()} activo en cada login para
+prevenir la fijación de sesión. Cuando un usuario inicia sesión desde un segundo
+dispositivo, la sesión anterior queda marcada como expirada y redirige a
+\texttt{/login?expired}.
+
+El rate limiting de \texttt{POST /login} lo implementa \texttt{LoginRateLimitFilter}
+(Bucket4j 8.10.1): cada dirección IP dispone de un cubo de 10 tokens con recarga
+cada 15 minutos; al agotarse, la respuesta es HTTP 429 con el cuerpo JSON
+\textit{«Demasiados intentos. Espera 15 minutos.»}. Las peticiones GET al formulario
+no consumen cupo.
+
+\section{Aislamiento Multi-Sede}
+
+Toda operación del \texttt{ROLE\_ADMIN\_CENTRO} pasa por
+\texttt{CentroAdminContextService}, que obtiene los \texttt{centro\_id} asignados
+al administrador autenticado y los usa como predicado en cada consulta. Si el
+recurso solicitado (grupo, impartición, matrícula o usuario) no pertenece a ninguno
+de esos centros, el servicio lanza \texttt{AccessDeniedException}, que Spring
+Security traduce en HTTP 403.
+
+El requisito R16F04 impide adicionalmente que un \texttt{ADMIN\_CENTRO} cree o
+modifique usuarios con \texttt{ROLE\_ADMIN} o \texttt{ROLE\_ADMIN\_CENTRO}:
+\texttt{CentroAdminContextService.validateUsuarioGestionablePorCentroAdmin}
+inspecciona los roles del usuario objetivo y lanza \texttt{AccessDeniedException}
+si detecta cualquiera de esos roles privilegiados.
+
+\section{Sistema de Auditoría Forense}
+
+La inmutabilidad del historial de calificaciones se garantiza a nivel de base de
+datos mediante el trigger PL/pgSQL definido en \texttt{V1\_\_schema\_definitivo.sql}:
+
+\begin{lstlisting}[language=SQL]
+CREATE TRIGGER trigger_auditoria_notas
+    AFTER UPDATE ON calificaciones
+    FOR EACH ROW
+    EXECUTE FUNCTION registrar_cambio_nota();
+\end{lstlisting}
+
+La función \texttt{registrar\_cambio\_nota()} inserta en \texttt{auditoria\_notas}
+únicamente cuando \texttt{OLD.valor IS DISTINCT FROM NEW.valor}, evitando registros
+ruidosos por actualizaciones sin cambio efectivo. El email del docente responsable
+se transmite mediante la variable de sesión de PostgreSQL
+\texttt{app.usuario\_actual}, que \texttt{TeacherDashboardService} establece
+invocando la función PostgreSQL \texttt{set\_config('app.usuario\_actual', :u, true)}
+a través de una \textit{native query} antes de cada persistencia de calificación.
+
+La exportación del histórico a Excel la gestiona \texttt{AuditoriaExcelExportService}
+(Apache POI 5.3.0): genera en memoria un \texttt{XSSFWorkbook} con nueve columnas
+(id, email del alumno, módulo, centro, valor anterior, valor nuevo, responsable,
+fecha en formato \texttt{dd/MM/yyyy HH:mm} y motivo) y lo devuelve como flujo de
+descarga directa sin escritura en disco. El \texttt{ADMIN\_CENTRO} exporta
+únicamente los registros de sus centros asignados.
+
+\section{Importación Masiva de Alumnos desde Excel}
+
+La importación de alumnos en bloque (R18) sigue un flujo de tres fases con
+validación atómica: si cualquier fila falla, no se persiste ningún registro.
+
+\begin{enumerate}
+  \item \textbf{Parsing:} \texttt{UsuarioExcelParserService} lee el \texttt{.xlsx}
+        con \texttt{XSSFWorkbook} de Apache POI, salta la cabecera (fila 0) e
+        itera las filas de datos mapeándolas a \texttt{UsuarioImportRowDTO} con
+        nueve campos: \textit{username}, \textit{nombre}, \textit{apellidos},
+        \textit{email}, \textit{password}, \textit{centroNombre},
+        \textit{cursoAcademicoNombre}, \textit{grupoNombre} y
+        \textit{esRepetidor}.
+  \item \textbf{Validación:} \texttt{UsuarioImportValidatorService} aplica un
+        límite global de 200 filas, detecta duplicados internos en el lote y
+        valida cada campo: email con expresión regular
+        \texttt{\^{}[\^{}@\textbackslash{}s]\{1,64\}@[\^{}@.\textbackslash{}s]+(\textbackslash{}.[\^{}@.\textbackslash{}s]+)+\$},
+        contraseña con mínimo 8 caracteres, al menos una mayúscula, una minúscula
+        y un dígito.
+  \item \textbf{Persistencia:} \texttt{UsuarioImportService} resuelve las claves
+        foráneas (centro, curso, grupo) contra la base de datos, crea cada usuario
+        con \texttt{ROLE\_ALUMNO} y contraseña cifrada con BCrypt, y genera una
+        \texttt{Matricula} en estado \texttt{ACTIVA} para cada impartición activa
+        del grupo.
+\end{enumerate}
+
+\section{Evaluación Granular por Criterio}
+
+El cuaderno del profesor implementa un modelo de calificación en dos niveles:
+\textbf{Resultado de Aprendizaje} (RA) $\rightarrow$ \textbf{Criterio de
+Evaluación} (CE). Cada CE lleva un peso porcentual almacenado en la columna
+\texttt{peso} de la tabla \texttt{criterios\_evaluacion}, configurable sin
+redespliegue desde el panel de administración
+(\texttt{POST /admin/modulos/\{id\}/editar}).
+
+\texttt{TeacherDashboardService} lee los pesos directamente de las entidades al
+calcular la nota final ponderada, sin ninguna constante \textit{hardcoded} en la
+lógica de negocio. Antes de cada guardado de calificación, el servicio establece
+la variable \texttt{app.usuario\_actual} en la sesión de PostgreSQL para que el
+trigger de auditoría capture el email del docente responsable.
+
+\section{Pipeline de CI/CD}
+
+El flujo de integración y entrega continua está implementado en
+\texttt{.github/workflows/ci-cd.yml} con cuatro jobs secuenciales:
+
+\begin{enumerate}
+  \item \textbf{Lint \& Validation:} Ejecuta los hooks de pre-commit (Spotless
+        para formato Java, hadolint para el Dockerfile) y valida la sintaxis de
+        los ficheros de GitHub Actions con actionlint.
+  \item \textbf{Build Test Container:} Construye la imagen Docker en la etapa
+        \textit{test} usando Docker Buildx con caché de GitHub Actions.
+  \item \textbf{Containerized Tests:} Levanta un servicio PostgreSQL 16-alpine y
+        ejecuta los tests dentro del contenedor. Verifica que la cobertura de
+        instrucciones reportada por JaCoCo supera el 80\%; si no, el job falla y
+        la promoción se cancela.
+  \item \textbf{Purge \& Promote:} Solo se ejecuta en push a \texttt{dev}.
+        Elimina los directorios de soporte (\texttt{.agents/}, \texttt{.claude/},
+        \texttt{conductor/}, \texttt{GEMINI.md}, etc.), hace force push a
+        \texttt{pre-prod} y abre una pull request hacia \texttt{main}.
+\end{enumerate}
+
+%=============================================================
+% CAPITULO 11 - PRUEBAS
+%=============================================================
+\chapter{Pruebas}
+
+\section{Estrategia de Pruebas}
+
+El proyecto adopta TDD (\textit{Test-Driven Development}) en su variante
+Red-Green-Refactor: por cada unidad de lógica de negocio se escribe primero el
+test que describe el comportamiento esperado, se implementa el código mínimo para
+que pase, y se refactoriza sin romper los tests existentes.
+
+Las pruebas se organizan en dos niveles:
+
+\begin{itemize}
+  \item \textbf{Tests unitarios:} JUnit 5 con Mockito. Cada dependencia del
+        servicio bajo prueba se sustituye por un \textit{mock} mediante
+        \texttt{@Mock} y \texttt{@InjectMocks}, sin levantar el contexto de
+        Spring.
+  \item \textbf{Tests de integración:} \texttt{@SpringBootTest} con
+        Testcontainers, que levanta un contenedor PostgreSQL 16 efímero por
+        cada ejecución garantizando paridad con el entorno de producción.
+\end{itemize}
+
+\section{Cobertura de Código}
+
+La cobertura de instrucciones se mide con JaCoCo 0.8.12 integrado en el plugin
+de Maven. El pipeline aplica un \textit{quality gate} bloqueante: si la cobertura
+no supera el 80\%, el job de tests falla y la promoción a \texttt{pre-prod} se
+cancela. El reporte se genera en \texttt{target/site/jacoco/index.html} y se
+sube como artifact de GitHub Actions en cada ejecución (referencia a imagen de
+pipeline en figura \ref{fig:pipeline-cicd}).
+
+\section{Tests Unitarios de Servicio}
+
+La batería de tests unitarios cubre los veinticinco servicios mediante veintisiete
+clases de test. Los casos más representativos son:
+
+\begin{itemize}
+  \item \textbf{AdminAuditoriaServiceTest:} Verifica el filtrado por email
+        (búsqueda parcial \textit{case-insensitive}), por módulo y por rango de
+        fechas; el correcto mapeo de entidad a \texttt{AdminAuditoriaListDTO} con
+        los diez campos; y que la búsqueda con \texttt{centroIds} delega en el
+        repositorio filtrado sin llamar a \texttt{findAllWithDetails()}.
+  \item \textbf{CentroAdminUsuarioServiceTest:} Verifica que el listado excluye
+        usuarios con \texttt{ROLE\_ADMIN} o \texttt{ROLE\_ADMIN\_CENTRO}; que
+        intentar crear usuarios con esos roles lanza \texttt{AccessDeniedException};
+        y que la actualización preserva los roles existentes del usuario.
+  \item \textbf{UsuarioImportValidatorServiceTest:} Verifica el rechazo de lotes
+        con más de 200 filas, la validación de la expresión regular del email, la
+        política de contraseñas y la detección de duplicados en el mismo lote.
+  \item \textbf{TeacherDashboardServiceTest:} Verifica el cálculo ponderado de la
+        nota final a partir de los pesos de los criterios almacenados en base de
+        datos.
+\end{itemize}
+
+\section{Tests de Seguridad}
+
+Se han implementado tests de seguridad en seis clases especializadas:
+
+\begin{itemize}
+  \item \textbf{SecurityConfigTest} (13 tests): Comprueba que
+        \texttt{/admin/dashboard} devuelve 302 sin autenticación, 403 para
+        \texttt{ROLE\_ALUMNO} y 200 para \texttt{ROLE\_ADMIN}; que
+        \texttt{/login} es público; que \texttt{POST /login} sin token CSRF
+        devuelve 403; que la respuesta incluye la cabecera
+        \texttt{Content-Security-Policy} con \texttt{frame-ancestors 'none'};
+        que \texttt{/snap-admin/**} devuelve 403 incluso para
+        \texttt{ROLE\_ADMIN}; y que rutas de \texttt{/admin/**} devuelven 403
+        para \texttt{ROLE\_ADMIN\_CENTRO}.
+  \item \textbf{CustomLoginSuccessHandlerTest} (3 tests): Verifica la redirección
+        a \texttt{/change-password} cuando \texttt{mustChangePassword} es verdadero,
+        la redirección por rol único y la redirección a \texttt{/seleccionar-rol}
+        para usuarios con múltiples roles.
+  \item \textbf{LoginRateLimitFilterTest} (3 tests): Comprueba que el undécimo
+        intento de login desde la misma IP devuelve HTTP 429; que dos IPs
+        distintas tienen cubos independientes; y que las peticiones GET no
+        consumen cupo.
+  \item \textbf{SecurityAuditLoggerTest} (6 tests): Verifica la sanitización de
+        entradas con saltos de línea y retornos de carro (prevención de
+        \textit{log injection}), el comportamiento con valores \texttt{null} y
+        que los métodos de logging no lanzan excepciones.
+  \item \textbf{AuthIntegrationTest} (6 tests): Pruebas de extremo a extremo
+        sobre la base de datos real: login exitoso para cada rol, credenciales
+        incorrectas y límite de una sesión concurrente.
+  \item \textbf{LoginControllerTest} (1 test): Verifica que \texttt{GET /login}
+        devuelve la vista del formulario de acceso.
+\end{itemize}
+
+%=============================================================
+% CAPITULO 12 - CONCLUSIONES Y TRABAJO FUTURO
+%=============================================================
+\chapter{Conclusiones y Trabajo Futuro}
+
+\section{Objetivos Alcanzados}
+
+El proyecto ha completado los veintiún requisitos funcionales planificados
+(R01--R21), implementando una plataforma ERP educativa multi-sede con las
+siguientes capacidades verificadas:
+
+\begin{itemize}
+  \item \textbf{Gestión completa de la infraestructura educativa:} CRUD de centros,
+        cursos académicos, módulos, grupos, imparticiones y matrículas, con
+        aislamiento estricto de datos entre sedes.
+  \item \textbf{Sistema de evaluación granular:} Cuaderno del profesor con
+        calificación por criterio de evaluación con pesos configurables,
+        soporte de recuperaciones y cálculo automático de la nota final ponderada.
+  \item \textbf{Auditoría forense inmutable:} Registro de cada modificación de
+        calificación mediante trigger PL/pgSQL, con identificación del docente
+        responsable y exportación completa a Excel.
+  \item \textbf{Importación masiva de alumnos:} Alta de hasta 200 alumnos con sus
+        matrículas en una única operación desde plantilla Excel, con validación
+        atómica.
+  \item \textbf{Seguridad OWASP Top 10:} Remediación de las nueve vulnerabilidades
+        identificadas en la auditoría (véase capítulo Seguridad), con
+        treinta y dos tests de seguridad automatizados integrados en el pipeline.
+  \item \textbf{Calidad continua:} Pipeline de CI/CD en GitHub Actions con
+        cobertura de código superior al 80\% como requisito bloqueante en cada
+        promoción a producción.
+\end{itemize}
+
+\section{Dificultades Encontradas}
+
+\begin{itemize}
+  \item \textbf{Modelo de roles N:M:} El diseño inicial con roles como enum en la
+        entidad \texttt{Usuario} resultó insuficiente para soportar la asignación
+        dinámica de roles. La refactorización hacia la tabla intermedia
+        \texttt{usuarios\_roles} requirió revisar todas las consultas JPQL
+        existentes y los seeds de datos de prueba.
+  \item \textbf{Variable de sesión en PostgreSQL:} La transmisión del email del
+        docente al trigger PL/pgSQL mediante la función
+        \texttt{set\_config('app.usuario\_actual', :u, true)} requirió estudiar
+        la API de Hibernate para ejecutar una \textit{native query} antes del
+        flush de la unidad de trabajo.
+  \item \textbf{Aislamiento de tests con Testcontainers:} La configuración de
+        \texttt{@Transactional} y los rollbacks automáticos fue crítica para evitar
+        interferencias entre tests que modifican el estado de la base de datos
+        compartida por el contenedor.
+  \item \textbf{Dependencia \texttt{snap-admin} (OWASP A06):} La librería fue
+        integrada en una fase temprana como herramienta de prototipado. Su
+        eliminación tardía requirió añadir la regla defensiva \texttt{denyAll()}
+        en \texttt{SecurityConfig} para garantizar que las rutas permanecen
+        bloqueadas incluso ante una reinstalación accidental de la dependencia.
+  \item \textbf{Integración de Bucket4j con Spring Security 6:} La API del filtro
+        de rate limiting cambió entre Spring Security 5 y 6. La implementación
+        como \texttt{OncePerRequestFilter} independiente del
+        \texttt{SecurityFilterChain} fue necesaria para evitar conflictos con el
+        procesamiento del contexto de seguridad.
+\end{itemize}
+
+\section{Trabajo Futuro}
+
+Los siguientes ítems quedaron fuera del alcance del TFG y constituyen líneas de
+trabajo futuro:
+
+\begin{itemize}
+  \item \textbf{Filtros dinámicos en el panel de administración:} La infraestructura
+        de \texttt{AdminCursoActivoService} está implementada, pero los controles
+        de filtrado por curso activo en la interfaz de usuario están pendientes.
+  \item \textbf{Importación en formatos alternativos:} El sistema soporta
+        importación desde \texttt{.xlsx}. La extensión a CSV, JSON y XML es una
+        evolución natural del servicio de parsing existente.
+  \item \textbf{Análisis estático con SonarQube:} El plugin
+        \texttt{sonar-maven-plugin 5.0.0.4389} está configurado en el
+        \texttt{pom.xml} pero no integrado en el pipeline de CI/CD. Un quality gate
+        de SonarQube añadiría análisis de deuda técnica y detección de
+        vulnerabilidades estáticas.
+  \item \textbf{Interfaz responsive:} El CSS actual no está optimizado para
+        dispositivos móviles. Una refactorización con CSS Grid mejoraría la
+        usabilidad para profesores que usan tabletas en el aula.
+  \item \textbf{Módulo de mensajería interna:} Una funcionalidad de comunicación
+        entre profesor y alumno (notificaciones de calificación, avisos de
+        ausencias) completaría el ecosistema de la plataforma.
+\end{itemize}
+
+\section{Conclusión Final}
+
+El desarrollo de Schooledule ha supuesto la puesta en práctica de un ciclo completo
+de ingeniería de software: desde el análisis de requisitos y el diseño del modelo
+de datos hasta la implementación con TDD, la securización sistemática con OWASP
+Top 10 y la entrega automatizada mediante CI/CD.
+
+El reto más significativo no fue la implementación de ninguna funcionalidad
+concreta, sino el diseño de una arquitectura capaz de soportar la complejidad real
+de los centros educativos: usuarios polivalentes con múltiples roles, datos de
+alumnos estrictamente aislados entre sedes y un historial académico auditable e
+inmutable por requisito legal.
+
+El resultado es un sistema desplegable con Docker, con una cobertura de tests
+superior al 80\% y sin vulnerabilidades en ninguna de las nueve categorías OWASP
+auditadas.
 
 %=============================================================
 % ANEXOS
 %=============================================================
 \appendix
 
-% \chapter{Manual de Usuario}
-% TODO
+%=============================================================
+% MANUAL DE USUARIO
+%=============================================================
 
-% \chapter{Manual de Instalación}
-% TODO
+% Macro: muestra la imagen si existe; si no, un recuadro gris con texto descriptivo.
+% Uso: \figurapendiente{imageXX.png}{Caption}{label}
+\newcommand{\figurapendiente}[3]{%
+  \begin{figure}[H]
+    \centering
+    \IfFileExists{#1}{%
+      \includegraphics[width=0.95\textwidth]{#1}%
+    }{%
+      \setlength{\fboxsep}{10pt}%
+      \colorbox{grisClaro}{\begin{minipage}{0.88\textwidth}%
+        \centering\vspace{1.2cm}%
+        \textcolor{grisTexto}{\small\textit{[Captura pendiente -- #2]}}%
+        \vspace{1.2cm}%
+      \end{minipage}}%
+    }%
+    \caption{#2}%
+    \label{fig:#3}%
+  \end{figure}%
+}
+
+\chapter{Manual de Usuario}
+
+Este apéndice describe el funcionamiento de cada portal de Schooledule desde el punto de
+vista del usuario final. La plataforma define cuatro roles con permisos distintos:
+\textbf{Administrador Global} (\texttt{/admin/**}),
+\textbf{Administrador de Centro} (\texttt{/centro-admin/**}),
+\textbf{Profesor} (\texttt{/profe/**}) y
+\textbf{Alumno} (\texttt{/alumno/**}).
+Cada rol accede a un portal independiente con su propia navegación y funcionalidad.
+Los profesores que han sido designados como tutores de un grupo disponen
+adicionalmente del portal de tutor (\texttt{/tutor/**}), accesible con el mismo
+rol \texttt{ROLE\_PROFESOR}.
+
+%-------------------------------------------------------------
+\section{Acceso al sistema}
+%-------------------------------------------------------------
+
+\subsection{Inicio de sesión}
+
+Todos los usuarios acceden a la plataforma a través del mismo formulario de login,
+disponible en \texttt{/login}. La autenticación se realiza mediante \textbf{dirección de
+correo electrónico / nombre de usuario y contraseña}. El sistema no distingue el rol en este paso: una vez
+verificadas las credenciales, determina automáticamente a qué portal redirigir al usuario.
+
+\figurapendiente{image20.png}{Formulario de inicio de sesión de Schooledule}{manual-login}
+
+\subsection{Selección de Rol}
+
+Un usuario puede tener asignados varios roles simultáneamente (por ejemplo, un profesor
+que también ejerce como alumno). En ese caso, tras el login, el sistema presenta una
+pantalla de selección de portal donde el usuario elige con qué perfil quiere operar en esa
+sesión. Si el usuario solo tiene un rol, la redirección es directa sin pasar por esta
+pantalla.
+
+\figurapendiente{image21.png}{Pantalla de selección de portal para usuarios con múltiples roles}{manual-selrol}
+
+%-------------------------------------------------------------
+\section{Administrador Global}
+%-------------------------------------------------------------
+
+El Administrador Global tiene acceso completo a la plataforma. Es el único rol que puede
+gestionar todos los centros educativos al mismo tiempo, administrar el catálogo de módulos,
+controlar el curso académico activo y consultar la auditoría forense de cambios de
+calificaciones. En un despliegue real, este rol corresponde al equipo técnico o al
+responsable de sistemas del consorcio educativo.
+
+\subsection{Panel principal}
+
+El panel de inicio muestra cuatro cifras clave del sistema en tiempo real: número de
+centros activos, total de usuarios registrados, matrículas del curso en vigor e
+imparticiones en marcha. Estas métricas permiten tener una visión global del estado de
+la plataforma de un solo vistazo.
+
+\figurapendiente{image22.png}{Dashboard del Administrador Global con el resumen de actividad}{manual-admindash}
+
+\subsection{Centros educativos}
+
+Desde la sección \textit{Centros} el administrador puede crear nuevos centros educativos,
+editar sus datos (nombre, ubicación). Cada centro funciona como un espacio de datos aislado: los usuarios y grupos de un centro no son visibles para los gestores de otro centro.
+
+\figurapendiente{image23.png}{Lista de centros educativos registrados en el sistema}{manual-admincentroslist}
+
+\figurapendiente{image24.png}{Formulario de creación y edición de un centro educativo}{manual-admincentrosform}
+
+\subsection{Usuarios}
+
+La sección de usuarios permite buscar, crear, editar y desactivar cuentas de usuario de
+cualquier rol. La tabla de listado incluye el nombre del usuario, su correo electrónico,
+los roles asignados.
+El filtrado por rol facilita la gestión en instalaciones con gran número de
+usuarios.
+
+\figurapendiente{image25.png}{Lista de usuarios con filtros por rol}{manual-adminuserslist}
+
+Al crear un usuario, el formulario permite asignar uno o varios roles mediante
+casillas de verificación, así como seleccionar los centros educativos a los que tendrá
+acceso. La contraseña inicial se establece en este paso y el usuario puede cambiarla
+posteriormente desde su perfil.
+
+\figurapendiente{image26.png}{Formulario de creación de usuario con selección de roles y centros}{manual-adminusersform}
+
+\subsection{Importación masiva de usuarios}
+
+Para dar de alta a múltiples usuarios a la vez (por ejemplo, al inicio de curso), el
+sistema ofrece un proceso de importación desde Excel. El administrador sube un fichero
+\texttt{.xlsx} con las columnas definidas en la plantilla descargable; la aplicación
+valida cada fila de forma independiente y muestra una vista previa con el resultado de
+la validación antes de confirmar la importación. Las filas con errores se marcan en rojo
+indicando el motivo, mientras que las válidas se importan de inmediato al confirmar.
+
+\figurapendiente{image27.png}{Vista previa de la importación masiva de usuarios desde Excel}{manual-adminimport}
+
+\subsection{Módulos}
+
+El catálogo de módulos recoge todas las asignaturas o módulos formativos que se pueden
+impartir en los centros. Su gestión (creación, edición) es exclusiva del Administrador
+Global, garantizando un catálogo único y consistente en toda la plataforma.
+
+\figurapendiente{image28.png}{Catálogo de módulos formativos del sistema}{manual-adminmodulos}
+
+Al igual que con los usuarios, los módulos pueden importarse en bloque desde un fichero
+Excel, lo que agiliza la carga inicial de datos al poner en marcha un nuevo centro.
+
+\figurapendiente{image29.png}{Formulario de importación de módulos desde Excel}{manual-adminmodulosimport}
+
+\subsection{Grupos e imparticiones}
+
+Los \textbf{grupos} representan las clases o divisiones de alumnos dentro de un centro.
+Las \textbf{imparticiones} son la unión de un módulo, un grupo y un profesor: representan
+el hecho de que un determinado profesor imparte un módulo concreto a un grupo de alumnos
+en un centro y en un período académico. Este modelo permite la misma asignatura ser
+impartida por profesores distintos en centros distintos sin interferencias.
+
+\figurapendiente{image30.png}{Listado de grupos académicos}{manual-admingrupos}
+
+\figurapendiente{image31.png}{Listado de imparticiones activas (módulo, profesor y grupo)}{manual-adminimparticiones}
+
+\subsection{Cursos académicos}
+
+El sistema distingue entre cursos académicos (p.~ej. \textit{2024--2025} y
+\textit{2025--2026}). Solo uno puede estar activo en cada momento. El Administrador
+Global puede marcar como activo un curso diferente, lo que cambia qué matrículas e
+imparticiones son visibles por defecto en toda la plataforma. Los datos de cursos
+anteriores se conservan íntegramente y son accesibles a través de los filtros.
+
+\figurapendiente{image32.png}{Gestión de cursos académicos con el curso activo resaltado}{manual-admincursos}
+
+\subsection{Auditoría forense}
+
+Cada vez que un profesor modifica una calificación, un \textit{trigger} de PostgreSQL
+registra de forma automática e inmutable: el usuario que realizó el cambio, la marca
+temporal exacta, el valor anterior de la nota y el nuevo valor. Este log no puede
+editarse ni borrarse desde la aplicación; actúa como un historial forense que garantiza
+la trazabilidad legal de cualquier modificación académica.
+
+El Administrador Global puede consultar este registro desde la sección
+\textit{Auditoría}, con filtros por alumno, módulo y rango de fechas. El resultado puede
+exportarse a Excel para facilitar su revisión fuera de la plataforma.
+
+\figurapendiente{image33.png}{Tabla de auditoría forense con registro de cambios de calificaciones}{manual-adminauditoria}
+
+%-------------------------------------------------------------
+\section{Administrador de Centro}
+%-------------------------------------------------------------
+
+El Administrador de Centro es un rol intermedio: tiene las mismas herramientas de gestión
+que el Administrador Global en lo que respecta a usuarios, grupos e imparticiones, pero
+su visibilidad está estrictamente limitada a los centros que tiene asignados. No puede
+acceder a los datos de otros centros, ni gestionar el catálogo de módulos, ni cambiar el
+curso académico activo.
+
+Adicionalmente, este rol \textbf{no puede modificar los roles de los usuarios}. Puede
+editar el nombre, el correo o la contraseña de un usuario, pero el rol con el que fue
+creado permanece bloqueado desde este panel como medida de seguridad.
+
+\subsection{Panel principal}
+
+El dashboard del Administrador de Centro muestra cuatro indicadores relativos
+exclusivamente a sus centros asignados: número de centros, grupos, imparticiones y
+alumnos activos.
+
+\figurapendiente{image35.png}{Dashboard del Administrador de Centro con sus cuatro métricas}{manual-admin2dash}
+
+\subsection{Usuarios del centro}
+
+La lista de usuarios solo incluye aquellos que pertenecen a alguno de los centros
+asignados al administrador. Al editar un usuario, los roles aparecen como texto
+de solo lectura con una nota explicativa. Los centros asignados sí pueden modificarse,
+dentro del subconjunto de centros que gestiona este administrador.
+
+\figurapendiente{image36.png}{Lista de usuarios gestionados por el Administrador de Centro}{manual-admin2userslist}
+
+\figurapendiente{image37.png}{Formulario de edición de usuario con rol en modo solo lectura}{manual-admin2usersform}
+
+\subsection{Grupos e imparticiones}
+
+La gestión de grupos e imparticiones funciona de forma idéntica a la del Administrador
+Global, con la única diferencia de que los datos mostrados están filtrados por los
+centros asignados.
+
+\figurapendiente{image38.png}{Lista de grupos del centro administrado}{manual-admin2grupos}
+
+\figurapendiente{image39.png}{Lista de imparticiones del centro administrado}{manual-admin2imparticiones}
+
+%-------------------------------------------------------------
+\section{Portal del Profesor}
+%-------------------------------------------------------------
+
+El portal del profesor está diseñado para que el docente pueda acceder rápidamente a sus
+imparticiones y calificar a sus alumnos por criterio de evaluación. No tiene acceso a la
+configuración del sistema ni a datos de otros profesores.
+
+\subsection{Panel principal}
+
+Al entrar en el portal, el profesor ve una tarjeta por cada centro educativo al que está
+asignado. Haciendo clic en una tarjeta accede a la lista de módulos que imparte en ese
+centro.
+
+\figurapendiente{image40.png}{Dashboard del profesor con los centros asignados como tarjetas}{manual-profdash}
+
+\subsection{Imparticiones del profesor}
+
+Dentro de un centro, se listan las imparticiones activas del profesor en el curso
+académico en vigor. Cada fila muestra el nombre del módulo, el grupo y el período de
+evaluación. Desde aquí se accede a la tabla de calificación.
+
+\figurapendiente{image41.png}{Lista de imparticiones activas del profesor en el centro seleccionado}{manual-profimparticiones}
+
+\subsection{Calificación por criterio de evaluación}
+
+Esta es la pantalla central del portal del profesor. Schooledule implementa un modelo
+de evaluación basado en \textbf{Resultados de Aprendizaje (RA)} y \textbf{Criterios de
+Evaluación (CE)}, alineado con la estructura de los módulos de Formación Profesional.
+
+Cada criterio de evaluación lleva asociado un \textbf{peso porcentual} que determina su
+contribución a la nota final del módulo. El profesor introduce la calificación de cada
+alumno en cada criterio; la aplicación calcula automáticamente la nota final ponderada
+sin necesidad de hojas de cálculo externas.
+
+La pantalla presenta una tabla donde las filas son los alumnos del grupo y las columnas
+son los criterios de evaluación con sus pesos. Al modificar una nota y guardar, el
+cambio queda registrado en el log de auditoría forense de forma inmediata.
+
+\figurapendiente{image42.png}{Tabla de calificación por criterio de evaluación con cálculo automático de nota final}{manual-profnotas}
+
+%-------------------------------------------------------------
+\section{Portal del Tutor (accesible con rol Profesor)}
+%-------------------------------------------------------------
+
+El portal del tutor es una vista adicional disponible para los docentes que han sido
+designados como tutores de un grupo. No constituye un rol RBAC independiente:
+el usuario accede con \texttt{ROLE\_PROFESOR} y, si tiene al menos un grupo tutelado
+(campo \texttt{tutor\_id} en la tabla \texttt{grupos}), el sistema habilita el
+portal en \texttt{/tutor/**}. A diferencia del portal del profesor, que se centra
+en la calificación de un módulo concreto, el portal del tutor ofrece una visión
+transversal del grupo.
+
+\subsection{Grupos tutelados}
+
+Al acceder al portal, el tutor ve la lista de grupos que tutoriza. Cada grupo muestra el
+centro al que pertenece y el número de alumnos inscritos.
+
+\figurapendiente{image43.png}{Lista de grupos tutelados en el portal del tutor}{manual-tutorgrupos}
+
+\subsection{Seguimiento del alumnado}
+
+Desde un grupo, el tutor puede consultar la relación de alumnos matriculados y acceder
+a información de sus imparticiones. Esta vista le permite detectar situaciones de riesgo
+académico sin tener que acceder a la herramienta de calificación del profesor.
+
+\figurapendiente{image44.png}{Vista de alumnos del grupo con seguimiento académico}{manual-tutoralumnos}
+
+%-------------------------------------------------------------
+\section{Portal del Alumno}
+%-------------------------------------------------------------
+
+El portal del alumno es de \textbf{solo lectura}: el alumno puede consultar su
+información académica pero no puede modificar ningún dato. El acceso está restringido
+a su propio expediente; no puede ver los datos de otros alumnos.
+
+\subsection{Menú principal}
+
+La pantalla de inicio del alumno presenta las secciones disponibles: perfil y
+datos de matrícula. El diseño, construido con Thymeleaf, es deliberadamente
+sencillo para reducir la curva de aprendizaje en usuarios que pueden no tener experiencia
+previa con plataformas académicas.
+
+\figurapendiente{image45.png}{Menú principal del portal del alumno}{manual-alumnodash}
+
+\subsection{Consulta de notas}
+
+El alumno puede consultar sus calificaciones organizadas por \textbf{período de
+evaluación} (primera, segunda evaluación, etc.) y, dentro de cada período, desglosadas
+por criterio de evaluación. Esto le permite ver no solo la nota final del módulo sino
+también en qué criterios concretos tiene margen de mejora.
+
+\figurapendiente{image46.png}{Vista de notas del alumno desglosadas por período y criterio}{manual-alumnonotas}
+
+\subsection{Perfil académico}
+
+La sección de perfil muestra los datos personales del alumno (nombre, correo electrónico)
+y el resumen de sus matrículas activas e históricas, con el módulo, el grupo y el curso
+académico correspondientes.
+
+\figurapendiente{image47.png}{Perfil académico del alumno con datos personales y matrículas}{manual-alumnoperfil}
+
+\chapter{Manual de Instalación}
+
+\section{Requisitos Previos}
+
+Para ejecutar Schooledule son necesarios:
+
+\begin{itemize}
+  \item \textbf{Docker Desktop} (versión 24 o superior) o Docker Engine con
+        Docker Compose v2 en sistemas Linux.
+  \item Los puertos \textbf{8080} (aplicación web) y \textbf{5433}
+        (PostgreSQL, acceso externo) disponibles en el host.
+  \item Mínimo \textbf{2 GB de RAM} libres para los contenedores.
+\end{itemize}
+
+No se requiere Java, Maven ni PostgreSQL instalados localmente; todo el entorno
+de ejecución está encapsulado en los contenedores Docker definidos en
+\texttt{infraestructura/docker-compose.yml}.
+
+\section{Instalación y Arranque}
+
+\begin{enumerate}
+  \item Clonar el repositorio y situarse en el directorio de infraestructura:
+\begin{lstlisting}[language=bash]
+git clone <url-del-repositorio>
+cd schooledule/infraestructura
+\end{lstlisting}
+
+  \item Revisar las variables de entorno en el fichero \texttt{.env} del
+        directorio \texttt{infraestructura/}. Los valores por defecto son:
+        \texttt{POSTGRES\_USER=admin}, \texttt{POSTGRES\_PASSWORD=password123},
+        \texttt{POSTGRES\_DB=schooledule}, \texttt{APP\_PORT=8080}.
+
+  \item Levantar los servicios:
+\begin{lstlisting}[language=bash]
+docker-compose up -d
+\end{lstlisting}
+
+  \item Verificar que los contenedores están activos:
+\begin{lstlisting}[language=bash]
+docker-compose ps
+\end{lstlisting}
+
+  El primer arranque tardará unos instantes mientras se ejecutan las
+  migraciones Flyway (\texttt{V1\_\_schema\_definitivo.sql} y
+  \texttt{V2\_\_seeds\_desarrollo.sql}).
+\end{enumerate}
+
+\section{Primer Acceso}
+
+Una vez levantados los servicios, abrir el navegador en:
+
+\begin{center}
+  \texttt{http://localhost:8080}
+\end{center}
+
+Los usuarios incluidos en el \textit{seed} de desarrollo son:
+
+\begin{center}
+  \begin{tabular}{lll}
+    \toprule
+    \textbf{Email} & \textbf{Contraseña inicial} & \textbf{Rol} \\
+    \midrule
+    \texttt{admin@tfg.com}  & \texttt{1234} & ROLE\_ADMIN \\
+    \texttt{juan@tfg.com}   & \texttt{1234} & ROLE\_PROFESOR \\
+    \texttt{ana@tfg.com}    & \texttt{1234} & ROLE\_ALUMNO \\
+    \texttt{pedro@tfg.com}  & \texttt{1234} & ROLE\_PROFESOR + ROLE\_ALUMNO \\
+    \bottomrule
+  \end{tabular}
+\end{center}
+
+En el primer login el sistema solicitará el cambio obligatorio de contraseña
+(\texttt{must\_change\_password = true} en todos los usuarios del seed).
+
+\section{Variables de Entorno para Producción}
+
+El fichero \texttt{.env} de \texttt{infraestructura/} define todas las variables
+del entorno. Para despliegues en producción se recomienda modificar al menos:
+
+\begin{itemize}
+  \item \texttt{POSTGRES\_PASSWORD} — Sustituir por una contraseña segura.
+  \item \texttt{SPRING\_DATASOURCE\_URL}, \texttt{SPRING\_DATASOURCE\_USERNAME},
+        \texttt{SPRING\_DATASOURCE\_PASSWORD} — Si se usa una instancia de
+        PostgreSQL externa.
+  \item \texttt{APP\_PORT} — Puerto de exposición de la aplicación
+        (por defecto \texttt{8080}).
+\end{itemize}
+
+%=============================================================
+% BIBLIOGRAFIA
+%=============================================================
+
+\clearpage
+\addcontentsline{toc}{chapter}{Bibliografía}
+
+\begin{thebibliography}{99}
+
+  % --- Lenguaje y plataforma ---
+  \bibitem{java21}
+    Oracle Corporation.
+    \textit{Java SE 21 Documentation}.
+    2023.
+    \url{https://docs.oracle.com/en/java/javase/21/}
+
+  \bibitem{spring}
+    VMware, Inc.
+    \textit{Spring Boot Reference Documentation}.
+    2024.
+    \url{https://docs.spring.io/spring-boot/docs/3.3.5/reference/html/}
+
+  \bibitem{springmvc}
+    VMware, Inc.
+    \textit{Spring Framework -- Web MVC}.
+    2024.
+    \url{https://docs.spring.io/spring-framework/reference/web/webmvc.html}
+
+  \bibitem{springsecurity}
+    VMware, Inc.
+    \textit{Spring Security Reference Documentation}.
+    2024.
+    \url{https://docs.spring.io/spring-security/reference/}
+
+  \bibitem{springdata}
+    VMware, Inc.
+    \textit{Spring Data JPA Reference Documentation}.
+    2024.
+    \url{https://docs.spring.io/spring-data/jpa/docs/current/reference/html/}
+
+  % --- Capa de presentación ---
+  \bibitem{thymeleaf}
+    The Thymeleaf Team.
+    \textit{Thymeleaf Documentation}.
+    2023.
+    \url{https://www.thymeleaf.org/documentation.html}
+
+  % --- Base de datos ---
+  \bibitem{postgresql}
+    The PostgreSQL Global Development Group.
+    \textit{PostgreSQL 16 Documentation}.
+    2023.
+    \url{https://www.postgresql.org/docs/16/}
+
+  \bibitem{flyway}
+    Redgate Software.
+    \textit{Flyway Documentation}.
+    2024.
+    \url{https://documentation.red-gate.com/flyway}
+
+  % --- Contenedores e infraestructura ---
+  \bibitem{docker}
+    Docker, Inc.
+    \textit{Docker Documentation}.
+    2024.
+    \url{https://docs.docker.com/}
+
+  \bibitem{ghactions}
+    GitHub, Inc.
+    \textit{GitHub Actions Documentation}.
+    2024.
+    \url{https://docs.github.com/en/actions}
+
+  % --- Calidad y pruebas ---
+  \bibitem{junit5}
+    The JUnit Team.
+    \textit{JUnit 5 User Guide}.
+    2024.
+    \url{https://junit.org/junit5/docs/current/user-guide/}
+
+  \bibitem{mockito}
+    Mockito contributors.
+    \textit{Mockito Documentation}.
+    2024.
+    \url{https://javadoc.io/doc/org.mockito/mockito-core/latest/}
+
+  \bibitem{jacoco}
+    EclEmma contributors.
+    \textit{JaCoCo -- Java Code Coverage Library}.
+    2024.
+    \url{https://www.jacoco.org/jacoco/}
+
+  \bibitem{maven}
+    The Apache Software Foundation.
+    \textit{Apache Maven Project}.
+    2024.
+    \url{https://maven.apache.org/}
+
+  % --- Herramientas de estilo ---
+  \bibitem{prettier}
+    Prettier contributors.
+    \textit{Prettier -- Opinionated Code Formatter}.
+    2024.
+    \url{https://prettier.io/docs/}
+
+  \bibitem{spotless}
+    diffplug contributors.
+    \textit{Spotless -- Keep your code spotless}.
+    2024.
+    \url{https://github.com/diffplug/spotless}
+
+  % --- Seguridad ---
+  \bibitem{owasp}
+    OWASP Foundation.
+    \textit{OWASP Top 10 -- 2021}.
+    2021.
+    \url{https://owasp.org/www-project-top-ten/}
+
+  \bibitem{bucket4j}
+    Vladimir Bukhtoyarov.
+    \textit{Bucket4j -- Java rate-limiting library based on token-bucket algorithm}.
+    2024.
+    \url{https://github.com/bucket4j/bucket4j}
+
+  % --- Metodología y normas ---
+  \bibitem{tdd}
+    Beck, K.
+    \textit{Test-Driven Development: By Example}.
+    Addison-Wesley, 2002.
+    ISBN 978-0321146533.
+
+  \bibitem{clean}
+    Martin, R. C.
+    \textit{Clean Architecture: A Craftsman's Guide to Software Structure and Design}.
+    Prentice Hall, 2017.
+    ISBN 978-0134494166.
+
+\end{thebibliography}
 
 \end{document}

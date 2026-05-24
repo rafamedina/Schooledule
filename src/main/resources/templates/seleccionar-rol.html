@@ -25,6 +25,20 @@
           </p>
         </a>
 
+        <!-- card ADMIN_CENTRO -->
+        <a
+          href="/centro-admin/dashboard"
+          class="role-card animate-in"
+          th:if="${roles.contains('ROLE_ADMIN_CENTRO')}"
+        >
+          <div class="role-card__icon">&#9632;</div>
+          <span class="role-card__name">Admin de Centro</span>
+          <p class="role-card__desc">
+            Gestión de usuarios, grupos e imparticiones de tus centros
+            asignados.
+          </p>
+        </a>
+
         <!-- card PROFESOR -->
         <a
           href="/profe/dashboard"
