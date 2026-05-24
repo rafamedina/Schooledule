@@ -951,7 +951,7 @@ Formulario con selección de impartición y estado inicial. Validar que el alumn
 \end{itemize}
 
 \subsubsection{R11F02T03 -- Implementar la edición y eliminación de matrículas}
-Permitir la modificación del estado (\texttt{ACTIVA}, \texttt{BAJA}, \texttt{TRASLADO}) y del campo \texttt{esRepetidor}. La eliminación solo está disponible cuando la matrícula no tiene calificaciones registradas.
+Permitir la modificación del estado (\texttt{ACTIVA}, \texttt{BAJA}, \texttt{CONVALIDADO}) y del campo \texttt{esRepetidor}. La eliminación solo está disponible cuando la matrícula no tiene calificaciones registradas.
 \begin{itemize}
   \item \textbf{R11F02T03P01 --} Intentar eliminar una matrícula con calificaciones asociadas y verificar que el sistema rechaza la operación con un mensaje que explica el motivo.
 \end{itemize}
@@ -1122,9 +1122,9 @@ La alta manual de alumnos uno a uno no es viable al inicio de un curso académic
 \subsection{R18F01 -- El sistema debe proporcionar una plantilla Excel descargable con el formato requerido}
 
 \subsubsection{R18F01T01 -- Implementar \texttt{GET /admin/usuarios/plantilla-excel}}
-Generar con Apache POI un fichero \texttt{.xlsx} con las columnas: \texttt{username}, \texttt{nombre}, \texttt{apellidos}, \texttt{email}, \texttt{password}, \texttt{centro\_nombre}, \texttt{curso\_academico\_nombre}, \texttt{grupo\_nombre}. Devolver el fichero con \texttt{Content-Disposition: attachment}.
+Generar con Apache POI un fichero \texttt{.xlsx} con las columnas: \texttt{username}, \texttt{nombre}, \texttt{apellidos}, \texttt{email}, \texttt{password}, \texttt{centro\_nombre}, \texttt{curso\_academico\_nombre}, \texttt{grupo\_nombre} y \texttt{es\_repetidor}. Devolver el fichero con \texttt{Content-Disposition: attachment}.
 \begin{itemize}
-  \item \textbf{R18F01T01P01 --} Descargar la plantilla y verificar que el fichero \texttt{.xlsx} contiene exactamente las ocho columnas requeridas en la primera fila y que el resto del fichero está vacío.
+  \item \textbf{R18F01T01P01 --} Descargar la plantilla y verificar que el fichero \texttt{.xlsx} contiene exactamente las nueve columnas requeridas en la primera fila y que el resto del fichero está vacío.
 \end{itemize}
 
 \subsection{R18F02 -- El sistema debe validar el contenido del fichero y crear los usuarios en una sola operación}
