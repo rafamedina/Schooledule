@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portal Profesor — Schooledule Apuntes</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav class="topnav">
+      <span class="topnav__brand">Schooledule TFG</span>
+      <a href="index.html">Inicio</a>
+      <a href="alumno.html">Alumno</a>
+      <a href="profesor.html" class="active">Profesor</a>
+      <a href="centro-admin.html">C.Admin</a>
+      <a href="admin.html">Admin</a>
+      <a href="login.html">Login</a>
+      <a href="seleccionar-rol.html">Sel.Rol</a>
+      <a href="seguridad.html">Seguridad</a>
+      <a href="owasp.html">OWASP</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="infraestructura.html">Infra</a>
+      <a href="diccionario.html">Diccionario</a>
+    </nav>
+    <div class="container">
+      <header class="page-header">
+        <span class="page-header__tag">Portal de Usuario</span>
+        <h1>Portal Profesor</h1>
+        <p>
+          El profesor gestiona su cuaderno de notas por impartición y, si es
+          tutor, accede a los grupos asignados.
+        </p>
+      </header>
+
+      <section>
+        <h2>Datos clave</h2>
+        <div class="card-grid">
+          <div class="card card--coral">
+            <div class="card__label">Rol requerido</div>
+            <div class="card__value">ROLE_PROFESOR</div>
+          </div>
+          <div class="card">
+            <div class="card__label">URLs</div>
+            <div class="card__value">/profe/**</div>
+            <p>+ /tutor/** (mismo rol)</p>
+          </div>
+          <div class="card card--green">
+            <div class="card__label">Controladores</div>
+            <div class="card__value">ProfeController</div>
+            <p>+ TutorController</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Flujo del cuaderno de notas (3 pasos)</h2>
+        <div class="flow">
+          <span class="flow__step">1. Dashboard</span>
+          <span class="flow__step--muted">Selecciona centro</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">2. Imparticiones</span>
+          <span class="flow__step--muted">Ver asignaturas del centro</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step flow__step--coral">3. Cuaderno</span>
+          <span class="flow__step--muted">Alumnos + notas por CE</span>
+        </div>
+        <div class="table-wrap" style="margin-top: 1rem">
+          <table>
+            <thead>
+              <tr>
+                <th>Ruta</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>/profe/dashboard</td>
+                <td><span class="badge badge--get">GET</span></td>
+                <td>Seleccionar centro asignado</td>
+              </tr>
+              <tr>
+                <td>/profe/centro/{centroId}/asignaturas</td>
+                <td><span class="badge badge--get">GET</span></td>
+                <td>Lista de imparticiones del profesor en ese centro</td>
+              </tr>
+              <tr>
+                <td>/profe/imparticion/{id}/alumnos</td>
+                <td><span class="badge badge--get">GET</span></td>
+                <td>Cuaderno de notas: lista de alumnos matriculados</td>
+              </tr>
+              <tr>
+                <td>/profe/api/matricula/{id}/notas</td>
+                <td><span class="badge badge--get">GET</span> JSON</td>
+                <td>Carga las notas actuales de un alumno (por CE)</td>
+              </tr>
+              <tr>
+                <td>/profe/api/matricula/{id}/notas</td>
+                <td><span class="badge badge--post">POST</span> JSON</td>
+                <td>Guarda/actualiza notas. Dispara la auditoría.</td>
+              </tr>
+              <tr>
+                <td>/profe/imparticion/{id}/items</td>
+                <td><span class="badge badge--post">POST</span></td>
+                <td>Crear un ítem evaluable (examen, práctica, etc.)</td>
+              </tr>
+              <tr>
+                <td>/profe/items/{id}/eliminar</td>
+                <td><span class="badge badge--post">POST</span></td>
+                <td>Eliminar un ítem evaluable</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Tipos de ítems evaluables</h2>
+        <p>
+          Al crear un <code>ItemEvaluable</code>, el profesor elige el tipo
+          mediante el enum <code>tipo_actividad</code>:
+        </p>
+        <div class="card-grid">
+          <div class="card">
+            <h3>EXAMEN</h3>
+            <p>Prueba escrita o test formal.</p>
+          </div>
+          <div class="card card--coral">
+            <h3>PRACTICA</h3>
+            <p>Trabajo práctico, proyecto o laboratorio.</p>
+          </div>
+          <div class="card card--green">
+            <h3>RECUPERACION</h3>
+            <p>Examen de recuperación para alumnos suspensos.</p>
+          </div>
+          <div class="card card--amber">
+            <h3>ACTITUD</h3>
+            <p>Evaluación de comportamiento y participación.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Auditoría de notas</h2>
+        <p>
+          Cada vez que un profesor guarda una nota se activa la cadena de
+          auditoría:
+        </p>
+        <div class="flow">
+          <span class="flow__step">1. TeacherDashboardService</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">2. set_config()</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">3. UPDATE calificaciones</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step flow__step--coral">4. Trigger PL/pgSQL</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">5. auditoria_notas</span>
+        </div>
+        <div class="box box--amber" style="margin-top: 0.75rem">
+          <strong>set_config:</strong> Antes de persistir la nota, el servicio
+          ejecuta la query nativa:<br />
+          <code>SELECT set_config('app.usuario_actual', :email, true)</code
+          ><br />
+          Esto inyecta el email del profesor en la sesión PostgreSQL para que el
+          trigger sepa quién hizo el cambio.
+        </div>
+        <div class="box">
+          El trigger <code>trigger_auditoria_notas</code> se dispara
+          <strong>AFTER UPDATE</strong> en <code>calificaciones</code>. Llama a
+          <code>registrar_cambio_nota()</code> que inserta en
+          <code>auditoria_notas</code>: valor_anterior, valor_nuevo,
+          usuario_responsable, fecha_cambio.
+        </div>
+      </section>
+
+      <section>
+        <h2>Portal Tutor (/tutor/**)</h2>
+        <p>
+          El tutor es un <strong>profesor</strong> asignado como tutor de un
+          grupo (<code>grupos.tutor_id FK → usuarios.id</code>). No es un rol
+          separado, usa <code>ROLE_PROFESOR</code>.
+        </p>
+        <div class="box box--coral">
+          <strong>Regla:</strong> Un tutor puede ver todos los grupos donde
+          figure como tutor. Para editar notas de una impartición concreta,
+          además debe ser el profesor asignado a esa impartición
+          (<code>imparticiones.profesor_id</code>).
+        </div>
+      </section>
+
+      <section>
+        <h2>Preguntas frecuentes</h2>
+        <div class="qa">
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Cómo sabe la base de datos quién modificó una nota?
+            </p>
+            <p class="qa__a">
+              El servicio inyecta el email del usuario autenticado en la sesión
+              PostgreSQL con
+              <code>set_config('app.usuario_actual', email, true)</code>. El
+              trigger PL/pgSQL lee esa variable con
+              <code>current_setting('app.usuario_actual')</code> y la guarda en
+              <code>auditoria_notas.usuario_responsable</code>.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Puede un profesor ver/editar notas de otro profesor?
+            </p>
+            <p class="qa__a">
+              No. El servicio valida que la
+              <code>imparticion.profesor_id</code> coincida con el usuario
+              autenticado antes de permitir la modificación de notas. Aplicación
+              del principio de propiedad de datos.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Qué diferencia hay entre /profe/** y /tutor/**?
+            </p>
+            <p class="qa__a">
+              Ambos requieren <code>ROLE_PROFESOR</code>.
+              <code>/profe/**</code> es el cuaderno de notas normal.
+              <code>/tutor/**</code> da acceso a los grupos donde el profesor
+              figura como tutor (<code>grupos.tutor_id</code>), que incluye ver
+              notas en modo lectura y, si también es el profesor de la
+              impartición, editarlas.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Qué tipos de actividades puede crear un profesor?
+            </p>
+            <p class="qa__a">
+              EXAMEN, PRACTICA, RECUPERACION y ACTITUD. Son los valores del enum
+              <code>tipo_actividad</code> definido en PostgreSQL.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

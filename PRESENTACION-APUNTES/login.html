@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flujo de Login — Schooledule Apuntes</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav class="topnav">
+      <span class="topnav__brand">Schooledule TFG</span>
+      <a href="index.html">Inicio</a>
+      <a href="alumno.html">Alumno</a>
+      <a href="profesor.html">Profesor</a>
+      <a href="centro-admin.html">C.Admin</a>
+      <a href="admin.html">Admin</a>
+      <a href="login.html" class="active">Login</a>
+      <a href="seleccionar-rol.html">Sel.Rol</a>
+      <a href="seguridad.html">Seguridad</a>
+      <a href="owasp.html">OWASP</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="infraestructura.html">Infra</a>
+      <a href="diccionario.html">Diccionario</a>
+    </nav>
+    <div class="container">
+      <header class="page-header">
+        <span class="page-header__tag">Autenticación</span>
+        <h1>Flujo de Login y Sesión</h1>
+        <p>
+          Cómo Spring Security autentica usuarios, protege la sesión y enruta al
+          portal correcto según el rol.
+        </p>
+      </header>
+
+      <section>
+        <h2>Endpoints del formulario</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Método</th>
+                <th>URL</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge badge--get">GET</span></td>
+                <td>/login</td>
+                <td>Muestra el formulario de login</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge--post">POST</span></td>
+                <td>/login</td>
+                <td>
+                  Spring Security procesa las credenciales (campo
+                  <code>username</code> + <code>password</code>)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="badge badge--get">GET</span></td>
+                <td>/change-password</td>
+                <td>
+                  Forzar cambio de contraseña (flag
+                  <code>must_change_password</code>)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="badge badge--post">POST</span></td>
+                <td>/logout</td>
+                <td>Invalida sesión → redirige a <code>/login?logout</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Parámetros de alerta en /login</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Causa</th>
+                <th>Mensaje</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>?error</td>
+                <td>Credenciales incorrectas</td>
+                <td>"Correo o contraseña incorrectos"</td>
+              </tr>
+              <tr>
+                <td>?logout</td>
+                <td>Cierre de sesión correcto</td>
+                <td>"Sesión cerrada correctamente"</td>
+              </tr>
+              <tr>
+                <td>?expired</td>
+                <td>Segunda sesión simultánea</td>
+                <td>Sesión caducada por límite concurrent</td>
+              </tr>
+              <tr>
+                <td>?norole</td>
+                <td>Usuario sin ningún rol asignado</td>
+                <td>"Tu cuenta no tiene ningún rol asignado"</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Lógica de redirección post-login (CustomLoginSuccessHandler)</h2>
+        <p>
+          La clase <code>CustomLoginSuccessHandler</code> implementa
+          <code>AuthenticationSuccessHandler</code> y decide adónde redirigir al
+          usuario tras autenticarse correctamente:
+        </p>
+        <div
+          class="flow"
+          style="flex-direction: column; align-items: flex-start; gap: 0.6rem"
+        >
+          <div class="flow">
+            <span class="flow__step">1. ¿must_change_password?</span>
+            <span class="flow__arrow">→ Sí →</span>
+            <span class="flow__step flow__step--coral">/change-password</span>
+          </div>
+          <div class="flow">
+            <span class="flow__step">2. Contar roles funcionales</span>
+            <span class="flow__step--muted"
+              >(ADMIN, ADMIN_CENTRO, PROFESOR, ALUMNO)</span
+            >
+            <span class="flow__arrow">→ &gt;1 rol →</span>
+            <span class="flow__step flow__step--coral">/seleccionar-rol</span>
+          </div>
+          <div class="flow">
+            <span class="flow__step">3. Exactamente 1 rol</span>
+            <span class="flow__arrow">→</span>
+            <span class="flow__step">ADMIN → /admin/dashboard</span>
+          </div>
+          <div class="flow" style="padding-left: 2rem">
+            <span class="flow__step--muted">ADMIN_CENTRO →</span>
+            <span class="flow__step">/centro-admin/dashboard</span>
+          </div>
+          <div class="flow" style="padding-left: 2rem">
+            <span class="flow__step--muted">PROFESOR →</span>
+            <span class="flow__step">/profe/dashboard</span>
+          </div>
+          <div class="flow" style="padding-left: 2rem">
+            <span class="flow__step--muted">ALUMNO →</span>
+            <span class="flow__step">/alumno/dashboard</span>
+          </div>
+          <div class="flow">
+            <span class="flow__step">4. 0 roles funcionales</span>
+            <span class="flow__arrow">→</span>
+            <span class="flow__step flow__step--coral">/login?norole</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Protecciones de sesión</h2>
+        <div class="card-grid">
+          <div class="card card--coral">
+            <h3>Session Fixation</h3>
+            <p>
+              <code>changeSessionId()</code> — al autenticarse, Spring asigna un
+              nuevo ID de sesión. Esto evita que un atacante fije el ID antes
+              del login.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Sesiones concurrentes</h3>
+            <p>
+              <code>maximumSessions(1)</code> — solo 1 sesión activa por
+              usuario. Un segundo login desde otro dispositivo expira la sesión
+              anterior → <code>/login?expired</code>.
+            </p>
+          </div>
+          <div class="card card--green">
+            <h3>Timeout de sesión</h3>
+            <p>
+              30 minutos de inactividad
+              (<code>server.servlet.session.timeout=30m</code>). Configurado en
+              <code>application.properties</code>.
+            </p>
+          </div>
+          <div class="card card--amber">
+            <h3>Cookie segura</h3>
+            <p>
+              <code>HttpOnly=true</code>, <code>SameSite=strict</code> en todos
+              los entornos. En producción, además
+              <code>Secure=true</code> (HTTPS obligatorio).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Rate limiting en login (Bucket4j)</h2>
+        <p>
+          La clase <code>LoginRateLimitFilter</code> se inserta en el filtro de
+          Spring Security <strong>antes</strong> de
+          <code>UsernamePasswordAuthenticationFilter</code>.
+        </p>
+        <div class="box box--coral">
+          <strong>Parámetros:</strong> 10 intentos por IP cada 15 minutos. El
+          intento número 11 recibe <code>HTTP 429 Too Many Requests</code>.
+          Basado en el algoritmo Token Bucket (librería Bucket4j).
+        </div>
+        <pre>
+// Posición en la cadena de filtros (SecurityConfig)
+http.addFilterBefore(loginRateLimitFilter,
+    UsernamePasswordAuthenticationFilter.class);</pre
+        >
+      </section>
+
+      <section>
+        <h2>Contraseñas</h2>
+        <div class="box box--green">
+          <strong>BCryptPasswordEncoder:</strong> Spring Security usa BCrypt
+          para hashear contraseñas. No se almacenan en texto plano. La
+          verificación se hace comparando el hash del input con el
+          <code>password_hash</code> almacenado en la tabla
+          <code>usuarios</code>.
+        </div>
+        <p>
+          El campo <code>must_change_password</code> (booleano en
+          <code>usuarios</code>) se puede activar por un administrador. Al hacer
+          login, <code>CustomLoginSuccessHandler</code> lo comprueba antes de
+          cualquier otra lógica.
+        </p>
+      </section>
+
+      <section>
+        <h2>Spring Session JDBC</h2>
+        <p>
+          Las sesiones se almacenan en la base de datos (no en memoria del
+          servidor) en las tablas <code>SPRING_SESSION</code> y
+          <code>SPRING_SESSION_ATTRIBUTES</code>. Esto permite escalar
+          horizontalmente sin perder sesiones.
+        </p>
+        <div class="box">
+          Estas tablas se crean en
+          <strong>V1__schema_definitivo.sql</strong> junto al resto del esquema.
+        </div>
+      </section>
+
+      <section>
+        <h2>Preguntas frecuentes</h2>
+        <div class="qa">
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Qué hace CustomLoginSuccessHandler si el usuario tiene 2 roles?
+            </p>
+            <p class="qa__a">
+              Redirige a <code>/seleccionar-rol</code> pasando los roles como
+              atributo de la sesión para que la página muestre las tarjetas
+              correspondientes.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">¿Qué es la Session Fixation y cómo se previene?</p>
+            <p class="qa__a">
+              Es un ataque donde el atacante conoce el ID de sesión antes del
+              login (p.ej. por URL). Spring previene esto con
+              <code>changeSessionId()</code>: al autenticarse correctamente, el
+              ID de sesión cambia, invalidando cualquier ID previo.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Qué pasa si un usuario abre sesión en dos dispositivos a la vez?
+            </p>
+            <p class="qa__a">
+              Con <code>maximumSessions(1)</code>, la primera sesión se marca
+              como expirada. Al intentar hacer cualquier petición con ella,
+              Spring redirige a <code>/login?expired</code>.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">¿Qué clase gestiona las contraseñas?</p>
+            <p class="qa__a">
+              <code>BCryptPasswordEncoder</code> registrado como bean en Spring.
+              En el login, Spring Security invoca automáticamente
+              <code>matches(rawPassword, encodedPassword)</code> para verificar
+              sin desencriptar.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

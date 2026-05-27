@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seleccionar Rol — Schooledule Apuntes</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav class="topnav">
+      <span class="topnav__brand">Schooledule TFG</span>
+      <a href="index.html">Inicio</a>
+      <a href="alumno.html">Alumno</a>
+      <a href="profesor.html">Profesor</a>
+      <a href="centro-admin.html">C.Admin</a>
+      <a href="admin.html">Admin</a>
+      <a href="login.html">Login</a>
+      <a href="seleccionar-rol.html" class="active">Sel.Rol</a>
+      <a href="seguridad.html">Seguridad</a>
+      <a href="owasp.html">OWASP</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="infraestructura.html">Infra</a>
+      <a href="diccionario.html">Diccionario</a>
+    </nav>
+    <div class="container">
+      <header class="page-header">
+        <span class="page-header__tag">Autenticación</span>
+        <h1>Página de Selección de Rol</h1>
+        <p>
+          Pantalla intermedia que aparece cuando un usuario autenticado tiene
+          más de un rol funcional asignado.
+        </p>
+      </header>
+
+      <section>
+        <h2>¿Cuándo aparece esta página?</h2>
+        <p>
+          Tras un login exitoso, <code>CustomLoginSuccessHandler</code> cuenta
+          los roles funcionales del usuario (<code>ROLE_ADMIN</code>,
+          <code>ROLE_ADMIN_CENTRO</code>, <code>ROLE_PROFESOR</code>,
+          <code>ROLE_ALUMNO</code>). Si hay <strong>más de uno</strong>,
+          redirige a <code>/seleccionar-rol</code> en lugar de ir directamente
+          al dashboard.
+        </p>
+        <div class="flow">
+          <span class="flow__step">Login exitoso</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">CustomLoginSuccessHandler</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">¿roles > 1?</span>
+          <span class="flow__arrow">→ Sí →</span>
+          <span class="flow__step flow__step--coral">/seleccionar-rol</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Tarjetas de rol</h2>
+        <p>
+          La plantilla Thymeleaf usa
+          <code>th:if="${roles.contains('ROLE_XXX')}"</code> para mostrar solo
+          las tarjetas de los roles que tiene el usuario:
+        </p>
+        <div class="card-grid">
+          <div class="card card--coral">
+            <h3>✦ Administrador</h3>
+            <p>Gestión de infraestructura, usuarios y centros educativos.</p>
+            <p><strong>Destino:</strong> <code>/admin/dashboard</code></p>
+          </div>
+          <div class="card">
+            <h3>■ Admin de Centro</h3>
+            <p>
+              Gestión de usuarios, grupos e imparticiones de tus centros
+              asignados.
+            </p>
+            <p>
+              <strong>Destino:</strong> <code>/centro-admin/dashboard</code>
+            </p>
+          </div>
+          <div class="card card--green">
+            <h3>✎ Profesor</h3>
+            <p>Gestión de grupos, evaluaciones y seguimiento de alumnos.</p>
+            <p><strong>Destino:</strong> <code>/profe/dashboard</code></p>
+          </div>
+          <div class="card card--amber">
+            <h3>⚒ Alumno</h3>
+            <p>Consulta de calificaciones, horarios y expediente académico.</p>
+            <p><strong>Destino:</strong> <code>/alumno/dashboard</code></p>
+          </div>
+        </div>
+        <div class="box" style="margin-top: 1rem">
+          Al pie de la página hay un formulario de
+          <strong>Cerrar sesión</strong> (POST <code>/logout</code>) que el
+          usuario puede usar para salir sin entrar a ningún portal.
+        </div>
+      </section>
+
+      <section>
+        <h2>Implementación Thymeleaf</h2>
+        <pre>
+&lt;!-- Ejemplo: tarjeta de Admin --&gt;
+&lt;a href="/admin/dashboard"
+   class="role-card animate-in"
+   th:if="${roles.contains('ROLE_ADMIN')}"&gt;
+  &lt;div class="role-card__icon"&gt;✦&lt;/div&gt;
+  &lt;span class="role-card__name"&gt;Administrador&lt;/span&gt;
+  &lt;p class="role-card__desc"&gt;...&lt;/p&gt;
+&lt;/a&gt;</pre
+        >
+        <p>
+          Si el usuario solo tiene un rol, esta página no se muestra. La
+          condición se evalúa sobre el modelo (<code>roles</code>) que el
+          controlador de autenticación inyecta en la sesión.
+        </p>
+      </section>
+
+      <section>
+        <h2>Seguridad de la página</h2>
+        <div class="box box--coral">
+          <strong>Atención:</strong> Una vez en <code>/seleccionar-rol</code>,
+          el usuario sigue autenticado. Si accede directamente a
+          <code>/admin/dashboard</code> sin pasar por la selección,
+          <code>SecurityConfig</code> comprueba el rol mediante
+          <code>hasRole("ADMIN")</code>. Solo puede acceder si el usuario tiene
+          ese rol asignado.
+        </div>
+        <p>
+          No es posible "elegir" un rol que el usuario no tiene: los
+          <code>th:if</code> de Thymeleaf y las reglas de
+          <code>SecurityConfig</code> son independientes y ambas aplican.
+        </p>
+      </section>
+
+      <section>
+        <h2>Preguntas frecuentes</h2>
+        <div class="qa">
+          <div class="qa__item">
+            <p class="qa__q">¿Cuándo aparece la página de selección de rol?</p>
+            <p class="qa__a">
+              Solo cuando el usuario tiene más de un rol funcional (ADMIN,
+              ADMIN_CENTRO, PROFESOR, ALUMNO). Si solo tiene uno,
+              <code>CustomLoginSuccessHandler</code> redirige directamente al
+              dashboard correspondiente.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Qué pasa si un usuario con ROLE_ADMIN y ROLE_PROFESOR hace login?
+            </p>
+            <p class="qa__a">
+              Ve la página de selección con dos tarjetas: "Administrador" y
+              "Profesor". Elige con cuál quiere trabajar en esa sesión.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Puede un usuario acceder a un portal para el que no tiene rol?
+            </p>
+            <p class="qa__a">
+              No. Aunque conozca la URL, <code>SecurityConfig</code> bloquea el
+              acceso a <code>/admin/**</code> si no tiene
+              <code>ROLE_ADMIN</code>, etc. Recibe <code>403 Forbidden</code>.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

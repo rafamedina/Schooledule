@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spring Security — Schooledule Apuntes</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav class="topnav">
+      <span class="topnav__brand">Schooledule TFG</span>
+      <a href="index.html">Inicio</a>
+      <a href="alumno.html">Alumno</a>
+      <a href="profesor.html">Profesor</a>
+      <a href="centro-admin.html">C.Admin</a>
+      <a href="admin.html">Admin</a>
+      <a href="login.html">Login</a>
+      <a href="seleccionar-rol.html">Sel.Rol</a>
+      <a href="seguridad.html" class="active">Seguridad</a>
+      <a href="owasp.html">OWASP</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="infraestructura.html">Infra</a>
+      <a href="diccionario.html">Diccionario</a>
+    </nav>
+    <div class="container">
+      <header class="page-header">
+        <span class="page-header__tag">Seguridad</span>
+        <h1>Spring Security 6 en Schooledule</h1>
+        <p>
+          Configuración de autenticación, autorización por roles, cabeceras
+          HTTP, protección de sesión y rate limiting.
+        </p>
+      </header>
+
+      <section>
+        <h2>Roles y rutas (SecurityConfig)</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Patrón de URL</th>
+                <th>Rol requerido</th>
+                <th>Tipo de acceso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>/snap-admin/**</td>
+                <td>—</td>
+                <td>
+                  <span class="badge badge--danger">denyAll</span> Siempre
+                  bloqueado
+                </td>
+              </tr>
+              <tr>
+                <td>/admin/**</td>
+                <td><span class="badge badge--role">ROLE_ADMIN</span></td>
+                <td>Solo administrador global</td>
+              </tr>
+              <tr>
+                <td>/centro-admin/**</td>
+                <td>
+                  <span class="badge badge--role">ROLE_ADMIN_CENTRO</span>
+                </td>
+                <td>Admin de centro asignado</td>
+              </tr>
+              <tr>
+                <td>/profe/**, /tutor/**</td>
+                <td><span class="badge badge--role">ROLE_PROFESOR</span></td>
+                <td>Profesor</td>
+              </tr>
+              <tr>
+                <td>/alumno/**</td>
+                <td><span class="badge badge--role">ROLE_ALUMNO</span></td>
+                <td>Alumno</td>
+              </tr>
+              <tr>
+                <td>/swagger-ui/**, /v3/api-docs/**</td>
+                <td>—</td>
+                <td><span class="badge badge--ok">permitAll</span></td>
+              </tr>
+              <tr>
+                <td>
+                  /, /login, /register, /change-password, /css/**, /js/**,
+                  /images/**
+                </td>
+                <td>—</td>
+                <td><span class="badge badge--ok">permitAll</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box box--amber">
+          <strong>/snap-admin/** denyAll</strong> es una regla defensiva para
+          evitar que si se reinstala accidentalmente la dependencia
+          <code>snap-admin</code> (que fue eliminada), el panel quede expuesto.
+        </div>
+      </section>
+
+      <section>
+        <h2>Doble capa de autorización</h2>
+        <p>
+          Las rutas de <code>SecurityConfig</code> son la primera barrera. La
+          segunda son las anotaciones <code>@PreAuthorize</code> en los
+          controladores:
+        </p>
+        <pre>
+@Controller
+@PreAuthorize("hasRole('ADMIN')")
+public class AdminController { ... }
+
+@Controller
+@PreAuthorize("hasRole('PROFESOR')")
+public class ProfeController { ... }</pre
+        >
+        <div class="box">
+          Ambas capas son independientes. Un atacante que eluda una sigue
+          bloqueado por la otra.
+        </div>
+      </section>
+
+      <section>
+        <h2>Cabeceras de seguridad HTTP</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Cabecera</th>
+                <th>Valor</th>
+                <th>Origen</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Content-Security-Policy</td>
+                <td>
+                  default-src 'self'; script-src 'self'
+                  https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'
+                  https://cdn.jsdelivr.net; img-src 'self' data:; font-src
+                  'self'; frame-ancestors 'none'; object-src 'none'
+                </td>
+                <td>SecurityConfig (manual)</td>
+              </tr>
+              <tr>
+                <td>Referrer-Policy</td>
+                <td>strict-origin-when-cross-origin</td>
+                <td>SecurityConfig (manual)</td>
+              </tr>
+              <tr>
+                <td>Permissions-Policy</td>
+                <td>camera=(), microphone=(), geolocation=()</td>
+                <td>SecurityConfig (manual)</td>
+              </tr>
+              <tr>
+                <td>X-Frame-Options</td>
+                <td>DENY</td>
+                <td>Spring Security (default)</td>
+              </tr>
+              <tr>
+                <td>X-Content-Type-Options</td>
+                <td>nosniff</td>
+                <td>Spring Security (default)</td>
+              </tr>
+              <tr>
+                <td>X-XSS-Protection</td>
+                <td>0</td>
+                <td>Spring Security (default)</td>
+              </tr>
+              <tr>
+                <td>Strict-Transport-Security</td>
+                <td>max-age=31536000 (HSTS)</td>
+                <td>Spring Security (default)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Las cabeceras "manual" se añaden en <code>SecurityConfig</code>. Las
+          "default" las añade Spring Security 6 automáticamente sin
+          configuración adicional.
+        </p>
+      </section>
+
+      <section>
+        <h2>CSRF</h2>
+        <div class="box box--green">
+          <strong>Habilitado por defecto</strong> para todos los formularios
+          HTML. Thymeleaf integra automáticamente el token CSRF en los
+          formularios con <code>th:action</code>. Para los endpoints de la API
+          Swagger (<code>/v3/api-docs/**</code>) el CSRF está deshabilitado ya
+          que son stateless.
+        </div>
+      </section>
+
+      <section>
+        <h2>Gestión de sesión</h2>
+        <div class="card-grid">
+          <div class="card card--coral">
+            <h3>Session Fixation</h3>
+            <p>
+              <code>changeSessionId()</code> al autenticar. Nuevo ID en cada
+              login.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Sesiones concurrentes</h3>
+            <p>
+              <code>maximumSessions(1)</code>. Segunda sesión expira la primera.
+              URL: <code>/login?expired</code>.
+            </p>
+          </div>
+          <div class="card card--green">
+            <h3>Timeout</h3>
+            <p>
+              30 minutos de inactividad
+              (<code>server.servlet.session.timeout=30m</code>).
+            </p>
+          </div>
+          <div class="card card--amber">
+            <h3>Cookie</h3>
+            <p>
+              HttpOnly=true, SameSite=strict siempre. Secure=true solo en perfil
+              <code>prod</code>.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Almacenamiento</h3>
+            <p>
+              Spring Session JDBC: tabla <code>SPRING_SESSION</code> en
+              PostgreSQL. Sobrevive reinicios.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Rate limiting (Bucket4j)</h2>
+        <pre>
+// LoginRateLimitFilter se inserta ANTES de UsernamePasswordAuthenticationFilter
+http.addFilterBefore(loginRateLimitFilter,
+    UsernamePasswordAuthenticationFilter.class);</pre
+        >
+        <div class="box box--coral">
+          <strong>Límite:</strong> 10 intentos por IP cada 15 minutos. El
+          intento 11 devuelve <code>HTTP 429</code>. Algoritmo Token Bucket
+          (Bucket4j). Protege contra ataques de fuerza bruta.
+        </div>
+      </section>
+
+      <section>
+        <h2>Validación de entradas</h2>
+        <ul>
+          <li>
+            Todos los DTOs usan <strong>Java records</strong> con anotaciones
+            Bean Validation (<code>@NotBlank</code>, <code>@Size</code>,
+            <code>@Email</code>, etc.).
+          </li>
+          <li>
+            Los controladores usan <code>@Valid</code> +
+            <code>BindingResult</code> para capturar errores de validación.
+          </li>
+          <li>
+            Las contraseñas en formularios de creación usan
+            <code>@ValidPassword</code> (anotación personalizada en
+            <code>domain/validation/</code>).
+          </li>
+          <li>
+            Las plantillas Thymeleaf usan <strong>siempre</strong>
+            <code>th:text</code> (nunca <code>th:utext</code>) para datos de
+            usuario, previniendo XSS.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Preguntas frecuentes</h2>
+        <div class="qa">
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Por qué hay dos capas de autorización (URL + @PreAuthorize)?
+            </p>
+            <p class="qa__a">
+              Defensa en profundidad. Las reglas de URL en
+              <code>SecurityConfig</code> son la primera barrera. Si por algún
+              error de configuración fallara, <code>@PreAuthorize</code> en el
+              controlador sigue bloqueando el acceso. Son independientes.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Qué es Content-Security-Policy y por qué importa?
+            </p>
+            <p class="qa__a">
+              Es una cabecera HTTP que indica al navegador qué recursos puede
+              cargar. Con <code>default-src 'self'</code> y
+              <code>frame-ancestors 'none'</code>, se evita que la app cargue
+              scripts de terceros (XSS) y que sea embebida en iframes
+              (clickjacking).
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Qué version de Spring Security usa Schooledule?
+            </p>
+            <p class="qa__a">
+              Spring Security 6 (incluido con Spring Boot 3.3.5). Usa el nuevo
+              estilo de configuración con lambdas en lugar del deprecated
+              <code>WebSecurityConfigurerAdapter</code>.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Por qué se bloquea /snap-admin/** si la dependencia ya fue
+              eliminada?
+            </p>
+            <p class="qa__a">
+              Es defensa contra reinstalaciones accidentales. Si alguien
+              añadiera de nuevo <code>snap-admin</code> al <code>pom.xml</code>,
+              el panel CRUD quedaría expuesto sin autenticación de Schooledule.
+              La regla <code>denyAll</code> en primer lugar del
+              <code>authorizeHttpRequests</code> garantiza que nunca sea
+              accesible.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

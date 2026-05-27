@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administrador Global — Schooledule Apuntes</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav class="topnav">
+      <span class="topnav__brand">Schooledule TFG</span>
+      <a href="index.html">Inicio</a>
+      <a href="alumno.html">Alumno</a>
+      <a href="profesor.html">Profesor</a>
+      <a href="centro-admin.html">C.Admin</a>
+      <a href="admin.html" class="active">Admin</a>
+      <a href="login.html">Login</a>
+      <a href="seleccionar-rol.html">Sel.Rol</a>
+      <a href="seguridad.html">Seguridad</a>
+      <a href="owasp.html">OWASP</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="infraestructura.html">Infra</a>
+      <a href="diccionario.html">Diccionario</a>
+    </nav>
+    <div class="container">
+      <header class="page-header">
+        <span class="page-header__tag">Portal de Gestión</span>
+        <h1>Portal Administrador Global</h1>
+        <p>
+          Control total del sistema: centros, usuarios, módulos, cursos, grupos,
+          imparticiones, importaciones masivas y auditoría global.
+        </p>
+      </header>
+
+      <section>
+        <h2>Datos clave</h2>
+        <div class="card-grid">
+          <div class="card card--coral">
+            <div class="card__label">Rol requerido</div>
+            <div class="card__value">ROLE_ADMIN</div>
+          </div>
+          <div class="card">
+            <div class="card__label">URL base</div>
+            <div class="card__value">/admin/**</div>
+          </div>
+          <div class="card card--green">
+            <div class="card__label">Controladores</div>
+            <div class="card__value">11 clases</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Controladores</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Clase</th>
+                <th>Responsabilidad principal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>AdminController</td>
+                <td>
+                  Dashboard: estadísticas globales (centros, usuarios, alumnos,
+                  módulos, imparticiones)
+                </td>
+              </tr>
+              <tr>
+                <td>AdminCentroController</td>
+                <td>CRUD de centros educativos</td>
+              </tr>
+              <tr>
+                <td>AdminUsuarioController</td>
+                <td>Gestión de todos los usuarios del sistema</td>
+              </tr>
+              <tr>
+                <td>AdminCursoController</td>
+                <td>Gestión de cursos académicos</td>
+              </tr>
+              <tr>
+                <td>AdminGrupoController</td>
+                <td>Gestión de grupos de todos los centros</td>
+              </tr>
+              <tr>
+                <td>AdminModuloController</td>
+                <td>Gestión de módulos (asignaturas), RAs y CEs</td>
+              </tr>
+              <tr>
+                <td>AdminImparticionController</td>
+                <td>Asignación de módulos a grupos y profesores</td>
+              </tr>
+              <tr>
+                <td>AdminAlumnoController</td>
+                <td>Gestión de alumnos y sus matrículas</td>
+              </tr>
+              <tr>
+                <td>AdminUsuarioImportController</td>
+                <td>Importación masiva de usuarios desde fichero Excel</td>
+              </tr>
+              <tr>
+                <td>AdminModuloImportController</td>
+                <td>Importación masiva de módulos y sus RAs/CEs</td>
+              </tr>
+              <tr>
+                <td>AdminAuditoriaController</td>
+                <td>
+                  Auditoría global de cambios de notas (tabla auditoria_notas)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Importación masiva de usuarios (Excel)</h2>
+        <p>
+          El controlador <code>AdminUsuarioImportController</code> usa el
+          servicio <code>UsuarioPlantillaExcelService</code> para procesar
+          ficheros <code>.xlsx</code>.
+        </p>
+        <div class="box box--amber">
+          <strong>9 columnas</strong> en la plantilla Excel, incluyendo
+          <code>es_repetidor</code>. El sistema crea usuarios, les asigna rol,
+          centro, grupo y matrícula en una sola operación.
+        </div>
+        <p>
+          El servicio valida cada fila, reporta errores por fila y solo persiste
+          las válidas. No hace rollback parcial: las filas válidas se guardan
+          aunque otras fallen.
+        </p>
+      </section>
+
+      <section>
+        <h2>Jerarquía de entidades que gestiona</h2>
+        <div class="flow" style="flex-wrap: wrap">
+          <span class="flow__step">Centro</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">CursoAcadémico</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">Grupo</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">Impartición</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step flow__step--coral">Matrícula + Notas</span>
+        </div>
+        <div class="flow" style="margin-top: 0.5rem">
+          <span class="flow__step">Módulo</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">RA</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__step">CE</span>
+          <span class="flow__step--muted">(estructura de evaluación)</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Auditoría global</h2>
+        <p>
+          <code>AdminAuditoriaController</code> muestra el contenido de la tabla
+          <code>auditoria_notas</code> con todos los cambios de calificaciones
+          del sistema.
+        </p>
+        <div class="box">
+          Cada registro incluye: <strong>calificacion_id</strong>,
+          valor_anterior, valor_nuevo,
+          <strong>usuario_responsable</strong> (email del profesor),
+          fecha_cambio y motivo opcional.
+        </div>
+      </section>
+
+      <section>
+        <h2>Layout del portal</h2>
+        <p>
+          El portal admin usa un layout de <strong>sidebar lateral</strong> (no
+          topnav). La clase CSS es <code>.admin-sidebar</code> con fondo oscuro
+          (<code>var(--ink)</code>) y el logo en blanco
+          (<code>schooledule-logo-white.svg</code>). El contenido principal está
+          en <code>.admin-main</code>.
+        </p>
+      </section>
+
+      <section>
+        <h2>Preguntas frecuentes</h2>
+        <div class="qa">
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Cuántos controladores tiene el portal de administrador?
+            </p>
+            <p class="qa__a">
+              11 controladores: AdminController (dashboard),
+              AdminCentroController, AdminUsuarioController,
+              AdminCursoController, AdminGrupoController, AdminModuloController,
+              AdminImparticionController, AdminAlumnoController,
+              AdminUsuarioImportController, AdminModuloImportController y
+              AdminAuditoriaController.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">
+              ¿Cómo funciona la importación masiva de usuarios?
+            </p>
+            <p class="qa__a">
+              El admin sube un fichero Excel con 9 columnas.
+              <code>UsuarioPlantillaExcelService</code> valida cada fila y
+              persiste las válidas. Se pueden crear usuarios, asignarles rol,
+              centro, grupo y matrícula en bloque.
+            </p>
+          </div>
+          <div class="qa__item">
+            <p class="qa__q">¿Qué es la tabla auditoria_notas?</p>
+            <p class="qa__a">
+              Registra cada cambio de calificación: valor anterior, valor nuevo,
+              quién lo hizo (<code>usuario_responsable</code>) y cuándo. Se
+              rellena automáticamente por el trigger PL/pgSQL
+              <code>trigger_auditoria_notas</code> cuando hay un UPDATE en
+              <code>calificaciones</code>.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

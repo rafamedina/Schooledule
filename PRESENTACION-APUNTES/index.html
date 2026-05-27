@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schooledule — Apuntes TFG</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav class="topnav">
+      <span class="topnav__brand">Schooledule TFG</span>
+      <a href="index.html" class="active">Inicio</a>
+      <a href="alumno.html">Alumno</a>
+      <a href="profesor.html">Profesor</a>
+      <a href="centro-admin.html">C.Admin</a>
+      <a href="admin.html">Admin</a>
+      <a href="login.html">Login</a>
+      <a href="seleccionar-rol.html">Sel.Rol</a>
+      <a href="seguridad.html">Seguridad</a>
+      <a href="owasp.html">OWASP</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="infraestructura.html">Infra</a>
+      <a href="diccionario.html">Diccionario</a>
+    </nav>
+    <div class="container">
+      <header class="page-header">
+        <span class="page-header__tag">TFG — Rafael Medina Ayuso</span>
+        <h1>Schooledule — Guías de Estudio</h1>
+        <p>
+          Apuntes técnicos para la defensa del TFG. Todos los datos son exactos
+          y verificados contra el código fuente.
+        </p>
+      </header>
+
+      <section>
+        <h2>Portales de usuario</h2>
+        <div class="index-grid">
+          <a href="alumno.html" class="index-card">
+            <h3>Portal Alumno</h3>
+            <p>ROLE_ALUMNO · /alumno/** · Dashboard, notas, perfil</p>
+          </a>
+          <a href="profesor.html" class="index-card--coral index-card">
+            <h3>Portal Profesor</h3>
+            <p>
+              ROLE_PROFESOR · /profe/** /tutor/** · Cuaderno de notas,
+              evaluación
+            </p>
+          </a>
+          <a href="centro-admin.html" class="index-card">
+            <h3>Admin de Centro</h3>
+            <p>
+              ROLE_ADMIN_CENTRO · /centro-admin/** · Gestión multi-centro
+              acotada
+            </p>
+          </a>
+          <a href="admin.html" class="index-card--coral index-card">
+            <h3>Administrador Global</h3>
+            <p>ROLE_ADMIN · /admin/** · Control total del sistema</p>
+          </a>
+        </div>
+      </section>
+
+      <section>
+        <h2>Autenticación y seguridad</h2>
+        <div class="index-grid">
+          <a href="login.html" class="index-card--green index-card">
+            <h3>Flujo de Login</h3>
+            <p>BCrypt · CustomLoginSuccessHandler · Sesión · Rate limiting</p>
+          </a>
+          <a href="seleccionar-rol.html" class="index-card--green index-card">
+            <h3>Seleccionar Rol</h3>
+            <p>Pantalla para usuarios con más de un rol funcional</p>
+          </a>
+          <a href="seguridad.html" class="index-card--green index-card">
+            <h3>Spring Security</h3>
+            <p>RBAC · @PreAuthorize · Headers HTTP · CSRF · Sesión</p>
+          </a>
+          <a href="owasp.html" class="index-card--green index-card">
+            <h3>OWASP Top 10</h3>
+            <p>Las 10 categorías de seguridad y cómo las aborda Schooledule</p>
+          </a>
+        </div>
+      </section>
+
+      <section>
+        <h2>Infraestructura y proceso</h2>
+        <div class="index-grid">
+          <a href="cicd.html" class="index-card">
+            <h3>CI/CD Pipeline</h3>
+            <p>GitHub Actions · 4 jobs · Purge &amp; Promote · JaCoCo 80%</p>
+          </a>
+          <a href="infraestructura.html" class="index-card">
+            <h3>Infraestructura</h3>
+            <p>
+              Dockerfile multi-stage · Docker Compose · Flyway · Perfiles Spring
+            </p>
+          </a>
+          <a href="diccionario.html" class="index-card--coral index-card">
+            <h3>Diccionario Técnico</h3>
+            <p>
+              Glosario completo: dominio, framework, seguridad, infraestructura
+            </p>
+          </a>
+        </div>
+      </section>
+
+      <section>
+        <h2>Datos clave del proyecto</h2>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card__label">Stack principal</div>
+            <div class="card__value">Java 21</div>
+            <p>Spring Boot 3.3.5 · PostgreSQL 16 · Thymeleaf</p>
+          </div>
+          <div class="card card--coral">
+            <div class="card__label">Roles</div>
+            <div class="card__value">4 roles</div>
+            <p>ADMIN · ADMIN_CENTRO · PROFESOR · ALUMNO</p>
+          </div>
+          <div class="card card--green">
+            <div class="card__label">Controladores</div>
+            <div class="card__value">22 clases</div>
+            <p>11 admin · 6 centro-admin · 2 profe · 1 alumno + auth</p>
+          </div>
+          <div class="card">
+            <div class="card__label">Cobertura tests</div>
+            <div class="card__value">&gt; 80%</div>
+            <p>JaCoCo · JUnit 5 · Mockito · H2 en tests</p>
+          </div>
+          <div class="card card--coral">
+            <div class="card__label">Migraciones</div>
+            <div class="card__value">V1 + V2</div>
+            <p>Flyway · V1 schema · V2 seeds de desarrollo</p>
+          </div>
+          <div class="card">
+            <div class="card__label">Servicios prod</div>
+            <div class="card__value">2 servicios</div>
+            <p>Docker Compose prod: postgres + app</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

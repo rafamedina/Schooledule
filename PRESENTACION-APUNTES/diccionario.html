@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diccionario Técnico — Schooledule Apuntes</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav class="topnav">
+      <span class="topnav__brand">Schooledule TFG</span>
+      <a href="index.html">Inicio</a>
+      <a href="alumno.html">Alumno</a>
+      <a href="profesor.html">Profesor</a>
+      <a href="centro-admin.html">C.Admin</a>
+      <a href="admin.html">Admin</a>
+      <a href="login.html">Login</a>
+      <a href="seleccionar-rol.html">Sel.Rol</a>
+      <a href="seguridad.html">Seguridad</a>
+      <a href="owasp.html">OWASP</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="infraestructura.html">Infra</a>
+      <a href="diccionario.html" class="active">Diccionario</a>
+    </nav>
+    <div class="container">
+      <header class="page-header">
+        <span class="page-header__tag">Referencia</span>
+        <h1>Diccionario Técnico</h1>
+        <p>
+          Glosario de todos los términos técnicos del proyecto: dominio,
+          framework, seguridad e infraestructura.
+        </p>
+      </header>
+
+      <section>
+        <h2>Dominio — Entidades de negocio</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Término</th>
+                <th>Definición</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Centro</td>
+                <td>
+                  Instituto, colegio u organización educativa. Tabla
+                  <code>centros</code>. Tiene configuración JSONB.
+                </td>
+              </tr>
+              <tr>
+                <td>Curso Académico</td>
+                <td>
+                  Año lectivo (ej: 2025-2026). Tabla
+                  <code>cursos_academicos</code>. Marca si está activo.
+                </td>
+              </tr>
+              <tr>
+                <td>Módulo</td>
+                <td>
+                  Asignatura o materia (Programación, BBDD…). Código único.
+                  Tabla <code>modulos</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>Resultado de Aprendizaje (RA)</td>
+                <td>
+                  Objetivo formativo de un módulo ligado a un curso académico.
+                  Tiene <code>peso_sugerido</code>. Tabla
+                  <code>resultados_aprendizaje</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>Criterio de Evaluación (CE)</td>
+                <td>
+                  Sub-criterio de un RA. Tiene <code>peso</code>, instrumento y
+                  trimestre. Las notas se almacenan a este nivel. Tabla
+                  <code>criterios_evaluacion</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>Grupo</td>
+                <td>
+                  Clase de alumnos en un centro. Tiene un tutor opcional (<code
+                    >tutor_id FK → usuarios</code
+                  >). Tabla <code>grupos</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>Impartición</td>
+                <td>
+                  Instancia de un módulo enseñado por un profesor a un grupo en
+                  un centro. Une Módulo + Grupo + Profesor + Centro. Tabla
+                  <code>imparticiones</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>Matrícula</td>
+                <td>
+                  Inscripción de un alumno en una impartición. Estados: ACTIVA,
+                  BAJA, CONVALIDADO. Campo <code>es_repetidor</code>. Tabla
+                  <code>matriculas</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>Período de Evaluación</td>
+                <td>
+                  Agrupación temporal dentro de una impartición (ej: 1er
+                  trimestre). Tiene <code>peso</code> para la nota global. Tabla
+                  <code>periodos_evaluacion</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>Ítem Evaluable</td>
+                <td>
+                  Actividad concreta de evaluación: EXAMEN, PRACTICA,
+                  RECUPERACION, ACTITUD. Tabla <code>items_evaluables</code>.
+                  Tiene <code>configuracion_rubrica</code> (JSONB).
+                </td>
+              </tr>
+              <tr>
+                <td>Calificación</td>
+                <td>
+                  Nota de un alumno en un CE. Valor 0-10. Tabla
+                  <code>calificaciones</code>. Cada cambio queda en
+                  <code>auditoria_notas</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>Auditoría de Notas</td>
+                <td>
+                  Historial de cambios de calificaciones: valor anterior, nuevo,
+                  quién, cuándo. Tabla <code>auditoria_notas</code>. Rellenada
+                  por trigger PL/pgSQL.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Framework y stack</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Término</th>
+                <th>Definición</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Spring Boot</td>
+                <td>
+                  Framework Java para aplicaciones web. Versión 3.3.5 con Java
+                  21. Incluye autoconfiguración y servidor embebido.
+                </td>
+              </tr>
+              <tr>
+                <td>Spring Security</td>
+                <td>
+                  Módulo de autenticación y autorización. Versión 6. Configura
+                  login, roles, headers, CSRF y sesión.
+                </td>
+              </tr>
+              <tr>
+                <td>Spring Data JPA</td>
+                <td>
+                  Abstracción sobre Hibernate para acceso a datos. Repositorios
+                  con métodos automáticos y queries JPQL.
+                </td>
+              </tr>
+              <tr>
+                <td>Hibernate</td>
+                <td>
+                  ORM (Object-Relational Mapping) que traduce entidades Java a
+                  tablas SQL. Versión 6.
+                </td>
+              </tr>
+              <tr>
+                <td>Thymeleaf</td>
+                <td>
+                  Motor de plantillas HTML del lado del servidor. Las variables
+                  se insertan con <code>th:text</code>, nunca
+                  <code>th:utext</code> para datos de usuario.
+                </td>
+              </tr>
+              <tr>
+                <td>Flyway</td>
+                <td>
+                  Herramienta de migraciones de base de datos. Los scripts se
+                  versionan (V1, V2…) y se aplican al arrancar la app.
+                </td>
+              </tr>
+              <tr>
+                <td>MapStruct</td>
+                <td>
+                  Generador de código Java para convertir entre entidades y DTOs
+                  en tiempo de compilación.
+                  <code>componentModel = "spring"</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>Lombok</td>
+                <td>
+                  Reduce boilerplate de Java: genera getters, setters,
+                  constructores, etc. mediante anotaciones.
+                </td>
+              </tr>
+              <tr>
+                <td>Bean Validation</td>
+                <td>
+                  Estándar Jakarta para validar datos con anotaciones
+                  (<code>@NotBlank</code>, <code>@Size</code>,
+                  <code>@Email</code>…). Los DTOs son Java records.
+                </td>
+              </tr>
+              <tr>
+                <td>DTO (Data Transfer Object)</td>
+                <td>
+                  Objeto que transporta datos entre capas. En Schooledule son
+                  Java records inmutables.
+                </td>
+              </tr>
+              <tr>
+                <td>Spring Session JDBC</td>
+                <td>
+                  Almacena sesiones HTTP en PostgreSQL (tabla
+                  <code>SPRING_SESSION</code>). Sobrevive reinicios.
+                </td>
+              </tr>
+              <tr>
+                <td>Bootstrap 5</td>
+                <td>
+                  Framework CSS para la interfaz. Se usa junto a los estilos
+                  propios del design system.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Seguridad</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Término</th>
+                <th>Definición</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>RBAC</td>
+                <td>
+                  Role-Based Access Control. Control de acceso por roles. En
+                  Schooledule: ADMIN, ADMIN_CENTRO, PROFESOR, ALUMNO.
+                </td>
+              </tr>
+              <tr>
+                <td>BCrypt</td>
+                <td>
+                  Algoritmo de hash para contraseñas con salt. Unidireccional:
+                  no se puede desencriptar. Spring usa
+                  <code>BCryptPasswordEncoder</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>CSRF</td>
+                <td>
+                  Cross-Site Request Forgery. Ataque que fuerza peticiones no
+                  deseadas. Prevenido con token CSRF en formularios (Thymeleaf
+                  lo integra automáticamente).
+                </td>
+              </tr>
+              <tr>
+                <td>CSP</td>
+                <td>
+                  Content Security Policy. Cabecera HTTP que restricte qué
+                  recursos puede cargar el navegador. Previene XSS. En
+                  Schooledule:
+                  <code>default-src 'self'; frame-ancestors 'none'</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>XSS</td>
+                <td>
+                  Cross-Site Scripting. Inyección de JS malicioso. Prevenido con
+                  <code>th:text</code> (escapa HTML) y la cabecera CSP.
+                </td>
+              </tr>
+              <tr>
+                <td>SQL Injection</td>
+                <td>
+                  Inyección de SQL malicioso. Prevenido usando JPA con consultas
+                  parametrizadas, nunca concatenación de strings.
+                </td>
+              </tr>
+              <tr>
+                <td>Session Fixation</td>
+                <td>
+                  Ataque donde el atacante conoce el ID de sesión antes del
+                  login. Mitigado con <code>changeSessionId()</code> al
+                  autenticar.
+                </td>
+              </tr>
+              <tr>
+                <td>@PreAuthorize</td>
+                <td>
+                  Anotación de Spring Security que aplica control de acceso por
+                  rol a nivel de clase o método. Segunda barrera tras las reglas
+                  URL.
+                </td>
+              </tr>
+              <tr>
+                <td>Bucket4j</td>
+                <td>
+                  Librería Java de rate limiting basada en algoritmo Token
+                  Bucket. Usada en <code>LoginRateLimitFilter</code>: 10 req/15
+                  min por IP.
+                </td>
+              </tr>
+              <tr>
+                <td>OWASP Top 10</td>
+                <td>
+                  Lista de los 10 riesgos de seguridad más críticos en
+                  aplicaciones web, publicada por OWASP. Edición 2021.
+                </td>
+              </tr>
+              <tr>
+                <td>snap-admin</td>
+                <td>
+                  Librería eliminada (v0.2.1). Exponía panel CRUD de todas las
+                  entidades JPA sin autenticación. Severidad CRÍTICA (A06).
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Base de datos y persistencia</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Término</th>
+                <th>Definición</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>PostgreSQL 16</td>
+                <td>
+                  Base de datos relacional utilizada. Soporta JSONB, PL/pgSQL y
+                  tipos personalizados (enums).
+                </td>
+              </tr>
+              <tr>
+                <td>JSONB</td>
+                <td>
+                  Tipo de dato PostgreSQL para JSON binario. Más eficiente que
+                  JSON. Usado en
+                  <code>configuracion_evaluacion</code> (imparticiones) y
+                  <code>configuracion_rubrica</code> (items).
+                </td>
+              </tr>
+              <tr>
+                <td>PL/pgSQL</td>
+                <td>
+                  Lenguaje procedural de PostgreSQL para funciones y triggers.
+                  Sintaxis similar a Pascal/Ada.
+                </td>
+              </tr>
+              <tr>
+                <td>Trigger</td>
+                <td>
+                  Función que se ejecuta automáticamente ante un evento.
+                  <code>trigger_auditoria_notas</code>: AFTER UPDATE en
+                  <code>calificaciones</code> → inserta en
+                  <code>auditoria_notas</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>app.usuario_actual</td>
+                <td>
+                  Variable de sesión PostgreSQL. El servicio la inyecta con
+                  <code>set_config('app.usuario_actual', email, true)</code>
+                  para que el trigger sepa quién modificó una nota.
+                </td>
+              </tr>
+              <tr>
+                <td>H2</td>
+                <td>
+                  Base de datos en memoria usada en tests de integración. No se
+                  usa en producción.
+                </td>
+              </tr>
+              <tr>
+                <td>Flyway Migration</td>
+                <td>
+                  Script SQL versionado (V1__, V2__…). Flyway los aplica en
+                  orden al arrancar y registra qué versiones están aplicadas en
+                  la tabla <code>flyway_schema_history</code>.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Infraestructura y CI/CD</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Término</th>
+                <th>Definición</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Docker</td>
+                <td>
+                  Plataforma de contenedores. La app se empaqueta con su JRE y
+                  se distribuye como imagen.
+                </td>
+              </tr>
+              <tr>
+                <td>Docker Compose</td>
+                <td>
+                  Herramienta para orquestar múltiples contenedores. Dev: 4
+                  servicios. Prod: 2 servicios.
+                </td>
+              </tr>
+              <tr>
+                <td>Multi-stage Dockerfile</td>
+                <td>
+                  Dockerfile con varias etapas (FROM). Permite separar build
+                  (Maven pesado) de runtime (JRE ligero).
+                </td>
+              </tr>
+              <tr>
+                <td>GitHub Actions</td>
+                <td>
+                  Servicio CI/CD de GitHub. Los workflows se definen en
+                  <code>.github/workflows/*.yml</code>. Schooledule tiene 2:
+                  <code>ci-cd.yml</code> y <code>memoria-pdf.yml</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>JaCoCo</td>
+                <td>
+                  Java Code Coverage. Mide el porcentaje de código cubierto por
+                  tests. Umbral mínimo: 80% en Schooledule.
+                </td>
+              </tr>
+              <tr>
+                <td>SonarQube</td>
+                <td>
+                  Plataforma de análisis estático de código. Detecta bugs,
+                  vulnerabilidades y code smells. Solo en entorno dev.
+                </td>
+              </tr>
+              <tr>
+                <td>Spotless</td>
+                <td>
+                  Plugin Maven para formatear código Java automáticamente
+                  (Google Java Format). Pre-commit hook + CI.
+                </td>
+              </tr>
+              <tr>
+                <td>Prettier</td>
+                <td>Formateador de HTML, CSS, JS. Pre-commit hook + CI.</td>
+              </tr>
+              <tr>
+                <td>Hadolint</td>
+                <td>
+                  Linter de Dockerfiles. Verifica buenas prácticas. Usado en el
+                  job de lint del CI.
+                </td>
+              </tr>
+              <tr>
+                <td>Actionlint</td>
+                <td>
+                  Linter de workflows de GitHub Actions. Verifica sintaxis y
+                  semántica de los ficheros YAML de CI.
+                </td>
+              </tr>
+              <tr>
+                <td>Purge &amp; Promote</td>
+                <td>
+                  Flujo automático que crea la rama
+                  <code>pre-prod</code> eliminando archivos de desarrollo antes
+                  de ir a producción.
+                </td>
+              </tr>
+              <tr>
+                <td>Token Bucket</td>
+                <td>
+                  Algoritmo de rate limiting: "bucket" que se llena de tokens a
+                  una tasa fija. Cada petición consume un token. Sin tokens →
+                  petición rechazada.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Patrones y arquitectura</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Término</th>
+                <th>Definición</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MVC</td>
+                <td>
+                  Model-View-Controller. Patrón arquitectónico. En Spring Boot:
+                  Controller (peticiones HTTP) + Service (lógica de negocio) +
+                  Repository (acceso a datos) + Thymeleaf (vista).
+                </td>
+              </tr>
+              <tr>
+                <td>Multi-tenant</td>
+                <td>
+                  Arquitectura donde varios clientes (centros) comparten la
+                  misma instancia de la app con datos aislados por
+                  <code>centro_id</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>TDD</td>
+                <td>
+                  Test-Driven Development. Metodología: primero el test (Red),
+                  luego el código (Green), luego refactor. Obligatorio en
+                  Schooledule.
+                </td>
+              </tr>
+              <tr>
+                <td>IDOR</td>
+                <td>
+                  Insecure Direct Object Reference. Acceder a datos ajenos
+                  cambiando un ID en la URL. Prevenido con ownership checks en
+                  servicios.
+                </td>
+              </tr>
+              <tr>
+                <td>Defense in depth</td>
+                <td>
+                  Múltiples capas de seguridad independientes. En Schooledule:
+                  URL rules + @PreAuthorize + ownership checks en servicio.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
