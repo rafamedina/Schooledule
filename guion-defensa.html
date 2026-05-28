@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guión Defensa — Schooledule TFG</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --border: #2a2d3e;
+        --navy: #2e3a5c;
+        --coral: #c24e3d;
+        --paper: #f7f2ea;
+        --text: #e8e4dc;
+        --muted: #8a8fa8;
+        --accent: #6b8cff;
+        --green: #4caf87;
+        --yellow: #e6c44a;
+        --red: #e05252;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Georgia", serif;
+        font-size: 18px;
+        line-height: 1.75;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 6rem;
+      }
+
+      /* Header */
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem 0 2.5rem;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 3rem;
+      }
+      .logo-mark {
+        width: 42px;
+        height: 42px;
+        background: var(--navy);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .logo-mark::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: var(--coral);
+        border-radius: 4px 0 0 4px;
+      }
+      .logo-mark span {
+        color: var(--paper);
+        font-style: italic;
+        font-weight: bold;
+        font-size: 1rem;
+        margin-left: 4px;
+      }
+      .header-text h1 {
+        font-size: 1.05rem;
+        font-weight: normal;
+        color: var(--text);
+        letter-spacing: 0.03em;
+      }
+      .header-text p {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-family: monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      /* Total time badge */
+      .total-time {
+        margin-left: auto;
+        background: var(--navy);
+        color: var(--paper);
+        padding: 0.3rem 0.9rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-family: monospace;
+        letter-spacing: 0.05em;
+      }
+
+      /* Progress nav */
+      .progress-bar {
+        position: sticky;
+        top: 0;
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        padding: 0.6rem 0;
+        margin-bottom: 2rem;
+        z-index: 10;
+        display: flex;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+      }
+      .progress-bar a {
+        font-size: 0.72rem;
+        font-family: monospace;
+        color: var(--muted);
+        text-decoration: none;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        border: 1px solid var(--border);
+        transition: all 0.15s;
+      }
+      .progress-bar a:hover {
+        color: var(--text);
+        border-color: var(--accent);
+      }
+      .progress-bar a.demo {
+        border-color: var(--coral);
+        color: var(--coral);
+      }
+
+      /* Slide block */
+      .slide {
+        margin-bottom: 3.5rem;
+        scroll-margin-top: 70px;
+      }
+
+      .slide-header {
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      .slide-num {
+        font-family: monospace;
+        font-size: 0.75rem;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        flex-shrink: 0;
+      }
+      .slide-title {
+        font-size: 0.95rem;
+        font-weight: bold;
+        color: var(--accent);
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+      .slide-time {
+        margin-left: auto;
+        font-family: monospace;
+        font-size: 0.78rem;
+        color: var(--green);
+        flex-shrink: 0;
+      }
+      .slide-time.long {
+        color: var(--yellow);
+      }
+      .slide-time.demo {
+        color: var(--coral);
+      }
+
+      .slide-content {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--navy);
+        border-radius: 6px;
+        padding: 1.6rem 2rem;
+      }
+      .slide-content p {
+        margin-bottom: 1.1rem;
+      }
+      .slide-content p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Emphasis */
+      .slide-content strong {
+        color: var(--paper);
+        font-weight: bold;
+      }
+      .slide-content em {
+        color: var(--yellow);
+        font-style: normal;
+        font-weight: bold;
+      }
+
+      /* Action notes */
+      .action {
+        display: block;
+        background: rgba(194, 78, 61, 0.12);
+        border: 1px solid rgba(194, 78, 61, 0.35);
+        border-radius: 4px;
+        padding: 0.6rem 1rem;
+        margin: 1rem 0;
+        font-family: monospace;
+        font-size: 0.82rem;
+        color: var(--coral);
+        letter-spacing: 0.02em;
+      }
+      .action::before {
+        content: "▶ ";
+      }
+
+      /* Tip notes */
+      .tip {
+        display: block;
+        background: rgba(107, 140, 255, 0.08);
+        border: 1px solid rgba(107, 140, 255, 0.25);
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        margin: 0.8rem 0;
+        font-size: 0.82rem;
+        color: var(--muted);
+        font-family: monospace;
+      }
+      .tip::before {
+        content: "💡 ";
+      }
+
+      /* Demo block */
+      .demo-block {
+        border-left-color: var(--coral);
+      }
+      .demo-block .slide-title {
+        color: var(--coral);
+      }
+
+      /* Divider */
+      .divider {
+        text-align: center;
+        color: var(--border);
+        margin: 2rem 0;
+        font-size: 1.2rem;
+        letter-spacing: 0.5rem;
+      }
+
+      /* Keywords */
+      kbd {
+        background: var(--border);
+        color: var(--text);
+        padding: 0.1rem 0.4rem;
+        border-radius: 3px;
+        font-family: monospace;
+        font-size: 0.85em;
+      }
+
+      /* Final section */
+      .section-label {
+        font-family: monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        border-top: 1px solid var(--border);
+        padding-top: 0.5rem;
+        margin: 3rem 0 1.5rem;
+      }
+
+      @media print {
+        body {
+          background: white;
+          color: black;
+          font-size: 14px;
+        }
+        .progress-bar {
+          display: none;
+        }
+        .slide-content {
+          border: 1px solid #ccc;
+          background: #f9f9f9;
+        }
+        .action {
+          color: #900;
+          background: #fff0ee;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="logo-mark"><span>S</span></div>
+      <div class="header-text">
+        <h1>Guión de Defensa — Schooledule</h1>
+        <p>TFG · Rafael Medina · DAM 2026</p>
+      </div>
+      <div class="total-time">~10 min + demo</div>
+    </div>
+
+    <nav class="progress-bar">
+      <a href="#s1">01 Portada</a>
+      <a href="#s2">02 Problema</a>
+      <a href="#s3">03 Autor</a>
+      <a href="#s4">04 Producto</a>
+      <a href="#s5">05 Mercado</a>
+      <a href="#s6">06 DAFO</a>
+      <a href="#s7">07 Negocio</a>
+      <a href="#s8" class="demo">08–12 DEMO</a>
+      <a href="#s13">13 Roadmap</a>
+      <a href="#s14">14 Cierre</a>
+    </nav>
+
+    <!-- SLIDE 1 -->
+    <div class="slide" id="s1">
+      <div class="slide-header">
+        <span class="slide-num">Slide 01 / 14</span>
+        <span class="slide-title">Portada</span>
+        <span class="slide-time">~30 s</span>
+      </div>
+      <div class="slide-content">
+        <p>
+          Buenos días. Voy a presentaros <strong>Schooledule</strong>, mi
+          Trabajo de Fin de Grado para el ciclo de Desarrollo de Aplicaciones
+          Multiplataforma.
+        </p>
+        <p>
+          Schooledule es una plataforma de gestión académica multi-sede con
+          trazabilidad forense desde la base de datos. Y lo que quiero que os
+          llevéis al final de estos diez minutos es una idea:
+          <em>la gestión educativa sigue rota</em>, y este sistema tiene tres
+          respuestas concretas a ese problema.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide" id="s2">
+      <div class="slide-header">
+        <span class="slide-num">Slide 02 / 14</span>
+        <span class="slide-title">El Problema</span>
+        <span class="slide-time long">~1 min 15 s</span>
+      </div>
+      <div class="slide-content">
+        <p>
+          Empecemos por el problema. La gestión académica en la mayoría de
+          centros de formación profesional sigue siendo un
+          <strong
+            >patchwork de Excel, correos y plataformas que no hablan entre
+            sí</strong
+          >. Tres problemas concretos me llevaron a crear este proyecto.
+        </p>
+        <p>
+          <strong>Primero: los datos viven en Excel.</strong> Sin control de
+          versiones, sin auditoría, con errores manuales cada trimestre. Esto no
+          es un problema menor: es la realidad de muchos centros hoy.
+        </p>
+        <p>
+          <strong>Segundo: sin aislamiento entre sedes.</strong> Cuando un
+          centro tiene varios edificios o delegaciones, no existe una forma
+          segura de aislar los datos. Un cambio en una sede puede contaminar a
+          otra, y delegar la administración es prácticamente imposible.
+        </p>
+        <p>
+          <strong>Tercero, y este es el más crítico:</strong> si alguien cambia
+          una nota, ¿quién lo hizo, cuándo y por qué? En la mayoría de sistemas
+          no hay respuesta. Y eso es un problema legal y de confianza.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide" id="s3">
+      <div class="slide-header">
+        <span class="slide-num">Slide 03 / 14</span>
+        <span class="slide-title">Autor</span>
+        <span class="slide-time">~45 s</span>
+      </div>
+      <div class="slide-content">
+        <p>
+          Soy <strong>Rafael Medina</strong>. Este proyecto lo he desarrollado
+          en solitario durante seis meses. No nació de un enunciado académico:
+          nació de ver cómo se gestionaban las notas en clase. Aplicaciones
+          obsoletas, sin historial, con errores frecuentes. Decidí que había una
+          forma mejor.
+        </p>
+        <p>
+          El resultado son <em>159 commits</em>,
+          <em>499 tests automatizados</em>, cinco roles de usuario distintos, y
+          una implementación completa del estándar
+          <strong>OWASP Top 10</strong> de seguridad web. Esto último es algo
+          que pocos proyectos a este nivel abordan de forma sistemática.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide" id="s4">
+      <div class="slide-header">
+        <span class="slide-num">Slide 04 / 14</span>
+        <span class="slide-title">Qué es Schooledule</span>
+        <span class="slide-time long">~1 min</span>
+      </div>
+      <div class="slide-content">
+        <p>¿Qué es Schooledule? Son tres garantías.</p>
+        <p>
+          <strong>La primera: multi-sede real.</strong> Varios centros
+          educativos bajo un único sistema, con datos completamente aislados. No
+          es que los datos estén separados por lógica de aplicación: el
+          aislamiento está garantizado a nivel de esquema de base de datos con
+          la columna <kbd>centro_id</kbd> como predicado obligatorio en cada
+          consulta académica.
+        </p>
+        <p>
+          <strong
+            >La segunda: cuatro perfiles de usuario con permisos
+            exactos.</strong
+          >
+          Admin global, Admin de Centro, Profesor y Alumno. Cada uno con su
+          portal y sin acceso a lo que no le corresponde.
+        </p>
+        <p>
+          <strong
+            >La tercera, y la más diferencial: trazabilidad forense.</strong
+          >
+          Cada cambio en una calificación queda registrado de forma inmutable en
+          PostgreSQL mediante un trigger <kbd>PL/pgSQL</kbd>. Nada se modifica
+          sin dejar rastro.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 -->
+    <div class="slide" id="s5">
+      <div class="slide-header">
+        <span class="slide-num">Slide 05 / 14</span>
+        <span class="slide-title">Frente al Mercado</span>
+        <span class="slide-time long">~1 min</span>
+      </div>
+      <div class="slide-content">
+        <p>
+          ¿Dónde está Schooledule frente al mercado? Los referentes en España
+          son <strong>Rayuela, iEduca</strong> y, en lo gratuito,
+          <strong>Google Classroom</strong>. Y Excel, que sigue siendo la
+          herramienta más usada por defecto.
+        </p>
+        <p>
+          Schooledule no compite por precio: compite por tres características
+          que ningún competidor ofrece de forma completa al mismo tiempo:
+          <em>multi-sede con aislamiento real</em>,
+          <em>auditoría forense inmutable</em>, y
+          <em>motor de evaluación configurable sin tocar código</em>.
+        </p>
+        <p>
+          Moodle es lo más cercano en funcionalidad, pero su modelo de datos
+          está diseñado para la gestión de contenidos, no para la administración
+          académica. No tiene el concepto de «sede» como unidad de aislamiento,
+          y su auditoría de notas puede ser alterada por el propio profesor.
+        </p>
+        <span class="tip"
+          >Puedes señalar la tabla comparativa de la diapositiva mientras lo
+          dices.</span
+        >
+      </div>
+    </div>
+
+    <!-- SLIDE 6 -->
+    <div class="slide" id="s6">
+      <div class="slide-header">
+        <span class="slide-num">Slide 06 / 14</span>
+        <span class="slide-title">Análisis DAFO</span>
+        <span class="slide-time long">~1 min</span>
+      </div>
+      <div class="slide-content">
+        <p>El análisis DAFO es honesto.</p>
+        <p>
+          Como <strong>fortaleza principal</strong>: la auditoría forense. Es el
+          único sistema que la implementa a nivel de base de datos, no como
+          política de acceso. El stack también es moderno: Java 21 y Spring Boot
+          3.3, con seguridad documentada desde el primer commit.
+        </p>
+        <p>
+          Las <strong>debilidades</strong> son las de cualquier proyecto en
+          solitario: no hay app móvil todavía, y la velocidad de iteración tiene
+          un límite cuando hay una sola persona detrás.
+        </p>
+        <p>
+          Las <strong>oportunidades</strong>: la normativa europea está
+          empujando la digitalización obligatoria en centros concertados. El
+          mercado educativo español está fragmentado, sin un líder técnico
+          claro.
+        </p>
+        <p>
+          Las <strong>amenazas</strong>: Microsoft y Google están entrando
+          activamente en gestión educativa, y el coste de migración desde
+          sistemas legacy puede frenar la adopción.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div class="slide" id="s7">
+      <div class="slide-header">
+        <span class="slide-num">Slide 07 / 14</span>
+        <span class="slide-title">Modelo de Negocio</span>
+        <span class="slide-time">~45 s</span>
+      </div>
+      <div class="slide-content">
+        <p>
+          El modelo de negocio es <strong>SaaS en tres niveles</strong>. Un tier
+          gratuito para que los centros prueben sin riesgo: hasta un centro y
+          200 alumnos. Un tier Pro para hasta cinco centros con soporte
+          prioritario. Y un tier Enterprise para despliegues multi-sede sin
+          límite, con integraciones a medida.
+        </p>
+        <p>
+          Para el arranque, hay tres vías de financiación: la subvención
+          <strong>NEOTEC del CDTI</strong> para startups tecnológicas, el
+          programa europeo <strong>Horizon Europe</strong> de digitalización
+          educativa, y acuerdos piloto con consorcios de centros concertados. La
+          infraestructura es ligera, lo que mantiene el punto de equilibrio bajo
+          y permite crecer por demanda.
+        </p>
+      </div>
+    </div>
+
+    <div class="divider">· · ·</div>
+    <div class="section-label">A continuación: demo en vivo · Slides 08–12</div>
+
+    <!-- SLIDES 8-12 DEMO -->
+    <div class="slide" id="s8">
+      <div class="slide-header">
+        <span class="slide-num">Slides 08–12 / 14</span>
+        <span class="slide-title demo">Demo en vivo</span>
+        <span class="slide-time demo">~1 min intro + demo</span>
+      </div>
+      <div class="slide-content demo-block">
+        <p>
+          A partir de aquí voy a mostraros la aplicación funcionando en vivo.
+          Tenemos cuatro portales activos y quiero recorrer los flujos más
+          representativos.
+        </p>
+
+        <span class="action"
+          >Abrir la aplicación en el navegador · http://localhost:8080</span
+        >
+
+        <p>
+          <strong>Portal del Administrador Global</strong> — empezamos aquí
+          porque es donde se entiende todo lo demás. El dashboard muestra en
+          tiempo real: centros activos, usuarios registrados, matrículas del
+          curso en vigor e imparticiones en marcha.
+        </p>
+        <span class="action"
+          >Mostrar dashboard admin → sección Auditoría → exportar a Excel</span
+        >
+
+        <p>
+          Lo más diferencial: la <em>auditoría forense</em>. Vemos el log de
+          cambios de calificación: quién lo cambió, cuándo, valor anterior y
+          nuevo. Este registro no puede borrarse ni editarse desde la
+          aplicación. Lo genera un trigger de PostgreSQL que no está bajo
+          control del código de la app.
+        </p>
+        <span class="action"
+          >Mostrar importación masiva desde Excel → subir plantilla con
+          alumnos</span
+        >
+
+        <p>
+          También la <strong>importación masiva</strong>: subimos un Excel con
+          decenas de alumnos. El sistema valida fila a fila y, si hay un error
+          en la fila 7, la fila 7 falla pero el resto puede seguir. Si el alumno
+          ya existía, lo reutiliza sin duplicarlo.
+        </p>
+
+        <span class="action">Cambiar al portal del Profesor</span>
+
+        <p>
+          <strong>Portal del Profesor</strong> — aquí se califica. No una
+          casilla mensual: cada nota va a un criterio de evaluación concreto,
+          dentro de un resultado de aprendizaje. El sistema calcula la nota
+          final automáticamente según los pesos configurados por el
+          administrador. Sin hojas de cálculo externas.
+        </p>
+
+        <span class="action">Cambiar al portal del Alumno</span>
+
+        <p>
+          <strong>Portal del Alumno</strong> — acceso de solo lectura. El alumno
+          ve su expediente: notas desglosadas por criterio, no solo la final.
+          Sabe exactamente cómo se construyó su nota.
+        </p>
+
+        <span class="action"
+          >Mostrar brevemente el portal del Admin de Centro si queda
+          tiempo</span
+        >
+
+        <p>
+          <strong>Admin de Centro</strong> — mismo panel que el admin global,
+          pero acotado a su sede. No puede ver otras sedes ni cambiar roles de
+          usuario. El sistema lo bloquea a nivel de consulta de base de datos,
+          no solo de interfaz.
+        </p>
+
+        <span class="tip"
+          >Si hay una pregunta sobre seguridad: mencionar los 499 tests y el
+          OWASP Top 10 implementado.</span
+        >
+      </div>
+    </div>
+
+    <div class="divider">· · ·</div>
+    <div class="section-label">Vuelta a la presentación · Slides 13–14</div>
+
+    <!-- SLIDE 13 -->
+    <div class="slide" id="s13">
+      <div class="slide-header">
+        <span class="slide-num">Slide 13 / 14</span>
+        <span class="slide-title">Roadmap</span>
+        <span class="slide-time">~30 s</span>
+      </div>
+      <div class="slide-content">
+        <p>
+          El sistema ya está desplegado y accesible con dominio propio y backups
+          diarios. El roadmap mira a corto y medio plazo.
+        </p>
+        <p>
+          En el <strong>Q3 de 2026</strong>: API pública documentada con OpenAPI
+          para integraciones con terceros. En el <strong>Q4</strong>: app móvil
+          para alumnos con notificaciones de notas en tiempo real. A
+          <strong>principios de 2027</strong>: conexión con Moodle y Google
+          Workspace for Education.
+        </p>
+        <p>
+          Cada hito está pensado para que el sistema siga creciendo sin romper
+          lo que ya funciona en los centros que lo usan.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 14 -->
+    <div class="slide" id="s14">
+      <div class="slide-header">
+        <span class="slide-num">Slide 14 / 14</span>
+        <span class="slide-title">Cierre</span>
+        <span class="slide-time">~30 s</span>
+      </div>
+      <div class="slide-content">
+        <p>
+          Para cerrar:
+          <strong
+            >Schooledule resuelve un problema real con arquitectura
+            sólida</strong
+          >. Datos académicos aislados por centro, calificación granular por
+          criterio, y un rastro forense inmutable que ningún competidor directo
+          ofrece a este nivel técnico.
+        </p>
+        <p>
+          499 tests, cobertura por encima del 80%, pipeline de CI/CD completo y
+          seguridad OWASP documentada desde el primer día.
+        </p>
+        <p>
+          Quedo a vuestra disposición para preguntas. <em>Muchas gracias.</em>
+        </p>
+      </div>
+    </div>
+
+    <!-- NOTAS FINALES -->
+    <div class="section-label">Notas de preparación</div>
+    <div class="slide">
+      <div class="slide-content">
+        <p><strong>Distribución de tiempo orientativa:</strong></p>
+        <p>
+          Slides 1–7 (presentación): ~6 min 30 s &nbsp;·&nbsp; Demo en vivo:
+          variable ~5–8 min &nbsp;·&nbsp; Slides 13–14 (cierre): ~1 min
+        </p>
+        <p style="margin-top: 1rem">
+          <strong>Si te piden recortar:</strong> DAFO (slide 6) y Negocio (slide
+          7) son los más prescindibles. Puedes pasarlos en 20 segundos cada uno
+          señalando la diapositiva.
+        </p>
+        <p style="margin-top: 1rem">
+          <strong>Si te preguntan por los tests:</strong> 499 tests, 28 clases
+          de test de servicio, 6 clases de tests de seguridad específicos,
+          cobertura de instrucciones superior al 80% bloqueante en el pipeline.
+        </p>
+        <p style="margin-top: 1rem">
+          <strong>Si te preguntan por la seguridad:</strong> OWASP A01 (control
+          de acceso con <kbd>@PreAuthorize</kbd> en cada controlador), A04 (rate
+          limiting con Bucket4j, 10 intentos/15 min por IP), A05 (CSP, session
+          fixation, sesión única), A07 (política de contraseña con
+          <kbd>@ValidPassword</kbd>). 32 tests de seguridad automatizados en el
+          pipeline.
+        </p>
+        <p style="margin-top: 1rem">
+          <strong>Si te preguntan por la BD:</strong> PostgreSQL 16, trigger
+          PL/pgSQL para auditoría, JSONB para configuración de centros, Spring
+          Session JDBC para sesiones persistentes, Flyway para migraciones.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
