@@ -1,0 +1,1722 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Preguntas del Tribunal — Schooledule TFG</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      :root {
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --border: #2a2d3e;
+        --navy: #2e3a5c;
+        --coral: #c24e3d;
+        --paper: #f7f2ea;
+        --text: #e8e4dc;
+        --muted: #8a8fa8;
+        --accent: #6b8cff;
+        --green: #4caf87;
+        --yellow: #e6c44a;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Georgia", serif;
+        padding: 2rem 1.5rem 6rem;
+      }
+
+      /* HEADER */
+      .page-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        max-width: 1200px;
+        margin: 0 auto 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .logo-mark {
+        width: 42px;
+        height: 42px;
+        background: var(--navy);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .logo-mark::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: var(--coral);
+        border-radius: 4px 0 0 4px;
+      }
+      .logo-mark span {
+        color: var(--paper);
+        font-style: italic;
+        font-weight: bold;
+        font-size: 1rem;
+        margin-left: 4px;
+      }
+      .page-header h1 {
+        font-size: 1.1rem;
+        font-weight: normal;
+      }
+      .page-header p {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-family: monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .badge {
+        margin-left: auto;
+        background: var(--navy);
+        color: var(--paper);
+        padding: 0.3rem 0.9rem;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-family: monospace;
+      }
+
+      /* FILTROS */
+      .filters {
+        max-width: 1200px;
+        margin: 0 auto 2rem;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .filter-btn {
+        font-family: monospace;
+        font-size: 0.75rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+        letter-spacing: 0.04em;
+      }
+      .filter-btn:hover,
+      .filter-btn.active {
+        background: var(--navy);
+        color: var(--paper);
+        border-color: var(--accent);
+      }
+      .filter-btn[data-cat="seguridad"].active {
+        border-color: var(--coral);
+        background: rgba(194, 78, 61, 0.2);
+      }
+      .filter-btn[data-cat="base-datos"].active {
+        border-color: var(--green);
+        background: rgba(76, 175, 135, 0.15);
+      }
+      .filter-btn[data-cat="tests"].active {
+        border-color: var(--yellow);
+        background: rgba(230, 196, 74, 0.15);
+      }
+      .filter-btn[data-cat="producto"].active {
+        border-color: #a78bfa;
+        background: rgba(167, 139, 250, 0.15);
+      }
+      .filter-btn[data-cat="arquitectura"].active {
+        border-color: var(--accent);
+        background: rgba(107, 140, 255, 0.15);
+      }
+      .filter-btn[data-cat="implementacion"].active {
+        border-color: #fb923c;
+        background: rgba(251, 146, 60, 0.15);
+      }
+
+      /* GRID */
+      .grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.2rem;
+      }
+
+      /* SECTION LABEL */
+      .section-label {
+        grid-column: 1 / -1;
+        font-family: monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        border-top: 1px solid var(--border);
+        padding-top: 0.8rem;
+        margin-top: 0.5rem;
+      }
+
+      /* FLIP CARD */
+      .card-wrap {
+        perspective: 1000px;
+        height: 200px;
+        cursor: pointer;
+      }
+      .card-wrap.tall {
+        height: 260px;
+      }
+      .card-wrap.xtall {
+        height: 320px;
+      }
+
+      .card {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 8px;
+      }
+      .card-wrap.flipped .card {
+        transform: rotateY(180deg);
+      }
+
+      .card-front,
+      .card-back {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        border-radius: 8px;
+        padding: 1.3rem 1.4rem;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* FRONT */
+      .card-front {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        justify-content: space-between;
+      }
+      .card-front::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        border-radius: 8px 0 0 8px;
+      }
+      .card-wrap[data-cat="arquitectura"] .card-front::before {
+        background: var(--accent);
+      }
+      .card-wrap[data-cat="seguridad"] .card-front::before {
+        background: var(--coral);
+      }
+      .card-wrap[data-cat="base-datos"] .card-front::before {
+        background: var(--green);
+      }
+      .card-wrap[data-cat="tests"] .card-front::before {
+        background: var(--yellow);
+      }
+      .card-wrap[data-cat="producto"] .card-front::before {
+        background: #a78bfa;
+      }
+      .card-wrap[data-cat="implementacion"] .card-front::before {
+        background: #fb923c;
+      }
+      .card-wrap[data-cat="cicd"] .card-front::before {
+        background: #22d3ee;
+      }
+
+      .card-cat {
+        font-family: monospace;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.6rem;
+      }
+      .card-wrap[data-cat="arquitectura"] .card-cat {
+        color: var(--accent);
+      }
+      .card-wrap[data-cat="seguridad"] .card-cat {
+        color: var(--coral);
+      }
+      .card-wrap[data-cat="base-datos"] .card-cat {
+        color: var(--green);
+      }
+      .card-wrap[data-cat="tests"] .card-cat {
+        color: var(--yellow);
+      }
+      .card-wrap[data-cat="producto"] .card-cat {
+        color: #a78bfa;
+      }
+      .card-wrap[data-cat="implementacion"] .card-cat {
+        color: #fb923c;
+      }
+      .card-wrap[data-cat="cicd"] .card-cat {
+        color: #22d3ee;
+      }
+
+      .card-question {
+        font-size: 1rem;
+        line-height: 1.5;
+        color: var(--paper);
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+
+      .card-hint {
+        font-size: 0.7rem;
+        color: var(--muted);
+        font-family: monospace;
+        margin-top: 0.8rem;
+        align-self: flex-end;
+      }
+
+      /* BACK */
+      .card-back {
+        background: var(--navy);
+        border: 1px solid rgba(107, 140, 255, 0.3);
+        transform: rotateY(180deg);
+        overflow-y: auto;
+      }
+      .card-back-label {
+        font-family: monospace;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        margin-bottom: 0.7rem;
+        flex-shrink: 0;
+      }
+      .card-answer {
+        font-size: 0.88rem;
+        line-height: 1.6;
+        color: var(--text);
+        flex: 1;
+      }
+      .card-answer strong {
+        color: var(--paper);
+      }
+      .card-answer code {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.05rem 0.35rem;
+        border-radius: 3px;
+        font-size: 0.82em;
+        font-family: monospace;
+        color: var(--yellow);
+      }
+
+      /* contador */
+      .card-num {
+        position: absolute;
+        top: 0.6rem;
+        right: 0.8rem;
+        font-family: monospace;
+        font-size: 0.65rem;
+        color: var(--border);
+      }
+
+      /* hidden */
+      .card-wrap.hidden {
+        display: none;
+      }
+
+      /* contador visible */
+      .count-label {
+        max-width: 1200px;
+        margin: 0 auto 1rem;
+        font-family: monospace;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-header">
+      <div class="logo-mark"><span>S</span></div>
+      <div>
+        <h1>Preguntas del Tribunal</h1>
+        <p>Schooledule TFG · Rafael Medina · 2026</p>
+      </div>
+      <div class="badge">50 tarjetas · clic para voltear</div>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" data-cat="all">Todas</button>
+      <button class="filter-btn" data-cat="arquitectura">Arquitectura</button>
+      <button class="filter-btn" data-cat="seguridad">Seguridad</button>
+      <button class="filter-btn" data-cat="base-datos">Base de datos</button>
+      <button class="filter-btn" data-cat="tests">Tests</button>
+      <button class="filter-btn" data-cat="cicd">CI/CD</button>
+      <button class="filter-btn" data-cat="implementacion">
+        Implementación
+      </button>
+      <button class="filter-btn" data-cat="producto">Producto</button>
+    </div>
+
+    <div class="count-label" id="count-label">Mostrando 50 de 50 tarjetas</div>
+
+    <div class="grid" id="grid">
+      <!-- ===== ARQUITECTURA ===== -->
+      <div class="section-label" data-section="arquitectura">
+        Arquitectura y diseño
+      </div>
+
+      <div class="card-wrap" data-cat="arquitectura">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">01</span>
+            <div class="card-cat">Arquitectura</div>
+            <div class="card-question">
+              ¿Por qué elegiste Spring Boot y no otro framework como Django o
+              Express?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Spring Boot 3.3 sobre Java 21 ofrece
+              <strong>Spring Security integrado</strong> con RBAC nativo, Spring
+              Data JPA para el ORM y Spring Session JDBC para sesiones
+              persistentes en PostgreSQL. El ecosistema unificado evita
+              ensamblar librerías independientes para cada capa. Además, Java 21
+              con Virtual Threads mejora la concurrencia sin cambiar el modelo
+              de programación.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="arquitectura">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">02</span>
+            <div class="card-cat">Arquitectura</div>
+            <div class="card-question">
+              ¿Por qué Thymeleaf en lugar de React o Angular?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Thymeleaf es SSR (Server-Side Rendering): no existe API REST
+              pública que proteger, se elimina la superficie de ataque de CORS y
+              JWT, y el token CSRF lo gestiona Thymeleaf automáticamente con
+              <code>th:action</code>. El tiempo de desarrollo en solitario
+              también favorece evitar dos aplicaciones separadas.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="arquitectura">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">03</span>
+            <div class="card-cat">Arquitectura</div>
+            <div class="card-question">
+              ¿Qué es RBAC y cómo lo implementaste?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <strong>Role-Based Access Control</strong>: los permisos se
+              asignan a roles, no a usuarios directamente. Implementado con
+              tabla intermedia <code>usuarios_roles</code> (N:M). Cada
+              controlador lleva <code>@PreAuthorize("hasRole('X')")</code> a
+              nivel de clase más los URL matchers de
+              <code>SecurityConfig</code>. Doble capa de defensa.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="arquitectura">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">04</span>
+            <div class="card-cat">Arquitectura</div>
+            <div class="card-question">
+              ¿Qué es la entidad Impartición y por qué es el pivot central del
+              modelo?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <strong>Impartición</strong> vincula cuatro dimensiones:
+              <em>qué</em> (Módulo), <em>quién</em> (Profesor),
+              <em>a quién</em> (Grupo de alumnos) y <em>dónde</em> (Centro). Es
+              el nodo del que cuelgan las Matrículas, los PeriodosEvaluacion y
+              los ItemsEvaluables. Sin ella no existe calificación ni auditoría.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="arquitectura">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">05</span>
+            <div class="card-cat">Arquitectura</div>
+            <div class="card-question">
+              ¿Cómo garantizas el aislamiento multi-sede a nivel de base de
+              datos?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              La columna <code>centro_id</code> aparece como clave foránea en
+              <code>grupos</code>, <code>imparticiones</code> y
+              <code>matriculas</code>. Toda consulta académica filtra por ese
+              campo. Para el rol <code>ADMIN_CENTRO</code>, el componente
+              <code>CentroAdminContextService</code> inyecta los
+              <code>centro_id</code> permitidos como predicado obligatorio en
+              cada operación antes de ejecutarla.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="arquitectura">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">06</span>
+            <div class="card-cat">Arquitectura</div>
+            <div class="card-question">
+              ¿Cómo funciona la relación N:M entre usuarios y roles?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              La tabla intermedia <code>usuarios_roles</code> relaciona
+              <code>usuario_id</code> con <code>rol_id</code>. Los roles se
+              cargan con <code>FetchType.EAGER</code> para que Spring Security
+              los tenga disponibles en cada petición sin consultas adicionales
+              al autenticar. Esto permite que un mismo usuario tenga varios
+              roles simultáneos (p.ej. Profesor + Alumno).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="arquitectura">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">07</span>
+            <div class="card-cat">Arquitectura</div>
+            <div class="card-question">
+              ¿Qué es una Matrícula en tu sistema y qué estados puede tener?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Una <strong>Matrícula</strong> vincula un alumno
+              (<code>Usuario</code>) con una <code>Imparticion</code> concreta
+              dentro de un <code>Centro</code>. Sus estados son:
+              <code>ACTIVA</code>, <code>BAJA</code> y <code>CONVALIDADO</code>.
+              También almacena el flag <code>esRepetidor</code>. No puede
+              eliminarse si tiene calificaciones registradas.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="arquitectura">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">08</span>
+            <div class="card-cat">Arquitectura</div>
+            <div class="card-question">
+              ¿Qué diferencia hay entre el rol Admin Global y el Admin de
+              Centro?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              El <strong>Admin Global</strong> (<code>ROLE_ADMIN</code>) tiene
+              acceso irrestricto a toda la plataforma: todos los centros, el
+              catálogo de módulos y la auditoría forense global. El
+              <strong>Admin de Centro</strong> (<code>ROLE_ADMIN_CENTRO</code>)
+              usa las mismas herramientas pero acotadas a sus centros asignados,
+              y no puede cambiar roles de usuarios ni ver datos de otras sedes.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SEGURIDAD ===== -->
+      <div class="section-label" data-section="seguridad">
+        Seguridad y OWASP
+      </div>
+
+      <div class="card-wrap" data-cat="seguridad">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">09</span>
+            <div class="card-cat">Seguridad</div>
+            <div class="card-question">
+              ¿Qué es OWASP Top 10 y cuántas categorías abordaste?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              OWASP Top 10 es el estándar de las diez vulnerabilidades web más
+              críticas. En el proyecto se identificaron y remediaron
+              <strong>9 categorías</strong>: A01 (Broken Access Control), A02
+              (credenciales hardcoded), A03 (XSS via th:utext), A04 (rate
+              limiting login), A05 (headers HTTP y gestión de sesiones), A06
+              (snap-admin vulnerable), A07 (política de contraseña), A09 (log de
+              eventos de seguridad). Con 32 tests de seguridad automatizados.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="seguridad">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">10</span>
+            <div class="card-cat">Seguridad</div>
+            <div class="card-question">
+              ¿Cómo protegiste la aplicación contra XSS?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Uso exclusivo de <code>th:text</code> en todas las plantillas
+              Thymeleaf para datos de usuario o BD (auto-escapado HTML
+              implícito). Se auditaron exhaustivamente todos los templates:
+              <strong>cero ocurrencias</strong> de <code>th:utext</code> con
+              datos dinámicos. Adicionalmente, la cabecera
+              <code>Content-Security-Policy</code> restringe los scripts a
+              <code>'self'</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="seguridad">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">11</span>
+            <div class="card-cat">Seguridad</div>
+            <div class="card-question">¿Cómo protegiste contra CSRF?</div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Spring Security 6 habilita la protección CSRF por defecto.
+              Thymeleaf incluye automáticamente el token CSRF en cada formulario
+              que usa <code>th:action="@{/ruta}"</code>. Un POST sin token
+              válido devuelve HTTP 403. La cookie de sesión tiene
+              <code>SameSite=Strict</code> como capa adicional.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="seguridad">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">12</span>
+            <div class="card-cat">Seguridad</div>
+            <div class="card-question">
+              ¿Qué es el rate limiting y cómo lo implementaste?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              El filtro <code>LoginRateLimitFilter</code> (Bucket4j 8.10.1,
+              algoritmo <em>token bucket</em>) limita a
+              <strong>10 intentos de POST /login por IP cada 15 minutos</strong
+              >. El intento 11 recibe HTTP 429. La IP se resuelve desde
+              <code>X-Forwarded-For</code> para funcionar detrás de proxy.
+              Registrado en <code>SecurityConfig</code> antes de
+              <code>UsernamePasswordAuthenticationFilter</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="seguridad">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">13</span>
+            <div class="card-cat">Seguridad</div>
+            <div class="card-question">
+              ¿Qué es session fixation y cómo la previste?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <em>Session fixation</em>: un atacante obtiene un ID de sesión
+              antes del login y lo reutiliza tras la autenticación. Prevención:
+              <code>sessionFixation().changeSessionId()</code> en
+              <code>SecurityConfig</code> regenera el ID de sesión justo después
+              del login exitoso, invalidando cualquier sesión prefijada. Además,
+              <code>maximumSessions(1)</code> impide sesiones concurrentes.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="seguridad">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">14</span>
+            <div class="card-cat">Seguridad</div>
+            <div class="card-question">
+              ¿Qué es IDOR y cómo lo preveniste en el portal del alumno?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <strong>IDOR</strong> (Insecure Direct Object Reference):
+              manipular un ID en la URL para acceder a datos ajenos. En el
+              portal del alumno,
+              <code>UsuarioService.getStudentGrades(usuarioId, periodoId)</code>
+              verifica que el <code>periodoId</code> pertenece a una impartición
+              donde el alumno autenticado tiene matrícula activa. Si no es suyo,
+              lanza <code>AccessDeniedException</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="seguridad">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">15</span>
+            <div class="card-cat">Seguridad</div>
+            <div class="card-question">
+              ¿Qué era snap-admin y por qué fue un problema de seguridad
+              crítico?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <code>snap-admin:0.2.1</code> instalaba un panel CRUD automático
+              sobre <strong>todas las entidades JPA</strong> en
+              <code>/snap-admin/**</code>, sin pasar por el
+              <code>SecurityConfig</code> de la app. Cualquier persona con
+              acceso a la red podía listar, crear y eliminar cualquier registro.
+              Se eliminó la dependencia del <code>pom.xml</code> y se añadió
+              <code>.requestMatchers("/snap-admin/**").denyAll()</code> como
+              salvaguarda permanente.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="seguridad">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">16</span>
+            <div class="card-cat">Seguridad</div>
+            <div class="card-question">
+              ¿Qué hace @ValidPassword y dónde se aplica?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Es una anotación Bean Validation personalizada con su
+              <code>PasswordConstraintValidator</code>. Exige: mínimo 8
+              caracteres, al menos una mayúscula, una minúscula y un dígito. Se
+              aplica al campo <code>password</code> de
+              <code>AdminUsuarioFormDTO</code> y a los usuarios creados por
+              importación Excel. En la edición, el campo es opcional: si está
+              vacío, el hash existente se conserva sin regenerar.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="seguridad">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">17</span>
+            <div class="card-cat">Seguridad</div>
+            <div class="card-question">
+              ¿Qué cabeceras HTTP de seguridad añadiste y para qué sirven?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <strong>Content-Security-Policy</strong>: evita XSS restringiendo
+              orígenes de scripts (<code>default-src 'self'</code>,
+              <code>frame-ancestors 'none'</code>).
+              <strong>Referrer-Policy</strong>
+              <code>strict-origin-when-cross-origin</code>: evita fuga de URLs
+              internas. <strong>Permissions-Policy</strong>: deshabilita cámara,
+              micrófono y geolocalización. Spring Security 6 añade por defecto
+              <code>X-Content-Type-Options</code>,
+              <code>X-Frame-Options: DENY</code> y HSTS.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="seguridad">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">18</span>
+            <div class="card-cat">Seguridad</div>
+            <div class="card-question">
+              ¿Qué hace MustChangePasswordFilter y cuándo entra en acción?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Es un <code>OncePerRequestFilter</code> registrado tras
+              <code>UsernamePasswordAuthenticationFilter</code>. En cada
+              petición autenticada lee el atributo de sesión
+              <code>mustChangePassword</code>. Si es <code>true</code>, redirige
+              a <code>/change-password</code> sin importar la ruta destino. Se
+              salta rutas estáticas y de gestión de sesión.
+              <code>CustomLoginSuccessHandler</code> es quien escribe ese
+              atributo al hacer login.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== BASE DE DATOS ===== -->
+      <div class="section-label" data-section="base-datos">
+        Base de datos y persistencia
+      </div>
+
+      <div class="card-wrap" data-cat="base-datos">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">19</span>
+            <div class="card-cat">Base de datos</div>
+            <div class="card-question">
+              ¿Por qué PostgreSQL en lugar de MySQL?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              PostgreSQL ofrece tres funcionalidades que MySQL no tiene de forma
+              nativa y que el proyecto necesita: <strong>JSONB</strong> para el
+              campo <code>configuracion</code> de centros,
+              <strong>triggers PL/pgSQL</strong> para la auditoría forense
+              inmutable, y la función <code>current_setting()</code> que permite
+              transmitir el email del profesor desde la app al trigger de
+              auditoría dentro de la sesión.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="base-datos">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">20</span>
+            <div class="card-cat">Base de datos</div>
+            <div class="card-question">
+              ¿Cómo funciona el trigger de auditoría PL/pgSQL?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              El trigger <code>trigger_auditoria_notas</code> se dispara
+              <code>AFTER UPDATE</code> sobre la tabla
+              <code>calificaciones</code>. La función
+              <code>registrar_cambio_nota()</code> inserta en
+              <code>auditoria_notas</code> el valor anterior
+              (<code>OLD.valor</code>), el nuevo (<code>NEW.valor</code>), la
+              fecha exacta y el email del docente leído de la variable de sesión
+              <code>app.usuario_actual</code>. Solo actúa cuando el valor cambia
+              realmente (<code>IS DISTINCT FROM</code>).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="base-datos">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">21</span>
+            <div class="card-cat">Base de datos</div>
+            <div class="card-question">
+              ¿Cómo transmites el email del profesor desde Java al trigger de
+              PostgreSQL?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Dentro de la transacción de
+              <code>TeacherDashboardService.upsertGrades()</code>, antes de
+              persistir las calificaciones, se ejecuta la native query:
+              <code>SELECT set_config('app.usuario_actual', :email, true)</code
+              >. Esto escribe el email en la sesión de PostgreSQL para esa
+              transacción. El trigger lo lee con
+              <code>current_setting('app.usuario_actual', true)</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="base-datos">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">22</span>
+            <div class="card-cat">Base de datos</div>
+            <div class="card-question">
+              ¿Qué es Flyway y por qué lo usas en lugar de Hibernate ddl-auto?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Flyway aplica migraciones SQL versionadas (<code>V1__</code>,
+              <code>V2__</code>…) de forma reproducible y auditable.
+              <code>Hibernate ddl-auto</code> no puede gestionar triggers
+              PL/pgSQL ni datos de seed complejos. Con Flyway el esquema es
+              explícito, versionado en git, y se puede reproducir exactamente el
+              mismo estado en cualquier entorno (dev, CI, producción).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="base-datos">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">23</span>
+            <div class="card-cat">Base de datos</div>
+            <div class="card-question">
+              ¿Qué es Spring Session JDBC y por qué lo usas?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Spring Session JDBC almacena las sesiones HTTP en tablas de
+              PostgreSQL (<code>SPRING_SESSION</code> y
+              <code>SPRING_SESSION_ATTRIBUTES</code>). Esto permite: (1) que las
+              sesiones sobrevivan a reinicios de la app, (2) que
+              <code>maximumSessions(1)</code> funcione sin caché externa (Redis,
+              etc.), y (3) que la sesión expire a los 30 minutos configurados en
+              <code>server.servlet.session.timeout</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="base-datos">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">24</span>
+            <div class="card-cat">Base de datos</div>
+            <div class="card-question">
+              ¿Cómo se calcula la nota final ponderada de un alumno?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              El cálculo tiene tres niveles: <strong>CE → RA</strong> ponderado
+              por el campo <code>peso</code> de
+              <code>CriterioEvaluacion</code> (fallback: media simple si todos
+              los pesos son 0). <strong>RA → Periodo</strong> ponderado por
+              <code>ResultadoAprendizaje.pesoSugerido</code>.
+              <strong>Periodo → Global</strong> ponderado por
+              <code>PeriodoEvaluacion.peso</code>. Todo se lee de la base de
+              datos; no hay constantes hardcoded en el código.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="base-datos">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">25</span>
+            <div class="card-cat">Base de datos</div>
+            <div class="card-question">
+              ¿Por qué la tabla auditoria_notas es inmutable? ¿Cómo lo
+              garantizas?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              La inmutabilidad está garantizada a
+              <strong>nivel de base de datos</strong>, no de política de código.
+              Solo el trigger PL/pgSQL puede insertar en
+              <code>auditoria_notas</code>. En la aplicación no existe ningún
+              endpoint <code>DELETE</code> ni <code>PUT</code> sobre esta tabla,
+              y ningún repositorio expone métodos de escritura directa sobre
+              ella.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== TESTS ===== -->
+      <div class="section-label" data-section="tests">Tests y calidad</div>
+
+      <div class="card-wrap" data-cat="tests">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">26</span>
+            <div class="card-cat">Tests</div>
+            <div class="card-question">¿Qué es TDD y cómo lo aplicaste?</div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <strong>Test-Driven Development</strong>: primero se escribe el
+              test que describe el comportamiento esperado (Red), luego el
+              código mínimo que lo hace pasar (Green), y finalmente se
+              refactoriza sin romper nada (Refactor). En el proyecto, cada nuevo
+              servicio o controlador tiene su test escrito antes o en paralelo a
+              la implementación. El pipeline bloquea si la cobertura baja del
+              80%.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="tests">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">27</span>
+            <div class="card-cat">Tests</div>
+            <div class="card-question">
+              ¿Cuál es tu cobertura de tests y cómo la mides?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Cobertura de instrucciones medida con
+              <strong>JaCoCo 0.8.12</strong> integrado en el plugin Maven. El
+              pipeline de GitHub Actions aplica un quality gate bloqueante: si
+              la cobertura no supera el <strong>80%</strong>, el job de tests
+              falla y la promoción a <code>pre-prod</code> se cancela. El
+              reporte se sube como artifact en cada ejecución.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="tests">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">28</span>
+            <div class="card-cat">Tests</div>
+            <div class="card-question">
+              ¿Qué es Testcontainers y por qué lo usas para los tests de
+              integración?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Testcontainers levanta un contenedor Docker de
+              <strong>PostgreSQL 16-alpine</strong> efímero por cada ejecución
+              de tests. Garantiza paridad total con el entorno de producción: el
+              mismo motor, los mismos triggers PL/pgSQL, el mismo comportamiento
+              de transacciones. Alternativa descartada: base de datos H2 en
+              memoria (no soporta PL/pgSQL ni JSONB).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="tests">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">29</span>
+            <div class="card-cat">Tests</div>
+            <div class="card-question">
+              ¿Cuántos tests de seguridad tienes y qué cubren?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <strong>32 tests</strong> en 6 clases:
+              <code>SecurityConfigTest</code> (13 tests: acceso por rol, CSP,
+              CSRF, snap-admin), <code>CustomLoginSuccessHandlerTest</code> (3:
+              redirección por rol y mustChangePassword),
+              <code>LoginRateLimitFilterTest</code> (3: HTTP 429, IPs
+              independientes), <code>SecurityAuditLoggerTest</code> (6:
+              log-injection, nulls), <code>AuthIntegrationTest</code> (6: login
+              real con BD, sesiones concurrentes),
+              <code>LoginControllerTest</code> (1).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="tests">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">30</span>
+            <div class="card-cat">Tests</div>
+            <div class="card-question">
+              ¿Cómo evitas que los tests de integración se contaminen entre sí?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Los tests de integración con <code>@SpringBootTest</code> usan
+              <code>@Transactional</code> para envolver cada test en una
+              transacción que se hace rollback al terminar. Testcontainers
+              levanta un contenedor PostgreSQL fresco por ejecución. Para tests
+              que necesitan comprobar el estado persistido (sin rollback), se
+              limpian las tablas en el <code>@BeforeEach</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CI/CD ===== -->
+      <div class="section-label" data-section="cicd">CI/CD y despliegue</div>
+
+      <div class="card-wrap" data-cat="cicd">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">31</span>
+            <div class="card-cat">CI/CD</div>
+            <div class="card-question">
+              ¿Cuáles son los cuatro jobs de tu pipeline y qué hace cada uno?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <strong>1. Lint &amp; Validation</strong>: Spotless (formato
+              Java), hadolint (Dockerfile), actionlint.
+              <strong>2. Build Test Container</strong>: construye la imagen
+              Docker en la etapa <em>test</em> con caché de GitHub Actions.
+              <strong>3. Containerized Tests</strong>: levanta PostgreSQL
+              16-alpine, ejecuta los 499 tests, verifica cobertura &gt;80% con
+              JaCoCo. <strong>4. Purge &amp; Promote</strong>: elimina
+              herramientas dev, force-push a <code>pre-prod</code>, abre PR a
+              <code>main</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="cicd">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">32</span>
+            <div class="card-cat">CI/CD</div>
+            <div class="card-question">
+              ¿Qué es la política de purga y por qué existe?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              La rama <code>dev</code> contiene herramientas de IA,
+              documentación técnica interna y el directorio
+              <code>conductor/</code>. Antes de llegar a
+              <code>main</code> (producción), el job
+              <em>Purge &amp; Promote</em> elimina automáticamente esos
+              directorios (<code>.agents/</code>, <code>.claude/</code>,
+              <code>conductor/</code>, <code>GEMINI.md</code>…) y hace
+              force-push a <code>pre-prod</code>. Así el código productivo nunca
+              expone metadatos de desarrollo.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="cicd">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">33</span>
+            <div class="card-cat">CI/CD</div>
+            <div class="card-question">
+              ¿Por qué usas un Dockerfile multi-etapa?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              El Dockerfile multi-etapa tiene una etapa <em>build/test</em> con
+              JDK completo y Maven para compilar y ejecutar tests, y una etapa
+              <em>runtime</em> con solo el JRE. La imagen final no incluye el
+              código fuente, las herramientas de build ni el entorno de test.
+              Resultado: imagen más pequeña, menor superficie de ataque y menor
+              tiempo de deploy.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== IMPLEMENTACIÓN ===== -->
+      <div class="section-label" data-section="implementacion">
+        Implementación específica
+      </div>
+
+      <div class="card-wrap" data-cat="implementacion">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">34</span>
+            <div class="card-cat">Implementación</div>
+            <div class="card-question">
+              ¿Cómo funciona la importación masiva de alumnos desde Excel?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Tres fases atómicas: (1) <strong>Parsing</strong>:
+              <code>UsuarioExcelParserService</code> lee el .xlsx con Apache
+              POI. (2) <strong>Validación</strong>:
+              <code>UsuarioImportValidatorService</code> verifica formato de
+              email, política de contraseña, límite de 200 filas y duplicados en
+              el lote. Si hay cualquier error, se lanza excepción y no se
+              persiste nada. (3) <strong>Persistencia</strong>: upsert por
+              username — si existe, reutiliza; si no, crea con
+              <code>mustChangePassword=true</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="implementacion">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">35</span>
+            <div class="card-cat">Implementación</div>
+            <div class="card-question">
+              ¿Qué hace EvaluacionBootstrapService y cuándo se llama?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Crea automáticamente la estructura mínima de evaluación para una
+              impartición: un <code>PeriodoEvaluacion</code> ("Evaluación", peso
+              100) y un <code>ItemEvaluable</code> de tipo EXAMEN por cada RA
+              del módulo. Es <strong>idempotente</strong>: comprueba
+              <code>existsByImparticionId</code> antes de crear nada. Se llama
+              desde <code>AdminAlumnoService.asignarGrupo()</code> por cada
+              matrícula nueva. El import Excel NO lo llama.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="implementacion">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">36</span>
+            <div class="card-cat">Implementación</div>
+            <div class="card-question">
+              ¿Cómo funciona la redirección post-login según el rol del usuario?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <code>CustomLoginSuccessHandler</code> aplica esta lógica: (1) si
+              <code>mustChangePassword == true</code> →
+              <code>/change-password</code>. (2) Si tiene más de un rol
+              funcional → <code>/seleccionar-rol</code>. (3) Si tiene un único
+              rol → al dashboard de ese rol (<code>/admin/dashboard</code>,
+              <code>/centro-admin/dashboard</code>, etc.). (4) Si no tiene
+              ningún rol válido → <code>/login?norole</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="implementacion">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">37</span>
+            <div class="card-cat">Implementación</div>
+            <div class="card-question">
+              ¿Cómo funciona el portal del tutor? ¿Es un rol RBAC separado?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              No es un rol RBAC independiente. El tutor accede con
+              <code>ROLE_PROFESOR</code>. Si el campo <code>tutor_id</code> de
+              la tabla <code>grupos</code> apunta al usuario autenticado, el
+              sistema habilita el portal <code>/tutor/**</code>. Si además el
+              tutor es el profesor de una impartición concreta
+              (<code>puedeEditar=true</code>), el enlace redirige al cuaderno
+              del profesor; si no, muestra la vista de solo lectura.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="implementacion">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">38</span>
+            <div class="card-cat">Implementación</div>
+            <div class="card-question">
+              ¿Cómo se asigna un alumno a un grupo y qué pasa después?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <code>AdminAlumnoService.asignarGrupo()</code> itera todas las
+              imparticiones del grupo. Por cada una que el alumno no tenga
+              matrícula, crea una <code>Matricula</code> (ACTIVA) y llama a
+              <code>EvaluacionBootstrapService.bootstrapParaImparticion()</code>
+              para inicializar el PeriodoEvaluacion e ItemsEvaluables. Las
+              imparticiones ya matriculadas se saltan silenciosamente. El método
+              devuelve el número de matrículas creadas.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="implementacion">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">39</span>
+            <div class="card-cat">Implementación</div>
+            <div class="card-question">
+              ¿Cómo funciona la exportación de auditoría a Excel?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <code>AuditoriaExcelExportService</code> genera en memoria un
+              <code>XSSFWorkbook</code> de Apache POI 5.3.0 con los registros de
+              <code>auditoria_notas</code>. Se devuelve como flujo de descarga
+              directa con <code>Content-Disposition: attachment</code> sin
+              escritura en disco. El <code>ADMIN_CENTRO</code> solo exporta
+              registros de sus centros asignados; el <code>ADMIN</code> exporta
+              todo.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="implementacion">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">40</span>
+            <div class="card-cat">Implementación</div>
+            <div class="card-question">
+              ¿Qué es un ResultadoAprendizaje y cómo se relaciona con la
+              evaluación?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Un <strong>ResultadoAprendizaje (RA)</strong> es un objetivo
+              pedagógico del módulo, obligatorio por el Real Decreto 659/2023 de
+              la LOFP. Cada RA se desglosa en
+              <strong>CriteriosEvaluacion (CE)</strong> con pesos porcentuales.
+              El profesor califica por CE, el sistema agrega
+              CE→RA→Periodo→Global usando los pesos almacenados en BD. Los RA
+              tienen también <code>pesoSugerido</code> para ponderar entre
+              ellos.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="implementacion">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">41</span>
+            <div class="card-cat">Implementación</div>
+            <div class="card-question">
+              ¿Por qué Bucket4j y no Nginx o un API Gateway para el rate
+              limiting?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Para el alcance del proyecto, Bucket4j <em>in-process</em> no
+              requiere infraestructura adicional: ni Nginx, ni Redis, ni API
+              Gateway. El cubo de tokens vive en memoria de la JVM. La
+              contrapartida es que el estado no se comparte entre múltiples
+              instancias de la app, pero con un despliegue monolítico en Docker
+              esto no es un problema real.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="implementacion">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">42</span>
+            <div class="card-cat">Implementación</div>
+            <div class="card-question">
+              ¿Cómo evitas que el Admin de Centro modifique usuarios con rol
+              ADMIN?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              <code
+                >CentroAdminContextService.validateUsuarioGestionablePorCentroAdmin()</code
+              >
+              inspecciona los roles del usuario objetivo antes de cualquier
+              operación de escritura. Si detecta <code>ROLE_ADMIN</code> o
+              <code>ROLE_ADMIN_CENTRO</code>, lanza
+              <code>AccessDeniedException</code>, que Spring Security traduce en
+              HTTP 403. La comprobación ocurre en la capa de servicio, no solo
+              en la interfaz.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="implementacion">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">43</span>
+            <div class="card-cat">Implementación</div>
+            <div class="card-question">
+              ¿Qué es el tour de onboarding y cómo detecta el primer acceso?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              El tour está implementado con <strong>Driver.js</strong> y cargado
+              desde CDN jsDelivr (CSP actualizada para permitirlo). El script
+              <code>admin-tour.js</code> comprueba en
+              <code>localStorage</code> la clave
+              <code>schooledule_tour_admin_visto</code>. Si no existe, lanza el
+              tour automáticamente. Tiene 11 pasos que cubren todo el sidebar.
+              El botón «Tour guiado» del sidebar permite relanzarlo pasando
+              <code>?tour=1</code> en la URL.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="implementacion" data-tall="true">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">44</span>
+            <div class="card-cat">Implementación</div>
+            <div class="card-question">
+              ¿Por qué las credenciales del seed de desarrollo tienen contraseña
+              "1234" si tienes política de contraseñas?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              La política <code>@ValidPassword</code> se aplica en los
+              <strong>formularios</strong> de creación de usuario, no en las
+              migraciones SQL. El seed
+              <code>V2__seeds_desarrollo.sql</code> inserta directamente el hash
+              BCrypt de "1234" en la BD sin pasar por el validador de la
+              aplicación. Esto es intencionado: el seed es solo para entornos de
+              desarrollo. Además, todos los usuarios del seed tienen
+              <code>must_change_password=true</code>, así que el primer login
+              fuerza a cambiar la contraseña a una que sí cumpla la política.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PRODUCTO ===== -->
+      <div class="section-label" data-section="producto">
+        Producto y decisiones
+      </div>
+
+      <div class="card-wrap" data-cat="producto">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">45</span>
+            <div class="card-cat">Producto</div>
+            <div class="card-question">
+              ¿Por qué no usaste Moodle como base en lugar de crear algo desde
+              cero?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Moodle tiene tres carencias estructurales: (1) no tiene el
+              concepto de "sede" como unidad de aislamiento de datos, gestionar
+              varias requiere instancias separadas. (2) Su auditoría de
+              calificaciones puede ser alterada por el profesor. (3) No modela
+              la jerarquía RA→CE obligatoria en FP por el Real Decreto 659/2023.
+              Adaptar Moodle habría requerido reescribir su modelo de datos
+              central.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="producto">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">46</span>
+            <div class="card-cat">Producto</div>
+            <div class="card-question">
+              ¿Qué harías diferente si pudieras empezar de nuevo?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              Diseñaría el esquema de evaluación (Periodos, Items,
+              Calificaciones) desde el primer commit con el modelo final, en
+              lugar de migrarlo incrementalmente. El número de migraciones
+              Flyway acumuladas refleja ese aprendizaje progresivo. También
+              añadiría SonarQube al pipeline desde el inicio para detectar deuda
+              técnica antes de que se acumule.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="producto">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">47</span>
+            <div class="card-cat">Producto</div>
+            <div class="card-question">
+              ¿A qué normativa educativa se alinea el modelo de RAs y CEs?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              A la <strong>Ley Orgánica 3/2022 (LOFP)</strong> de Ordenación e
+              Integración de la Formación Profesional y al
+              <strong>Real Decreto 659/2023</strong>, que establece la
+              evaluación por competencias mediante Resultados de Aprendizaje
+              ponderados con Criterios de Evaluación. El modelo de Schooledule
+              refleja directamente esa estructura jerárquica obligatoria para
+              los ciclos FP.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="producto">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">48</span>
+            <div class="card-cat">Producto</div>
+            <div class="card-question">
+              ¿Cómo escalaría el sistema si pasara de 200 a 20.000 alumnos?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              La arquitectura actual soporta escalado horizontal: múltiples
+              instancias de la app detrás de un load balancer (las sesiones ya
+              están en PostgreSQL, no en memoria local). Para el rate limiting
+              habría que migrar Bucket4j a un backend compartido (Redis). El
+              modelo de datos multi-sede ya está diseñado para múltiples
+              tenants. PostgreSQL escalaría con réplicas de lectura para las
+              consultas de auditoría.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="producto">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">49</span>
+            <div class="card-cat">Producto</div>
+            <div class="card-question">
+              ¿Cómo gestionas el cambio de curso académico sin perder datos
+              históricos?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              La entidad <code>CursoAcademico</code> actúa como eje temporal.
+              Solo uno puede estar activo en cada momento; el admin lo marca con
+              <code>POST /admin/cursos/{id}/activar</code>, que desmarca el
+              anterior. Los datos de cursos pasados se conservan íntegramente y
+              son accesibles mediante los filtros de la interfaz. El curso
+              activo actúa como filtro por defecto en todas las listas del
+              panel.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-wrap" data-cat="producto">
+        <div class="card">
+          <div class="card-front">
+            <span class="card-num">50</span>
+            <div class="card-cat">Producto</div>
+            <div class="card-question">
+              ¿Cuál es la parte técnica de la que estás más orgulloso y por qué?
+            </div>
+            <div class="card-hint">voltear →</div>
+          </div>
+          <div class="card-back">
+            <div class="card-back-label">Respuesta</div>
+            <div class="card-answer">
+              La <strong>auditoría forense inmutable</strong>. No es un log de
+              aplicación que se puede desactivar o borrar: es un trigger
+              PL/pgSQL que actúa directamente en la base de datos, fuera del
+              alcance del código Java. Transmitir el email del profesor a través
+              de <code>set_config</code> de PostgreSQL dentro de la misma
+              transacción JPA fue el reto técnico más interesante del proyecto,
+              y el resultado resuelve un problema legal real.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /grid -->
+
+    <script>
+      // FLIP
+      document.querySelectorAll(".card-wrap").forEach((wrap) => {
+        wrap.addEventListener("click", () => wrap.classList.toggle("flipped"));
+      });
+
+      // Ajustar altura según contenido del back
+      document.querySelectorAll(".card-wrap").forEach((wrap) => {
+        const back = wrap.querySelector(".card-answer");
+        if (back) {
+          const text = back.textContent.length;
+          if (text > 400) wrap.classList.add("xtall");
+          else if (text > 250) wrap.classList.add("tall");
+        }
+      });
+
+      // FILTROS
+      const filterBtns = document.querySelectorAll(".filter-btn");
+      const cards = document.querySelectorAll(".card-wrap");
+      const sections = document.querySelectorAll(".section-label");
+      const countLabel = document.getElementById("count-label");
+
+      filterBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          filterBtns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          const cat = btn.dataset.cat;
+          let visible = 0;
+
+          cards.forEach((card) => {
+            if (cat === "all" || card.dataset.cat === cat) {
+              card.classList.remove("hidden");
+              visible++;
+            } else {
+              card.classList.add("hidden");
+              card.classList.remove("flipped");
+            }
+          });
+
+          // Ocultar section-labels vacíos
+          sections.forEach((sec) => {
+            const sectionCat = sec.dataset.section;
+            if (cat === "all" || cat === sectionCat) {
+              sec.style.display = "";
+            } else {
+              sec.style.display = "none";
+            }
+          });
+
+          countLabel.textContent = `Mostrando ${visible} de 50 tarjetas`;
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -6,6 +6,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## En progreso / Pendientes
 
+- [x] **Track: ux_fixes_20260601** — Error handling (403→login), filtros completos en todas las pestañas del panel admin (Usuarios/Centros/Módulos/Cursos/Auditoría), y email de bienvenida al crear cuenta (manual + Excel).
+*Link: [./tracks/ux_fixes_20260601/plan.md](./tracks/ux_fixes_20260601/plan.md)*
+
 - [x] **Track: memoria_actualizacion_20260519** — Añadir R14–R21 a la memoria TFG: ADMIN_CENTRO, tutor, filtros, exportar Excel, importar alumnos, importar RAs/CEs, pesos configurables, tour guiado. + Ampliación capítulo Seguridad.
 *Link: [./tracks/memoria_actualizacion_20260519/plan.md](./tracks/memoria_actualizacion_20260519/plan.md)*
 
