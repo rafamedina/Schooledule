@@ -1059,6 +1059,13 @@ Permitir la modificación del estado (\texttt{ACTIVA}, \texttt{BAJA}, \texttt{CO
   \item \textbf{R11F02T03P01 --} Intentar eliminar una matrícula con calificaciones asociadas y verificar que el sistema rechaza la operación con un mensaje que explica el motivo.
 \end{itemize}
 
+\subsubsection{R11F02T04 -- Implementar la asignación de un alumno a todos los módulos de un grupo}
+Ofrecer un formulario en \texttt{GET /admin/alumnos/\{alumnoId\}/asignar-grupo} donde el administrador selecciona un grupo y el flag de repetidor. Al confirmar (\texttt{POST /admin/alumnos/\{alumnoId\}/asignar-grupo}), el servicio \texttt{AdminAlumnoService.asignarGrupo()} itera todas las imparticiones del grupo y crea una \texttt{Matricula} en estado \texttt{ACTIVA} para cada una, omitiendo silenciosamente las imparticiones en las que el alumno ya estuviera matriculado. Si el grupo no tiene ninguna impartición, la operación se rechaza con un mensaje explicativo. Por cada matrícula nueva se inicializa la estructura de evaluación mediante \texttt{EvaluacionBootstrapService.bootstrapParaImparticion()}: crea un único \texttt{PeriodoEvaluacion} (nombre \textit{«Evaluación»}, peso 100) y un \texttt{ItemEvaluable} de tipo \texttt{EXAMEN} por cada \texttt{ResultadoAprendizaje} del módulo. El bootstrap es idempotente: si la impartición ya dispone de períodos, no se crea nada.
+\begin{itemize}
+  \item \textbf{R11F02T04P01 --} Asignar un alumno a un grupo con tres imparticiones, dos de las cuales ya tiene matrícula, y verificar que se generan exactamente una matrícula nueva y que el mensaje de éxito indica el número correcto de matrículas creadas.
+  \item \textbf{R11F02T04P02 --} Intentar asignar un alumno a un grupo sin imparticiones y verificar que el sistema rechaza la operación con el mensaje \textit{«El grupo no tiene módulos asignados todavía»}.
+\end{itemize}
+
 %-------------------------------------------------------------
 \section{R12 -- El administrador debe poder consultar el registro de auditoría de calificaciones}
 
@@ -1233,7 +1240,7 @@ Generar con Apache POI un fichero \texttt{.xlsx} con las columnas: \texttt{usern
 \subsection{R18F02 -- El sistema debe validar el contenido del fichero y crear los usuarios en una sola operación}
 
 \subsubsection{R18F02T01 -- Implementar \texttt{POST /admin/usuarios/importar} con validación y persistencia en un único paso}
-El endpoint recibe el fichero \texttt{.xlsx}, lo parsea con \texttt{UsuarioExcelParserService} y ejecuta las validaciones de \texttt{UsuarioImportValidatorService}. El límite máximo es 200 filas. Si se detecta cualquier error, se lanza \texttt{UsuarioImportException} con la lista de errores por fila y no se persiste ningún registro. Si todas las filas son válidas, para cada fila: (1) se crea el usuario con rol \texttt{ROLE\_ALUMNO} y contraseña cifrada con BCrypt; (2) se localiza el grupo por \texttt{centro\_nombre} + \texttt{curso\_academico\_nombre} + \texttt{grupo\_nombre}; (3) se crea una \texttt{Matricula} en estado \texttt{ACTIVA} para cada impartición activa del grupo.
+El endpoint recibe el fichero \texttt{.xlsx}, lo parsea con \texttt{UsuarioExcelParserService} y ejecuta las validaciones de \texttt{UsuarioImportValidatorService}. El límite máximo es 200 filas. Si se detecta cualquier error, se lanza \texttt{UsuarioImportException} con la lista de errores por fila y no se persiste ningún registro. Si todas las filas son válidas, para cada fila: (1) si el \texttt{username} ya existe en el sistema, el usuario se reutiliza sin crear ningún registro nuevo; en caso contrario se crea el usuario con rol \texttt{ROLE\_ALUMNO}, contraseña cifrada con BCrypt y el flag \texttt{mustChangePassword=true}; (2) se localiza el grupo por \texttt{centro\_nombre} + \texttt{curso\_academico\_nombre} + \texttt{grupo\_nombre}; (3) se crea una \texttt{Matricula} en estado \texttt{ACTIVA} para cada impartición activa del grupo, omitiendo las imparticiones en las que el alumno ya estuviera matriculado.
 \begin{itemize}
   \item \textbf{R18F02T01P01 --} Subir un fichero con una fila que contiene un email con formato inválido y otra con una contraseña que no cumple la política, y verificar que la respuesta muestra exactamente dos errores con el número de fila y el campo afectado sin persistir ningún registro.
   \item \textbf{R18F02T01P02 --} Subir un fichero con 201 filas y verificar que el sistema rechaza la importación con un mensaje que indica que se ha superado el límite de 200 alumnos.
@@ -1489,11 +1496,11 @@ La aplicación sigue el patrón de arquitectura en tres capas de Spring MVC,
 reflejado directamente en la estructura de paquetes del proyecto:
 
 \begin{itemize}
-  \item \textbf{Capa de Presentación:} Veintidós controladores Spring MVC anotados
+  \item \textbf{Capa de Presentación:} Veinticuatro controladores Spring MVC anotados
         con \texttt{@PreAuthorize} a nivel de clase y plantillas Thymeleaf
         organizadas por portal (\texttt{admin/}, \texttt{centro-admin/},
         \texttt{profe/}, \texttt{tutor/}, \texttt{alumno/}).
-  \item \textbf{Capa de Lógica de Negocio:} Veinticinco servicios
+  \item \textbf{Capa de Lógica de Negocio:} Veintiocho servicios
         \texttt{@Service} bajo \texttt{infrastructure/service/} que encapsulan
         las reglas académicas: validación de importaciones, cálculo de
         calificaciones ponderadas y verificación de pertenencia de recursos al
@@ -1623,6 +1630,16 @@ prevenir la fijación de sesión. Cuando un usuario inicia sesión desde un segu
 dispositivo, la sesión anterior queda marcada como expirada y redirige a
 \texttt{/login?expired}.
 
+El flag \texttt{mustChangePassword} no solo actúa en el momento del login. El filtro
+\texttt{MustChangePasswordFilter} (\texttt{OncePerRequestFilter}, registrado en
+\texttt{SecurityConfig} tras \texttt{UsernamePasswordAuthenticationFilter}) comprueba
+en cada petición autenticada el atributo de sesión \texttt{mustChangePassword}. Si el
+atributo está activo, redirige inmediatamente a \texttt{/change-password},
+independientemente de la ruta solicitada. Quedan excluidas de esta redirección las
+rutas de gestión de sesión y los recursos estáticos:
+\texttt{/change-password}, \texttt{/logout}, \texttt{/login/**}, \texttt{/css/**},
+\texttt{/js/**}, \texttt{/images/**} y \texttt{/error}.
+
 El rate limiting de \texttt{POST /login} lo implementa \texttt{LoginRateLimitFilter}
 (Bucket4j 8.10.1): cada dirección IP dispone de un cubo de 10 tokens con recarga
 cada 15 minutos; al agotarse, la respuesta es HTTP 429 con el cuerpo JSON
@@ -1691,11 +1708,35 @@ validación atómica: si cualquier fila falla, no se persiste ningún registro.
         contraseña con mínimo 8 caracteres, al menos una mayúscula, una minúscula
         y un dígito.
   \item \textbf{Persistencia:} \texttt{UsuarioImportService} resuelve las claves
-        foráneas (centro, curso, grupo) contra la base de datos, crea cada usuario
-        con \texttt{ROLE\_ALUMNO} y contraseña cifrada con BCrypt, y genera una
-        \texttt{Matricula} en estado \texttt{ACTIVA} para cada impartición activa
-        del grupo.
+        foráneas (centro, curso, grupo) contra la base de datos. Para cada fila,
+        si el \texttt{username} ya existe en el sistema el usuario se reutiliza
+        sin crear ningún registro nuevo (upsert por username); en caso contrario
+        se crea el usuario con \texttt{ROLE\_ALUMNO}, contraseña cifrada con
+        BCrypt y el flag \texttt{mustChangePassword=true}. A continuación se
+        genera una \texttt{Matricula} en estado \texttt{ACTIVA} para cada
+        impartición activa del grupo, omitiendo las imparticiones en las que el
+        alumno ya estuviera matriculado.
 \end{enumerate}
+
+\section{Asignación Directa de Alumnos a Grupos}
+
+Complementario a la importación masiva, \texttt{AdminAlumnoService.asignarGrupo()}
+permite matricular a un alumno en todos los módulos de un grupo en una sola operación
+desde la interfaz de administración (\texttt{GET/POST /admin/alumnos/\{alumnoId\}/asignar-grupo}).
+El servicio itera las imparticiones del grupo seleccionado, crea la \texttt{Matricula}
+para cada una que el alumno no tenga ya, y por cada matrícula nueva delega en
+\texttt{EvaluacionBootstrapService.bootstrapParaImparticion()}.
+
+\texttt{EvaluacionBootstrapService} crea un \texttt{PeriodoEvaluacion} (nombre
+\textit{«Evaluación»}, peso 100) y un \texttt{ItemEvaluable} de tipo \texttt{EXAMEN}
+por cada \texttt{ResultadoAprendizaje} del módulo del curso académico en curso.
+La operación es idempotente: comprueba mediante
+\texttt{periodoRepository.existsByImparticionId()} si la impartición ya dispone de
+períodos y, en ese caso, no crea ningún registro adicional. A diferencia del flujo de
+importación masiva, \texttt{UsuarioImportService} no invoca a
+\texttt{EvaluacionBootstrapService}; las matrículas creadas desde Excel quedan sin
+estructura de evaluación hasta que se realice una asignación posterior desde la UI o
+se creen los ítems manualmente.
 
 \section{Evaluación Granular por Criterio}
 
@@ -1768,7 +1809,7 @@ pipeline en figura \ref{fig:pipeline-cicd}).
 
 \section{Tests Unitarios de Servicio}
 
-La batería de tests unitarios cubre los veinticinco servicios mediante veintisiete
+La batería de tests unitarios cubre los veintiocho servicios mediante veintiocho
 clases de test. Los casos más representativos son:
 
 \begin{itemize}
